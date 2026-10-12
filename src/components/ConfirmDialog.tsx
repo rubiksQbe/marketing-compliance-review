@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button'
-import { Trash, X } from '@phosphor-icons/react'
+import { Archive, X } from '@phosphor-icons/react'
 import { useEffect } from 'react'
 
 export function ConfirmDialog({
   open,
   title,
   body,
-  confirmLabel = 'Delete',
+  confirmLabel = 'Confirm',
   onConfirm,
   onCancel,
 }: {
@@ -63,7 +63,7 @@ export function ConfirmDialog({
           <Button variant="ghost" icon={<X size={14} />} onClick={onCancel}>
             Cancel
           </Button>
-          <Button variant="decline" icon={<Trash size={14} />} onClick={onConfirm}>
+          <Button variant="decline" icon={<Archive size={14} />} onClick={onConfirm}>
             {confirmLabel}
           </Button>
         </div>

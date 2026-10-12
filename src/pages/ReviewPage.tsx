@@ -17,7 +17,7 @@ import {
 import { useStore } from '@/lib/store'
 import { formatSla } from '@/lib/time'
 import type { ReasonCode, RiskTier } from '@/lib/types'
-import { ArrowLeft, Path, PencilSimple, Trash } from '@phosphor-icons/react'
+import { Archive, ArrowLeft, Path, PencilSimple } from '@phosphor-icons/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
@@ -31,14 +31,14 @@ export function ReviewPage() {
     updateRiskTier,
     session,
     visibleRequests,
-    deleteRequest,
+    withdrawRequest,
   } = useStore()
   const request = getRequest(id)
 
   const [selected, setSelected] = useState<ReasonCode[]>([])
   const [notes, setNotes] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [confirmWithdraw, setConfirmWithdraw] = useState(false)
 
   const leftRef = useRef<HTMLDivElement>(null)
   const rightRef = useRef<HTMLDivElement>(null)
@@ -380,6 +380,12 @@ export function ReviewPage() {
               {isSubmitter && request.status === 'pending' && (
                 <p className="text-[11px] text-steel-600">Awaiting compliance decision.</p>
               )}
+
+              {isSubmitter && request.status === 'withdrawn' && (
+                <p className="text-[11px] text-steel-600">
+                  Withdrawn. Record and activity retained for audit; hidden from the active queue.
+                </p>
+              )}
             </div>
 
             {actionable && (
@@ -410,10 +416,10 @@ export function ReviewPage() {
                   type="button"
                   variant="ghost"
                   className="w-full"
-                  icon={<Trash size={16} />}
-                  onClick={() => setConfirmDelete(true)}
+                  icon={<Archive size={16} />}
+                  onClick={() => setConfirmWithdraw(true)}
                 >
-                  Delete request
+                  Withdraw request
                 </Button>
               </div>
             )}
@@ -422,13 +428,14 @@ export function ReviewPage() {
       </div>
 
       <ConfirmDialog
-        open={confirmDelete}
-        title="Delete request?"
-        body={`${request.id} — ${request.title}. This cannot be undone.`}
-        onCancel={() => setConfirmDelete(false)}
+        open={confirmWithdraw}
+        title="Withdraw request?"
+        body={`${request.id} — ${request.title}. Removed from the active queue; the record and activity stay for audit.`}
+        confirmLabel="Withdraw"
+        onCancel={() => setConfirmWithdraw(false)}
         onConfirm={() => {
-          deleteRequest(request.id)
-          setConfirmDelete(false)
+          withdrawRequest(request.id)
+          setConfirmWithdraw(false)
           navigate('/mine')
         }}
       />

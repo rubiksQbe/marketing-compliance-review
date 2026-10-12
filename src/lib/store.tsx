@@ -32,7 +32,8 @@ interface StoreValue {
   visibleRequests: ReviewRequest[]
   submitRequest: (input: SubmitInput) => ReviewRequest
   resubmitRequest: (id: string, input: SubmitInput) => ReviewRequest | undefined
-  deleteRequest: (id: string) => void
+  /** Soft-withdraw: retain payload + Activity; hide from active queue. */
+  withdrawRequest: (id: string) => void
   decide: (id: string, input: DecisionInput) => ReviewRequest | undefined
   markOpened: (id: string, actor: string) => void
   updateRiskTier: (id: string, tier: RiskTier, actor: string) => void
@@ -134,14 +135,32 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [session],
   )
 
-  const deleteRequest = useCallback(
+  const withdrawRequest = useCallback(
     (id: string) => {
-      if (!session) return
+      if (!session || session.role !== 'submitter') return
       setRequests((prev) =>
-        prev.filter((req) => {
-          if (req.id !== id) return true
-          if (session.role === 'reviewer') return false
-          return req.submitter !== session.name
+        prev.map((req) => {
+          if (req.id !== id || req.submitter !== session.name) return req
+          if (req.status === 'approved' || req.status === 'withdrawn') return req
+          if (req.status !== 'pending' && req.status !== 'changes_requested' && req.status !== 'rejected') {
+            return req
+          }
+          const now = new Date().toISOString()
+          return {
+            ...req,
+            status: 'withdrawn' as const,
+            updatedAt: now,
+            events: [
+              ...req.events,
+              {
+                id: createId('evt'),
+                at: now,
+                actor: session.name,
+                action: 'withdrawn' as const,
+                detail: 'Withdrawn by submitter. Record retained for audit.',
+              },
+            ],
+          }
         }),
       )
     },
@@ -233,7 +252,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       visibleRequests,
       submitRequest,
       resubmitRequest,
-      deleteRequest,
+      withdrawRequest,
       decide,
       markOpened,
       updateRiskTier,
@@ -247,7 +266,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       visibleRequests,
       submitRequest,
       resubmitRequest,
-      deleteRequest,
+      withdrawRequest,
       decide,
       markOpened,
       updateRiskTier,

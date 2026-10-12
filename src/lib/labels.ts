@@ -43,10 +43,20 @@ export const STATUS_LABELS: Record<RequestStatus, string> = {
   changes_requested: 'Declined',
   approved: 'Approved',
   rejected: 'Declined',
+  withdrawn: 'Withdrawn',
 }
 
 export function isDeclinedStatus(status: RequestStatus): boolean {
   return status === 'changes_requested' || status === 'rejected'
+}
+
+export function isWithdrawnStatus(status: RequestStatus): boolean {
+  return status === 'withdrawn'
+}
+
+/** Active workbench statuses (excludes withdrawn exam-retained records). */
+export function isActiveQueueStatus(status: RequestStatus): boolean {
+  return status !== 'withdrawn'
 }
 
 export const CLAIM_LABELS: Record<ClaimFlag, string> = {
@@ -77,7 +87,8 @@ export const EVENT_ACTION_LABELS: Record<
   | 'changes_requested'
   | 'rejected'
   | 'resubmitted'
-  | 'risk_updated',
+  | 'risk_updated'
+  | 'withdrawn',
   string
 > = {
   submitted: 'Submitted',
@@ -87,6 +98,7 @@ export const EVENT_ACTION_LABELS: Record<
   rejected: 'Declined',
   resubmitted: 'Resubmitted',
   risk_updated: 'Risk updated',
+  withdrawn: 'Withdrawn',
 }
 
 export const KIND_LABELS: Record<IdentityKind, string> = {

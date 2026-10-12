@@ -2,7 +2,12 @@ export type Product = 'personal_loans' | 'credit_cards' | 'mortgage_prequal'
 export type Channel = 'affiliate' | 'paid_social' | 'email' | 'web' | 'display'
 export type AssetType = 'banner' | 'landing_page' | 'email' | 'social_post' | 'affiliate_creative'
 export type RiskTier = 'low' | 'medium' | 'high'
-export type RequestStatus = 'pending' | 'changes_requested' | 'approved' | 'rejected'
+export type RequestStatus =
+  | 'pending'
+  | 'changes_requested'
+  | 'approved'
+  | 'rejected'
+  | 'withdrawn'
 export type SubmissionSource = 'internal' | 'affiliate'
 
 /** Demo session role after landing */
@@ -46,6 +51,7 @@ export interface AuditEvent {
     | 'rejected'
     | 'resubmitted'
     | 'risk_updated'
+    | 'withdrawn'
   detail?: string
   reasonCodes?: ReasonCode[]
 }

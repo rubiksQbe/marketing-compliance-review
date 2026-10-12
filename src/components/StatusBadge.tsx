@@ -1,9 +1,10 @@
-import { RISK_LABELS, STATUS_LABELS, isDeclinedStatus } from '@/lib/labels'
+import { RISK_LABELS, STATUS_LABELS, isDeclinedStatus, isWithdrawnStatus } from '@/lib/labels'
 import { cn } from '@/lib/cn'
 import type { RequestStatus, RiskTier } from '@/lib/types'
 
 export function StatusBadge({ status }: { status: RequestStatus }) {
   const declined = isDeclinedStatus(status)
+  const withdrawn = isWithdrawnStatus(status)
   return (
     <span
       className={cn(
@@ -11,6 +12,7 @@ export function StatusBadge({ status }: { status: RequestStatus }) {
         status === 'pending' && 'bg-steel-100 text-navy-800',
         status === 'approved' && 'bg-forest-50 text-forest-800',
         declined && 'bg-danger-soft text-danger',
+        withdrawn && 'bg-mist-100 text-steel-600',
       )}
     >
       {STATUS_LABELS[status]}

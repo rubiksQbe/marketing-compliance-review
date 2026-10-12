@@ -108,7 +108,7 @@ This doc flags what is solid for a demo, what is stretched, and how a real produ
 4. **Permissioned purge**  
    - Only compliance admin can hard-delete after export; submitters only withdraw.
 
-**Demo today:** still hard-deletes for simplicity. Evolution path is (1) soft withdraw.
+**Now in product:** soft **Withdrawn** (1) — submitter withdraw from Mine / review; Active queue excludes withdrawn; Mine keeps the row with badge; Activity logs `Withdrawn`.
 
 ### A1b / campaign note (summary)
 
@@ -123,6 +123,7 @@ Single-person Mine lists are for **demo simplicity**. An evolution would introdu
 | Reviewer risk override on pending review header | D3 |
 | Visual assets require creative file | D7 |
 | Tiered checklist depth (Low stamp / Med standard / High full) + queue priority | D2 |
+| Soft withdraw (retain payload + Activity; hide from active queue) | D10 |
 | This evolution doc | All stretch items above |
 
 Keep `src/data/assumptions.ts` in sync when rules change; link demos to **Key assumptions** on the landing page.

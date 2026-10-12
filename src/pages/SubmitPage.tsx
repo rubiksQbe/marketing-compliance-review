@@ -150,8 +150,15 @@ export function SubmitPage() {
   if (editing && existing && existing.status === 'approved') {
     return <Navigate to={`/review/${existing.id}`} replace />
   }
-  if (editing && existing && !(existing.status === 'pending' || isDeclinedStatus(existing.status))) {
+  if (
+    editing &&
+    existing &&
+    !(existing.status === 'pending' || isDeclinedStatus(existing.status))
+  ) {
     return <Navigate to="/mine" replace />
+  }
+  if (editing && existing?.status === 'withdrawn') {
+    return <Navigate to={`/review/${existing.id}`} replace />
   }
   if (!hydrated) return null
 

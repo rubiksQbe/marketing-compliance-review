@@ -5,14 +5,14 @@ import { ASSET_LABELS, CHANNEL_LABELS, PRODUCT_LABELS, isDeclinedStatus } from '
 import { useStore } from '@/lib/store'
 import { formatWhen } from '@/lib/time'
 import type { ReviewRequest } from '@/lib/types'
-import { PencilSimple, Plus, Trash } from '@phosphor-icons/react'
+import { Archive, PencilSimple, Plus } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 export function MinePage() {
-  const { session, visibleRequests, deleteRequest } = useStore()
+  const { session, visibleRequests, withdrawRequest } = useStore()
   const navigate = useNavigate()
-  const [pendingDelete, setPendingDelete] = useState<ReviewRequest | null>(null)
+  const [pendingWithdraw, setPendingWithdraw] = useState<ReviewRequest | null>(null)
 
   if (!session) return <Navigate to="/" replace />
   if (session.role !== 'submitter') return <Navigate to="/queue" replace />
@@ -33,6 +33,7 @@ export function MinePage() {
       <ul className="space-y-2">
         {sorted.map((req) => {
           const canEdit = req.status === 'pending' || isDeclinedStatus(req.status)
+          const canWithdraw = canEdit
           return (
             <li key={req.id}>
               <div className="rounded-md border border-mist-200 bg-white/90 px-4 py-3 transition-colors hover:border-steel-400">
@@ -58,14 +59,16 @@ export function MinePage() {
                           onClick={() => navigate(`/submit/${req.id}`)}
                         />
                       )}
-                      <Button
-                        variant="ghost"
-                        icon={<Trash size={16} />}
-                        className="px-1 py-1"
-                        aria-label="Delete"
-                        title="Delete"
-                        onClick={() => setPendingDelete(req)}
-                      />
+                      {canWithdraw && (
+                        <Button
+                          variant="ghost"
+                          icon={<Archive size={16} />}
+                          className="px-1 py-1"
+                          aria-label="Withdraw"
+                          title="Withdraw"
+                          onClick={() => setPendingWithdraw(req)}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -84,17 +87,18 @@ export function MinePage() {
       </ul>
 
       <ConfirmDialog
-        open={Boolean(pendingDelete)}
-        title="Delete request?"
+        open={Boolean(pendingWithdraw)}
+        title="Withdraw request?"
         body={
-          pendingDelete
-            ? `${pendingDelete.id} — ${pendingDelete.title}. This cannot be undone.`
+          pendingWithdraw
+            ? `${pendingWithdraw.id} — ${pendingWithdraw.title}. Removed from the active queue; the record and activity stay for audit.`
             : undefined
         }
-        onCancel={() => setPendingDelete(null)}
+        confirmLabel="Withdraw"
+        onCancel={() => setPendingWithdraw(null)}
         onConfirm={() => {
-          if (pendingDelete) deleteRequest(pendingDelete.id)
-          setPendingDelete(null)
+          if (pendingWithdraw) withdrawRequest(pendingWithdraw.id)
+          setPendingWithdraw(null)
         }}
       />
     </div>

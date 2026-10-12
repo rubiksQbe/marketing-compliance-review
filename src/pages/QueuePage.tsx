@@ -1,5 +1,11 @@
 import { RiskBadge, StatusBadge } from '@/components/StatusBadge'
-import { ASSET_LABELS, CHANNEL_LABELS, PRODUCT_LABELS, isDeclinedStatus } from '@/lib/labels'
+import {
+  ASSET_LABELS,
+  CHANNEL_LABELS,
+  PRODUCT_LABELS,
+  isActiveQueueStatus,
+  isDeclinedStatus,
+} from '@/lib/labels'
 import { useStore } from '@/lib/store'
 import { formatSla, formatWhen, remainingFor } from '@/lib/time'
 import type { RiskTier } from '@/lib/types'
@@ -15,8 +21,13 @@ export function QueuePage() {
   const { session, visibleRequests } = useStore()
   const [statusFilter, setStatusFilter] = useState<Filter>('pending')
 
+  const activeRequests = useMemo(
+    () => visibleRequests.filter((r) => isActiveQueueStatus(r.status)),
+    [visibleRequests],
+  )
+
   const filtered = useMemo(() => {
-    const list = visibleRequests.filter((r) => {
+    const list = activeRequests.filter((r) => {
       if (statusFilter === 'all') return true
       if (statusFilter === 'pending') return r.status === 'pending'
       if (statusFilter === 'approved') return r.status === 'approved'
@@ -27,9 +38,9 @@ export function QueuePage() {
       if (risk !== 0) return risk
       return remainingFor(a) - remainingFor(b)
     })
-  }, [visibleRequests, statusFilter])
+  }, [activeRequests, statusFilter])
 
-  const pending = visibleRequests.filter((r) => r.status === 'pending')
+  const pending = activeRequests.filter((r) => r.status === 'pending')
   const atRisk = pending.filter((r) => remainingFor(r) < r.slaHours * 0.25)
 
   if (!session) return <Navigate to="/" replace />
@@ -47,7 +58,7 @@ export function QueuePage() {
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
         <Metric label="Needs review" value={String(pending.length)} />
         <Metric label="SLA at risk" value={String(atRisk.length)} warn={atRisk.length > 0} />
-        <Metric label="In queue (all)" value={String(visibleRequests.length)} />
+        <Metric label="In queue (all)" value={String(activeRequests.length)} />
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
