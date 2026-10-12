@@ -43,28 +43,30 @@ export function MinePage() {
                   </Link>
                   <div className="flex flex-wrap items-center gap-1.5">
                     <StatusBadge status={req.status} />
-                    {canEdit && (
+                    <div className="flex items-center gap-0">
+                      {canEdit && (
+                        <Button
+                          variant="ghost"
+                          icon={<PencilSimple size={16} />}
+                          className="px-1 py-1"
+                          aria-label="Edit"
+                          title="Edit"
+                          onClick={() => navigate(`/submit/${req.id}`)}
+                        />
+                      )}
                       <Button
                         variant="ghost"
-                        icon={<PencilSimple size={16} />}
-                        className="px-2 py-1"
-                        aria-label="Edit"
-                        title="Edit"
-                        onClick={() => navigate(`/submit/${req.id}`)}
+                        icon={<Trash size={16} />}
+                        className="px-1 py-1"
+                        aria-label="Delete"
+                        title="Delete"
+                        onClick={() => {
+                          if (window.confirm(`Delete ${req.id}? This cannot be undone.`)) {
+                            deleteRequest(req.id)
+                          }
+                        }}
                       />
-                    )}
-                    <Button
-                      variant="ghost"
-                      icon={<Trash size={16} />}
-                      className="px-2 py-1"
-                      aria-label="Delete"
-                      title="Delete"
-                      onClick={() => {
-                        if (window.confirm(`Delete ${req.id}? This cannot be undone.`)) {
-                          deleteRequest(req.id)
-                        }
-                      }}
-                    />
+                    </div>
                   </div>
                 </div>
               </div>
