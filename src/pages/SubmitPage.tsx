@@ -103,6 +103,44 @@ export function SubmitPage() {
     return scoreRisk({ product, channel, claimFlags })
   }, [product, channel, claimFlags])
 
+  const isDirty = useMemo(() => {
+    if (!editing || !existing) return true
+    const flagsEqual =
+      [...claimFlags].sort().join('|') === [...existing.claimFlags].sort().join('|')
+    const nextImage = isVisualAsset(assetType) ? creativeImage : undefined
+    return !(
+      title.trim() === existing.title &&
+      product === existing.product &&
+      channel === existing.channel &&
+      assetType === existing.assetType &&
+      audience.trim() === existing.audience &&
+      body.trim() === existing.body &&
+      nextImage === existing.creativeImage &&
+      destinationUrl.trim() === existing.destinationUrl &&
+      disclosures.trim() === existing.disclosures &&
+      flagsEqual &&
+      source === existing.source &&
+      (partnerName.trim() || undefined) === existing.partnerName &&
+      (intakeNotes.trim() || undefined) === (existing.intakeNotes || undefined)
+    )
+  }, [
+    editing,
+    existing,
+    title,
+    product,
+    channel,
+    assetType,
+    audience,
+    body,
+    creativeImage,
+    destinationUrl,
+    disclosures,
+    claimFlags,
+    source,
+    partnerName,
+    intakeNotes,
+  ])
+
   if (!session) return <Navigate to="/" replace />
   if (session.role !== 'submitter') return <Navigate to="/queue" replace />
   if (id && hydrated && (!existing || existing.submitter !== session.name)) {
@@ -138,6 +176,10 @@ export function SubmitPage() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    if (editing && !isDirty) {
+      setError('Change something in the package before resubmitting.')
+      return
+    }
     if (!product || !channel) {
       setError('Select product and channel before submitting.')
       return
@@ -475,6 +517,7 @@ export function SubmitPage() {
           variant="approve"
           icon={<FileArrowUp size={16} />}
           className="w-full sm:w-auto"
+          disabled={editing && !isDirty}
         >
           {editing ? 'Resubmit for approval' : 'Submit for compliance review'}
         </Button>
