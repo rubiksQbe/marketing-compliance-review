@@ -117,7 +117,7 @@ export function ReviewPage() {
 
   return (
     <div className="animate-in -mx-4 sm:-mx-6">
-      <div className="mx-auto flex h-[calc(100vh-7.5rem)] max-w-6xl flex-col overflow-hidden rounded-md border border-mist-200 bg-canvas sm:mx-6">
+      <div className="mx-auto flex max-w-6xl flex-col rounded-md border border-mist-200 bg-canvas sm:mx-6 lg:h-[calc(100vh-7.5rem)] lg:overflow-hidden">
         <header className="shrink-0 border-b border-mist-200 bg-white px-[18px] py-4">
           <div className="mb-2 flex items-center justify-between gap-2">
             <Link
@@ -157,8 +157,11 @@ export function ReviewPage() {
           </p>
         </header>
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(220px,0.85fr)_minmax(300px,1.15fr)] overflow-y-auto lg:grid-cols-[2fr_1fr] lg:grid-rows-none lg:overflow-hidden">
-          <div ref={leftRef} className="scroll-pane min-h-0 overflow-auto border-mist-200 p-3.5 lg:border-r">
+        <div className="grid flex-1 grid-cols-1 lg:min-h-0 lg:grid-cols-[2fr_1fr] lg:overflow-hidden">
+          <div
+            ref={leftRef}
+            className="border-mist-200 p-3.5 lg:scroll-pane lg:min-h-0 lg:overflow-auto lg:border-r"
+          >
             <div className="rounded-md border border-mist-200 bg-white p-3.5">
               <SectionLabel>Creative</SectionLabel>
               {visual ? (
@@ -231,8 +234,11 @@ export function ReviewPage() {
             </div>
           </div>
 
-          <aside className="flex min-h-[300px] flex-col border-t border-mist-200 bg-white lg:min-h-0 lg:border-t-0">
-            <div ref={rightRef} className="scroll-pane min-h-0 flex-1 overflow-auto px-3.5 pt-3.5 pb-2">
+          <aside className="flex flex-col border-t border-mist-200 bg-white lg:min-h-0 lg:border-t-0">
+            <div
+              ref={rightRef}
+              className="px-3.5 pt-3.5 pb-2 lg:scroll-pane lg:min-h-0 lg:flex-1 lg:overflow-auto"
+            >
               {isReviewer && (
                 <>
                   <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
