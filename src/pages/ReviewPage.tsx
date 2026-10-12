@@ -288,7 +288,7 @@ export function ReviewPage() {
                     <p className="mt-3 text-[11px] text-steel-600">Approved.</p>
                   )}
                   {!actionable && requestDeclined && (
-                    <p className="mt-3 text-[11px] text-steel-600">Already declined.</p>
+                    <p className="mt-3 text-[11px] text-steel-600">Declined.</p>
                   )}
 
                   <Button
