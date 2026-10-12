@@ -146,7 +146,7 @@ export function SubmitPage() {
       </h1>
       <p className="mt-1 text-sm text-steel-600">
         {editing
-          ? 'Update the package and resubmit — it returns to Pending for compliance.'
+          ? 'Update the package and resubmit — it returns to Needs review for compliance.'
           : 'Structured intake — incomplete packets are blocked so compliance gets a review-ready package.'}
       </p>
 
