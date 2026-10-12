@@ -19,8 +19,7 @@ export function IdentityPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div className="mb-8 max-w-lg text-center animate-in">
-        <p className="font-brand text-sm text-steel-600">ClearPath Financial</p>
-        <h1 className="mt-1 font-serif text-2xl text-navy-800">
+        <h1 className="font-serif text-2xl text-navy-800">
           {sessionRole === 'reviewer' ? 'Enter as reviewer' : 'Who is submitting?'}
         </h1>
         <p className="mt-2 text-sm text-steel-600">
