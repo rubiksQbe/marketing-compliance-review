@@ -2,7 +2,7 @@ import { SEED_REQUESTS } from '@/data/seed'
 import type { ReviewRequest, SessionIdentity } from './types'
 
 /** Bump when seed shape/content must replace stale localStorage demos. */
-const REQUESTS_KEY = 'clearpath-review.requests.v3'
+const REQUESTS_KEY = 'clearpath-review.requests.v4'
 const SESSION_KEY = 'clearpath-review.session.v2'
 
 export function loadRequests(): ReviewRequest[] {

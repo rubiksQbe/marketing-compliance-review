@@ -7,8 +7,9 @@ import {
   CLAIM_LABELS,
   PRODUCT_LABELS,
   isDeclinedStatus,
+  isVisualAsset,
 } from '@/lib/labels'
-import { suggestRiskTier } from '@/lib/risk'
+import { scoreRisk } from '@/lib/risk'
 import { useStore } from '@/lib/store'
 import type {
   AssetType,
@@ -17,11 +18,33 @@ import type {
   Product,
   SubmissionSource,
 } from '@/lib/types'
-import { FileArrowUp } from '@phosphor-icons/react'
-import { useEffect, useMemo, useState } from 'react'
+import { FileArrowUp, Image as ImageIcon, Trash } from '@phosphor-icons/react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 
 const CLAIMS = Object.keys(CLAIM_LABELS) as ClaimFlag[]
+/** Keep demo localStorage under control. */
+const MAX_CREATIVE_BYTES = 900_000
+
+function readImageAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) {
+      reject(new Error('Upload an image file (PNG, JPG, WebP, or GIF).'))
+      return
+    }
+    if (file.size > MAX_CREATIVE_BYTES) {
+      reject(new Error('Image must be under 900 KB for this demo.'))
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result === 'string') resolve(reader.result)
+      else reject(new Error('Could not read that file.'))
+    }
+    reader.onerror = () => reject(new Error('Could not read that file.'))
+    reader.readAsDataURL(file)
+  })
+}
 
 export function SubmitPage() {
   const { id } = useParams<{ id?: string }>()
@@ -31,11 +54,12 @@ export function SubmitPage() {
   const editing = Boolean(id && existing)
 
   const [title, setTitle] = useState('')
-  const [product, setProduct] = useState<Product>('personal_loans')
-  const [channel, setChannel] = useState<Channel>('affiliate')
+  const [product, setProduct] = useState<Product | ''>('')
+  const [channel, setChannel] = useState<Channel | ''>('')
   const [assetType, setAssetType] = useState<AssetType>('banner')
   const [audience, setAudience] = useState('')
   const [body, setBody] = useState('')
+  const [creativeImage, setCreativeImage] = useState<string | undefined>()
   const [destinationUrl, setDestinationUrl] = useState('')
   const [disclosures, setDisclosures] = useState('')
   const [claimFlags, setClaimFlags] = useState<ClaimFlag[]>([])
@@ -46,6 +70,7 @@ export function SubmitPage() {
   const [intakeNotes, setIntakeNotes] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [hydrated, setHydrated] = useState(!id)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!id || !existing) {
@@ -58,6 +83,7 @@ export function SubmitPage() {
     setAssetType(existing.assetType)
     setAudience(existing.audience)
     setBody(existing.body)
+    setCreativeImage(existing.creativeImage)
     setDestinationUrl(existing.destinationUrl)
     setDisclosures(existing.disclosures)
     setClaimFlags(existing.claimFlags)
@@ -67,19 +93,12 @@ export function SubmitPage() {
     setHydrated(true)
   }, [id, existing])
 
-  const riskTier = useMemo(
-    () => suggestRiskTier({ product, channel, claimFlags }),
-    [product, channel, claimFlags],
-  )
+  const visual = isVisualAsset(assetType)
 
-  /** Don’t surface a tier from bare defaults (e.g. channel=affiliate → Medium). */
-  const riskReady = Boolean(
-    title.trim() &&
-      audience.trim() &&
-      body.trim() &&
-      destinationUrl.trim() &&
-      disclosures.trim(),
-  )
+  const risk = useMemo(() => {
+    if (!product || !channel) return null
+    return scoreRisk({ product, channel, claimFlags })
+  }, [product, channel, claimFlags])
 
   if (!session) return <Navigate to="/" replace />
   if (session.role !== 'submitter') return <Navigate to="/queue" replace />
@@ -100,11 +119,32 @@ export function SubmitPage() {
     )
   }
 
+  async function onCreativeFile(file: File | undefined) {
+    if (!file) return
+    setError(null)
+    try {
+      const dataUrl = await readImageAsDataUrl(file)
+      setCreativeImage(dataUrl)
+    } catch (err) {
+      setCreativeImage(undefined)
+      setError(err instanceof Error ? err.message : 'Could not read that file.')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
   function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    if (!product || !channel) {
+      setError('Select product and channel before submitting.')
+      return
+    }
     if (!title.trim() || !audience.trim() || !body.trim() || !destinationUrl.trim() || !disclosures.trim()) {
       setError('Complete all required fields before submitting.')
+      return
+    }
+    if (visual && !creativeImage) {
+      setError('Upload the creative image for this asset type.')
       return
     }
     if (source === 'affiliate' && !partnerName.trim()) {
@@ -118,6 +158,8 @@ export function SubmitPage() {
       return
     }
 
+    const riskTier = scoreRisk({ product, channel, claimFlags }).tier
+
     const payload = {
       title: title.trim(),
       product,
@@ -125,6 +167,7 @@ export function SubmitPage() {
       assetType,
       audience: audience.trim(),
       body: body.trim(),
+      creativeImage: visual ? creativeImage : undefined,
       destinationUrl: destinationUrl.trim(),
       disclosures: disclosures.trim(),
       claimFlags,
@@ -167,8 +210,9 @@ export function SubmitPage() {
               id="product"
               className="mt-1"
               value={product}
-              onChange={(e) => setProduct(e.target.value as Product)}
+              onChange={(e) => setProduct(e.target.value as Product | '')}
             >
+              <option value="">Select product</option>
               {(Object.keys(PRODUCT_LABELS) as Product[]).map((p) => (
                 <option key={p} value={p}>
                   {PRODUCT_LABELS[p]}
@@ -184,8 +228,9 @@ export function SubmitPage() {
               id="channel"
               className="mt-1"
               value={channel}
-              onChange={(e) => setChannel(e.target.value as Channel)}
+              onChange={(e) => setChannel(e.target.value as Channel | '')}
             >
+              <option value="">Select channel</option>
               {(Object.keys(CHANNEL_LABELS) as Channel[]).map((c) => (
                 <option key={c} value={c}>
                   {CHANNEL_LABELS[c]}
@@ -201,7 +246,14 @@ export function SubmitPage() {
               id="asset"
               className="mt-1"
               value={assetType}
-              onChange={(e) => setAssetType(e.target.value as AssetType)}
+              onChange={(e) => {
+                const next = e.target.value as AssetType
+                setAssetType(next)
+                if (!isVisualAsset(next)) {
+                  setCreativeImage(undefined)
+                  if (fileInputRef.current) fileInputRef.current.value = ''
+                }
+              }}
             >
               {(Object.keys(ASSET_LABELS) as AssetType[]).map((a) => (
                 <option key={a} value={a}>
@@ -253,9 +305,55 @@ export function SubmitPage() {
           />
         </div>
 
+        {visual && (
+          <div>
+            <Label htmlFor="creative-file" required>
+              Creative file
+            </Label>
+            <p className="mt-0.5 text-xs text-steel-600">
+              Image of the banner, social post, or affiliate creative (PNG, JPG, WebP, or GIF · under
+              900 KB).
+            </p>
+            <input
+              ref={fileInputRef}
+              id="creative-file"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              className="mt-2 block w-full text-sm text-navy-800 file:mr-3 file:rounded-[5px] file:border-0 file:bg-steel-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-steel-800 hover:file:bg-steel-200"
+              onChange={(e) => void onCreativeFile(e.target.files?.[0])}
+            />
+            {creativeImage ? (
+              <div className="mt-3 overflow-hidden rounded-[5px] border border-mist-200 bg-canvas">
+                <img
+                  src={creativeImage}
+                  alt="Uploaded creative preview"
+                  className="max-h-48 w-full object-contain"
+                />
+                <div className="flex items-center justify-between gap-2 border-t border-mist-200 px-3 py-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-steel-600">
+                    <ImageIcon size={14} /> Ready for review
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    icon={<Trash size={14} />}
+                    className="h-auto px-1.5 py-1 text-xs"
+                    onClick={() => {
+                      setCreativeImage(undefined)
+                      if (fileInputRef.current) fileInputRef.current.value = ''
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        )}
+
         <div>
           <Label htmlFor="body" required>
-            Creative copy (exact)
+            {visual ? 'On-creative / accompanying copy' : 'Creative copy (exact)'}
           </Label>
           <Textarea
             id="body"
@@ -315,16 +413,23 @@ export function SubmitPage() {
 
         <div>
           <p className="text-sm font-medium text-navy-800">Auto-suggested risk tier</p>
-          {riskReady ? (
-            <div className="mt-1.5 flex flex-wrap items-center gap-2">
-              <RiskBadge tier={riskTier} short />
-              <span className="text-xs text-steel-600">
-                From product, channel, and claim flags
-              </span>
+          {risk ? (
+            <div className="mt-1.5 space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <RiskBadge tier={risk.tier} short />
+                <span className="text-xs text-steel-600">
+                  Score {risk.score} · Low 0–1 · Medium 2–3 · High 4+
+                </span>
+              </div>
+              <p className="text-xs text-steel-600">
+                {risk.factors.length
+                  ? risk.factors.join(' · ')
+                  : 'No elevated signals — stays Low until channel, product, or claims add weight.'}
+              </p>
             </div>
           ) : (
             <p className="mt-1.5 text-sm text-steel-600">
-              Complete the package fields above to see a suggestion.
+              Select product and channel to score. Claim flags update the tier live.
             </p>
           )}
         </div>

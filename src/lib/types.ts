@@ -51,6 +51,8 @@ export interface ReviewRequest {
   assetType: AssetType
   audience: string
   body: string
+  /** Data URL for uploaded banner / social / affiliate creative image. */
+  creativeImage?: string
   destinationUrl: string
   disclosures: string
   claimFlags: ClaimFlag[]
@@ -74,6 +76,7 @@ export interface SubmitInput {
   assetType: AssetType
   audience: string
   body: string
+  creativeImage?: string
   destinationUrl: string
   disclosures: string
   claimFlags: ClaimFlag[]
