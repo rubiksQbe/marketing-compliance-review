@@ -1,0 +1,34 @@
+@import "tailwindcss";
+@source "./screens";
+
+@theme inline {
+  --color-primary: var(--df-primary);
+  --color-secondary: var(--df-secondary);
+  --color-accent: var(--df-accent);
+  --color-background: var(--df-background);
+  --color-surface: var(--df-surface);
+  --color-surface-alt: var(--df-surface-alt);
+  --color-border: var(--df-border);
+  --color-text: var(--df-text);
+  --color-text-muted: var(--df-text-muted);
+  --color-text-invert: var(--df-text-invert);
+  --color-success: var(--df-success);
+  --color-warning: var(--df-warning);
+  --color-error: var(--df-error);
+  --color-info: var(--df-info);
+  --radius-sm: var(--df-radius-sm);
+  --radius-md: var(--df-radius-md);
+  --radius-lg: var(--df-radius-lg);
+  --radius-xl: var(--df-radius-xl);
+  --radius-full: var(--df-radius-full);
+  --spacing-xs: var(--df-spacing-xs);
+  --spacing-sm: var(--df-spacing-sm);
+  --spacing-md: var(--df-spacing-md);
+  --spacing-lg: var(--df-spacing-lg);
+  --spacing-xl: var(--df-spacing-xl);
+  --spacing-xxl: var(--df-spacing-xxl);
+  --font-sans: var(--df-font-family);
+  --shadow-sm: var(--df-shadow-sm);
+  --shadow-md: var(--df-shadow-md);
+  --shadow-lg: var(--df-shadow-lg);
+}

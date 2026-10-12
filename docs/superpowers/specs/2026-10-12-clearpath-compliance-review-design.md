@@ -159,9 +159,13 @@ We treat the product as an **operating system for review decisions**, not a mark
 - Auto risk suggestion with override
 - Purpose: make every submission review-ready (A5)
 
-### 4.3 Review workspace
-- One composition: asset preview | applicable checklist | decision panel
-- Actions: Approve / Request changes / Reject — with reason codes
+### 4.3 Review workspace (locked)
+- One composition: left **2/3** package card | right **1/3** sticky disposition rail
+- Equal-height dual scroll; auto-hide scrollbars; action bar pinned
+- Header: back + risk/SLA chips → title → Submitted by (partner when affiliate)
+- Package: Creative (image or text by asset type) → Destination (link) → Disclosures → Classification → Claims → Intake notes
+- Exception checklist (findings); requested changes autopopulate as **fix text only**
+- Default **Approve**; any checked finding morphs action to **Decline** (codes stored in audit; not shown in requested-changes box)
 - Purpose: maximize decisions per hour (throughput)
 
 ### 4.4 Audit trail

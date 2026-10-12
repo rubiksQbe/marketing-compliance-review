@@ -1,6 +1,7 @@
 # Product Requirements Document — ClearPath Review
 
-**Status:** Draft for review (pre-implementation alignment)  
+**Status:** Locked for implementation  
+
 **Date:** 2026-10-12  
 **Company:** ClearPath Financial (fictional)  
 **Product:** ClearPath Review  
@@ -126,8 +127,8 @@ Intuitive flows for both personas: reviewers decide quickly; submitters submit c
 | FR3 | Reviewer org-wide queue with risk, status, SLA cues, basic metrics |
 | FR4 | Submitter “Your submitted requests” scoped by identity |
 | FR5 | Structured submit form with validation; risk suggestion; source field |
-| FR6 | Review workspace: preview + tiered checklist + decision panel |
-| FR7 | Reason codes required for changes requested / reject |
+| FR6 | Review workspace: 2/3 package card + 1/3 sticky disposition rail (see §11b) |
+| FR7 | Exception checklist: ≥1 reason required to Decline; Approve when none checked |
 | FR8 | Per-request audit timeline |
 | FR9 | In-app assumptions log (pain + product assumptions) |
 | FR10 | localStorage persistence + reset demo; HashRouter for GitHub Pages |
@@ -364,11 +365,31 @@ Used on non-approvals. Reviewer selects one or more; submitter sees **finding + 
 | `firm_policy` | Fails internal ClearPath marketing policy | Follow marked policy guidance in reviewer note |
 | `other` | Other | See reviewer note |
 
-**Approve** does not require finding codes. **Changes requested** and **Decline** require ≥1 code.
+**Approve** does not require finding codes. **Decline** (v1 single non-approve action) requires ≥1 code. Submitters see autopopulated **requested changes** as the suggested-fix lines only (no code labels in that box).
 
 ---
 
-## 11. Component inventory (for discussion)
+## 11b. Review workspace (locked)
+
+Companion mock: `review-layout-locked.html`.
+
+| Decision | Locked choice |
+|----------|---------------|
+| Layout | Left **2/3** package card · right **1/3** disposition rail |
+| Scroll | Equal-height panes; each scrolls independently; **auto-hide** scrollbars; Approve/Decline bar pinned |
+| Header | Back (`← Queue · ID`) + risk/SLA chips on one row → Spectral title → `Submitted by …` |
+| Header chips | Risk tier + SLA only (claim flags live in package) |
+| Package sections | Creative (visual **or** verbatim text by asset type) → Destination (clickable URL, no `CTA/URL` label) → Disclosures → Classification (tight rows) → Claims flagged (value only) → Intake notes. No Source block (header has it). No “Creative & package” title. |
+| Disposition | Critical/exception checklist (findings, not affirmative compliance ticks) |
+| Requested changes | Autopopulates below checklist from checked items — **fix text only** |
+| Notes | Additional notes textarea |
+| Primary action | Default **Approve** (forest-400). Any checkbox → morphs to **Decline** (danger red, no icon) |
+| Card hover | None on package card; buttons keep hover/focus halo |
+| Audit | Not on decision screen (separate `/audit/:id`) |
+
+---
+
+## 11. Component inventory
 
 Only components tied to FR1–FR10:
 
@@ -402,9 +423,9 @@ Only components tied to FR1–FR10:
 ## 13. Open items before coding revision
 
 1. ~~Landing pattern~~ → **A locked**  
-2. **Branding direction** — confirm or adjust (§10)  
-3. **Component/UX details** — review workspace layout; submitter list density  
-4. Then: robust revision of `src/` to match this PRD + design spec  
+2. ~~Branding direction~~ → **Locked** (§10)  
+3. ~~Review workspace~~ → **Locked** (§11b)  
+4. **Next:** robust revision of `src/` to match this PRD + design spec  
 
 ---
 
@@ -417,7 +438,7 @@ Only components tied to FR1–FR10:
 | Pre-approved library assumed; AM completeness gate upstream | Locked |
 | Persona-aware homes + scoped submitter visibility | Locked |
 | Landing Option A — role cards first | Locked |
-| Branding tokens | **Locked** (palette scales, Sen/Spectral, Phosphor, buttons, soft halo) |
-| Mesh composition | **Locked** — BR3 bottom-right, steel 0.53, forest 72% wide |
-| Component set / review layout | **Discussing next** |
-| Implement main app revision | **Blocked until components agreed** |
+| Branding tokens | Locked (palette scales, Sen/Spectral, Phosphor, buttons, soft halo) |
+| Mesh composition | Locked — BR3 bottom-right, steel 0.53, forest 72% wide |
+| Component set / review layout | **Locked** (§11b) |
+| Implement main app revision | **In progress** |
