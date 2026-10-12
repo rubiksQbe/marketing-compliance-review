@@ -18,7 +18,7 @@ import type {
   RiskTier,
   SubmissionSource,
 } from '@/lib/types'
-import { PaperPlaneTilt } from '@phosphor-icons/react'
+import { FileArrowUp } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 
@@ -338,7 +338,12 @@ export function SubmitPage() {
 
         <FieldError>{error}</FieldError>
 
-        <Button type="submit" variant="primary" icon={<PaperPlaneTilt size={16} />} className="w-full sm:w-auto">
+        <Button
+          type="submit"
+          variant="approve"
+          icon={<FileArrowUp size={16} />}
+          className="w-full sm:w-auto"
+        >
           {editing ? 'Resubmit for approval' : 'Submit for compliance review'}
         </Button>
       </form>
