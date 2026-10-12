@@ -157,7 +157,7 @@ export function ReviewPage() {
           </p>
         </header>
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[2fr_1fr]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(220px,0.85fr)_minmax(300px,1.15fr)] overflow-y-auto lg:grid-cols-[2fr_1fr] lg:grid-rows-none lg:overflow-hidden">
           <div ref={leftRef} className="scroll-pane min-h-0 overflow-auto border-mist-200 p-3.5 lg:border-r">
             <div className="rounded-md border border-mist-200 bg-white p-3.5">
               <SectionLabel>Creative</SectionLabel>
@@ -231,7 +231,7 @@ export function ReviewPage() {
             </div>
           </div>
 
-          <aside className="flex min-h-0 flex-col bg-white">
+          <aside className="flex min-h-[300px] flex-col border-t border-mist-200 bg-white lg:min-h-0 lg:border-t-0">
             <div ref={rightRef} className="scroll-pane min-h-0 flex-1 overflow-auto px-3.5 pt-3.5 pb-2">
               {isReviewer && (
                 <>
