@@ -243,10 +243,10 @@ Persistence: `localStorage` with seed dataset reset.
 
 - Brand wordmark: **ClearPath Financial** in **Sen Regular 400**
 - Product emphasis: **ClearPath Review** with **Spectral Regular 400** for serif moments
-- Canvas `#f7f2e9` · blue `#008ad4` (+ blue-50…950) · green `#52a993` (+ green-50…950) — full steps in PRD §10
-- Buttons: default = `#008ad4`; hover = blue-600 `#006095`; loading = blue-100; approve = `#52a993`; focus = **soft halo**
-- Text contrast: blue-900 on light surfaces; no light-blue body/link text
-- Background: mesh on `#f7f2e9` with brighter blue/green blobs, Highnote-like atmosphere
+- Palette restored: `#1a3a5c` navy · `#5a8faa` steel · `#7eb3cc` steelBright · `#c9d4dc` mist · `#f5f8fa` canvas · `#2d4a3e` forest · `#3f7a5c` forestBright
+- Buttons: default = steel; hover = navy; loading = mist; approve = forestBright; focus = **soft halo**
+- Text contrast: navy on light surfaces; no light-blue body/link text
+- Background: mesh on `#f5f8fa` with brighter steel/forest blobs (placement chosen from companion variations)
 - Icons: **Phosphor Icons** only; **no emoji**
 - Buttons: minimally rounded (not pills); hover / focus / loading states required
 - Motion: subtle queue enter, SLA pulse, decision confirmation

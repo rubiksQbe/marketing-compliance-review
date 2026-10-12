@@ -175,72 +175,39 @@ Affiliate portal, library CMS, notifications integrations, multi-approver matrix
 
 **Direction:** airy fintech-ops surface inspired by mesh-gradient product landings (Highnote-like atmosphere), adapted for an internal compliance tool — not a consumer loan promo site.
 
-### 10.1 Core palette
+### 10.1 Core palette (restored)
 
 | Token | Hex | Use |
 |-------|-----|-----|
-| `canvas` | `#f7f2e9` | Page base / mesh field |
-| `blue` | `#008ad4` | Primary accent; **default** button |
-| `green` | `#52a993` | Secondary accent; **Approve** button; mesh |
+| `navy` | `#1a3a5c` | Primary text/ink; button **hover** fill |
+| `steel` | `#5a8faa` | **Default** primary button fill |
+| `steelBright` | `#7eb3cc` | Mesh blob (brighter steel) |
+| `mist` | `#c9d4dc` | Borders; button **loading** fill |
+| `canvas` | `#f5f8fa` | Page base / mesh field |
+| `forest` | `#2d4a3e` | Deep positive on light surfaces; approve hover |
+| `forestBright` | `#3f7a5c` | **Approve** button; mesh blob |
 
-### 10.2 Blue scale (`--blue-*`)
-
-| Step | Hex |
-|------|-----|
-| 50 | `#eff6fd` |
-| 100 | `#d6ebfc` |
-| 200 | `#addaff` |
-| 300 | `#6dc0ff` |
-| 400 | `#009aec` |
-| 500 | `#0078b9` |
-| 600 | `#006095` |
-| 700 | `#004c78` |
-| 800 | `#00395b` |
-| 900 | `#042942` |
-| 950 | `#031827` |
-
-Brand anchor `#008ad4` sits between 400–500; UI uses named steps below.
-
-### 10.3 Green scale (`--green-*`)
-
-| Step | Hex |
-|------|-----|
-| 50 | `#e7faf4` |
-| 100 | `#bbf7e5` |
-| 200 | `#76eecf` |
-| 300 | `#65cdb3` |
-| 400 | `#4fa48f` |
-| 500 | `#3c806f` |
-| 600 | `#2f6758` |
-| 700 | `#245146` |
-| 800 | `#193d34` |
-| 900 | `#132c25` |
-| 950 | `#0a1915` |
-
-Brand anchor `#52a993` sits near 300–400.
-
-### 10.4 Interaction states
+### 10.2 Interaction states
 
 | State | Rule | Fill | Text |
 |-------|------|------|------|
-| Default (primary) | blue brand | `#008ad4` | `#ffffff` |
-| Hover | blue-600 | `#006095` | `#ffffff` |
-| Focus | soft halo (not hard border) | `#008ad4` + `box-shadow: 0 0 0 4px rgba(0,138,212,0.28)` | `#ffffff` |
-| Loading | blue-100 | `#d6ebfc` | `#042942` (blue-900) |
-| Approve default | green brand | `#52a993` | `#ffffff` |
-| Approve hover | green-500 | `#3c806f` | `#ffffff` |
-| Approve focus | soft green halo | `#52a993` + `0 0 0 4px rgba(82,169,147,0.30)` | `#ffffff` |
-| Secondary / ghost | canvas or white + border blue-100 | — | blue-900 |
+| Default (primary) | steel | `#5a8faa` | `#ffffff` |
+| Hover | navy | `#1a3a5c` | `#ffffff` |
+| Focus | **soft halo** (not hard border) | `#5a8faa` + `box-shadow: 0 0 0 4px rgba(90,143,170,0.32)` | `#ffffff` |
+| Loading | mist | `#c9d4dc` | `#1a3a5c` |
+| Approve default | forestBright | `#3f7a5c` | `#ffffff` |
+| Approve hover | forest | `#2d4a3e` | `#ffffff` |
+| Approve focus | soft green halo | `#3f7a5c` + `0 0 0 4px rgba(63,122,92,0.32)` | `#ffffff` |
 | Danger | — | `#9b2c2c` | `#ffffff` |
-| Warning / SLA | warm on canvas | `#f3e7d3` / `#9a6b2f` | dark ink |
+| Warning / SLA | — | `#f3e7d3` / `#9a6b2f` | dark ink |
 
-**Focus:** soft halo only (single translucent ring via box-shadow). No high-contrast multi-layer border stack.
+**Focus:** soft halo only (translucent box-shadow ring). No high-contrast border stack.
 
-**Contrast rules:** Body/UI text uses **blue-900** (`#042942`) or darker on canvas/white. Do **not** use light blue (`blue-300`/`#008ad4`) for paragraph or link text on light backgrounds — use blue-900 with underline/weight for links. Accent blues/greens are for fills, mesh, icons on dark fills, and focus halos.
+**Contrast rules:** Body/UI text uses **navy** (`#1a3a5c`) on canvas/white. No light-blue paragraph/link text — steel/steelBright are for fills, mesh, and halos.
 
-**Mesh:** base `#f7f2e9` with soft blobs from brighter blue (`#6dc0ff` / `#addaff`) and brighter green (`#76eecf` / `#65cdb3`).
+**Mesh:** base `#f5f8fa` with brighter steel/forest blobs (placement TBD — choose from companion variations).
 
-### 10.5 Typography
+### 10.3 Typography
 
 | Role | Font | Weight | Notes |
 |------|------|--------|-------|
@@ -248,14 +215,14 @@ Brand anchor `#52a993` sits near 300–400.
 | Serif display / product emphasis | **Spectral** | Regular 400 | Product name, select headings |
 | UI / body | Sen (or Sen + system fallback) | 400/600 | Dense ops readability |
 
-### 10.6 Iconography & controls
+### 10.4 Iconography & controls
 
 - **Phosphor Icons** only where icons aid scanning (status, nav, SLA, actions). **No emoji.**
 - Buttons: **minimally rounded** corners (≈4–6px), not pills.
-- Buttons must implement **hover, focus (soft halo), and loading** states using the blue/green scales.
-- Background: **mesh gradient** on `#f7f2e9` with brighter blue/green blobs — atmospheric, not a flat fill.
+- Buttons must implement **hover, focus (soft halo), and loading** states.
+- Background: **mesh gradient** on `#f5f8fa` with brighter steel/forest blobs — atmospheric, not a flat fill.
 
-### 10.7 Motion
+### 10.5 Motion
 
 Subtle enter on lists; soft SLA pulse; decision confirmation — presence, not noise.
 
