@@ -34,7 +34,8 @@ npm run preview
 
 ## Demo flow
 
-1. **Landing** — choose Compliance reviewer or Submitter  
+1. **Landing** — choose Review or Submit, then a demo identity  
+
 2. **Identity** — Jordan Lee (reviewer), Ava Chen (internal marketer), or Sam Ortiz (affiliate manager)  
 3. **Reviewer** sees the org-wide queue; **submitters** see only **Your submitted requests**  
 4. Open **CP-1042** to use the locked review workspace (Approve, or check findings → Decline)  

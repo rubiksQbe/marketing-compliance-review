@@ -63,7 +63,7 @@ Intuitive flows for both personas: reviewers decide quickly; submitters submit c
 
 | Persona | Role | Home | Sees |
 |---------|------|------|------|
-| **Jordan Lee** | Compliance reviewer | Org-wide risk-tiered queue | All requests |
+| **Jordan Lee** | Marketing Compliance Specialist | Org-wide risk-tiered queue | All requests |
 | **Ava Chen** | Internal marketer (submitter) | Your submitted requests | Only Ava’s requests |
 | **Sam Ortiz** | Affiliate manager (submitter) | Your submitted requests | Only Sam’s requests |
 
