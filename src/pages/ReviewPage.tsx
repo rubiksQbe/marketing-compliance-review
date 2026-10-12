@@ -360,12 +360,7 @@ export function ReviewPage() {
                   variant="ghost"
                   className="w-full"
                   icon={<Trash size={16} />}
-                  onClick={() => {
-                    if (window.confirm(`Delete ${request.id}? This cannot be undone.`)) {
-                      deleteRequest(request.id)
-                      navigate('/mine')
-                    }
-                  }}
+                  onClick={() => setConfirmDelete(true)}
                 >
                   Delete request
                 </Button>
@@ -374,6 +369,18 @@ export function ReviewPage() {
           </aside>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Delete request?"
+        body={`${request.id} — ${request.title}. This cannot be undone.`}
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={() => {
+          deleteRequest(request.id)
+          setConfirmDelete(false)
+          navigate('/mine')
+        }}
+      />
     </div>
   )
 }
