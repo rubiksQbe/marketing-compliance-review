@@ -103,7 +103,7 @@ export function ReviewPage() {
     if (!actionable || !session) return
     setError(null)
     if (declining && selected.length === 0) {
-      setError('Select at least one rejection reason to decline.')
+      setError('Select at least one compliance issue to decline.')
       return
     }
     decide(request!.id, {
@@ -230,7 +230,7 @@ export function ReviewPage() {
                 <Row label="Audience" value={request.audience} />
               </dl>
 
-              <SectionLabel>Claims flagged</SectionLabel>
+              <SectionLabel>Claim types</SectionLabel>
               <p className="text-xs text-navy-800 leading-snug">
                 {request.claimFlags.length
                   ? request.claimFlags.map((c) => CLAIM_LABELS[c]).join(', ')
@@ -255,7 +255,7 @@ export function ReviewPage() {
                 <>
                   {actionable && (
                     <>
-                      <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
+                      <p className="mb-2 text-[11px] font-medium text-navy-800">Compliance issues</p>
                       {FINDINGS.map((f) => (
                         <label
                           key={f.code}
@@ -273,7 +273,7 @@ export function ReviewPage() {
 
                       {declining && (
                         <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
-                          <p className="font-medium text-navy-800">Requested changes</p>
+                          <p className="font-medium text-navy-800">Remediation</p>
                           <ul className="mt-1 list-disc space-y-0.5 pl-4 font-normal">
                             {requestedFixes.map((fix) => (
                               <li key={fix}>{fix}</li>
@@ -314,7 +314,7 @@ export function ReviewPage() {
                     className="mt-3 w-full justify-start px-0"
                     onClick={() => navigate(`/audit/${request.id}`)}
                   >
-                    Audit trail
+                    Activity
                   </Button>
                 </>
               )}
@@ -401,9 +401,9 @@ function DeclinedReasonsPanel({
 }) {
   return (
     <>
-      <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
+      <p className="mb-2 text-[11px] font-medium text-navy-800">Compliance issues</p>
       {codes.length === 0 ? (
-        <p className="text-[11px] text-steel-600">No coded reasons recorded.</p>
+        <p className="text-[11px] text-steel-600">No compliance issues recorded.</p>
       ) : (
         codes.map((code) => (
           <div
@@ -418,7 +418,7 @@ function DeclinedReasonsPanel({
 
       {fixes.length > 0 && (
         <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
-          <p className="font-medium text-navy-800">Requested changes</p>
+          <p className="font-medium text-navy-800">Remediation</p>
           <ul className="mt-1 list-disc space-y-0.5 pl-4 font-normal">
             {fixes.map((fix) => (
               <li key={fix}>{fix}</li>

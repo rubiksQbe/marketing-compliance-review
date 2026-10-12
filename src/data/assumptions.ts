@@ -141,7 +141,7 @@ export const ASSUMPTIONS: Assumption[] = [
   {
     id: 'D12',
     text: 'Review workspace is dual-pane on large screens (≈2/3 package + 1/3 disposition); stacked with page scroll on small screens.',
-    implication: 'Audit trail is a separate route for reviewers, linked from the decision rail.',
+    implication: 'Activity is a separate route for reviewers, linked from the decision rail.',
   },
   {
     id: 'D13',
@@ -149,31 +149,31 @@ export const ASSUMPTIONS: Assumption[] = [
     implication: 'See docs/prd/clearpath-review-prd.md §10 for full token and mesh specs.',
   },
 
-  // —— Vocabulary candidates (not yet applied) ——
+  // —— Vocabulary (applied) ——
   {
     id: 'V1',
-    text: 'Vocabulary candidate: label decline reasons “Decline reasons” (not “Rejection reasons”) to match Approve / Decline CTAs.',
-    implication: 'Keeps disposition language consistent; legal teams may still prefer “rejection” in audit exports.',
+    text: 'UI copy: “Compliance issues” (not “Rejection reasons”) for decline checklists.',
+    implication: 'Matches how reviewers describe findings; Approve / Decline CTAs unchanged.',
   },
   {
     id: 'V2',
-    text: 'Vocabulary candidate: rename “Requested changes” → “Required fixes” (or “Remediation”).',
-    implication: 'Avoids implying a separate changes-requested status after Decline was locked as the only negative disposition.',
+    text: 'UI copy: “Remediation” (not “Requested changes”) for autopopulated fixes.',
+    implication: 'Avoids implying a separate changes-requested status.',
   },
   {
     id: 'V3',
-    text: 'Vocabulary candidate: “Claims flagged” → “Claim types” or “Risk triggers.”',
-    implication: 'Matches how marketers classify packets before send; “flagged” can sound like a prior finding.',
+    text: 'UI copy: “Claim types” (not “Claims flagged” / “Claim flags”).',
+    implication: 'Classification language for intake, not a prior finding.',
   },
   {
     id: 'V4',
-    text: 'Vocabulary candidate: “SLA” / “SLA at risk” → “Due” / “Due soon” in submitter-facing UI (and clearer reviewer copy).',
-    implication: 'SLA is ops jargon; due timing is clearer — especially since SLA is just the risk-derived clock.',
+    text: 'SLA / due clocks are reviewer-ops only; submitters do not see SLA.',
+    implication: 'Submit shows risk suggestion only; queue and review header keep the due countdown for Jordan.',
   },
   {
     id: 'V5',
-    text: 'Vocabulary candidate: “Audit trail” → “Activity” for day-to-day review; keep “Audit” in export/compliance contexts.',
-    implication: 'Aligns with how reviewers narrate the workbench without diluting regulatory meaning.',
+    text: 'UI copy: “Activity” (not “Audit trail”) for the event history route.',
+    implication: 'Day-to-day workbench language; route path may still be /audit/:id.',
   },
 ]
 

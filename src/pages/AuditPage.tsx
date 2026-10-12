@@ -23,7 +23,7 @@ export function AuditPage() {
   if (!request || !canAccess) {
     return (
       <div className="rounded-md border border-dashed border-mist-200 bg-white/70 px-6 py-16 text-center">
-        <h1 className="font-serif text-2xl text-navy-800">Audit not available</h1>
+        <h1 className="font-serif text-2xl text-navy-800">Activity not available</h1>
         <Link to={session.role === 'reviewer' ? '/queue' : '/mine'} className="mt-4 inline-block text-sm font-medium underline">
           Back
         </Link>
@@ -64,7 +64,7 @@ export function AuditPage() {
                 </p>
                 {evt.reasonCodes?.length ? (
                   <p className="mt-1 text-xs text-steel-600">
-                    Reasons: {evt.reasonCodes.map((c) => REASON_LABELS[c]).join(', ')}
+                    Issues: {evt.reasonCodes.map((c) => REASON_LABELS[c]).join(', ')}
                   </p>
                 ) : null}
                 {fixes.length > 0 && (

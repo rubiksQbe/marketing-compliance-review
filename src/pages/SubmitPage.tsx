@@ -455,7 +455,7 @@ export function SubmitPage() {
         </div>
 
         <fieldset>
-          <legend className="text-sm font-medium text-navy-800">Claim flags</legend>
+          <legend className="text-sm font-medium text-navy-800">Claim types</legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {CLAIMS.map((flag) => {
               const on = claimFlags.includes(flag)
@@ -490,12 +490,12 @@ export function SubmitPage() {
               <p className="text-xs text-steel-600">
                 {risk.factors.length
                   ? risk.factors.join(' · ')
-                  : 'No elevated signals — stays Low until channel, product, or claims add weight.'}
+                  : 'No elevated signals — stays Low until channel, product, or claim types add weight.'}
               </p>
             </div>
           ) : (
             <p className="mt-1.5 text-sm text-steel-600">
-              Select product, channel, or claim flags to see a suggestion.
+              Select product, channel, or claim types to see a suggestion.
             </p>
           )}
         </div>
