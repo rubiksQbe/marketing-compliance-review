@@ -1,3 +1,4 @@
+import { BrandWordmark } from '@/components/BrandMark'
 import { ArrowRight, ClipboardText, UserCircle } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
@@ -8,8 +9,12 @@ export function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div className="mb-10 text-center animate-in">
-        <p className="font-brand text-xl text-navy-800 sm:text-2xl">ClearPath Financial</p>
-        <h1 className="mt-2 font-serif text-3xl text-navy-800 sm:text-4xl">
+        <BrandWordmark
+          className="justify-center"
+          markSize={34}
+          textClassName="text-xl sm:text-2xl"
+        />
+        <h1 className="mt-3 font-serif text-3xl text-navy-800 sm:text-4xl">
           Marketing Compliance Review
         </h1>
       </div>
