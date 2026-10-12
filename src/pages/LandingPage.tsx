@@ -57,7 +57,7 @@ export function LandingPage() {
           to="/assumptions"
           className="text-[11px] text-steel-600/80 underline-offset-2 hover:text-steel-600 hover:underline"
         >
-          Demo notes · key assumptions
+          demo notes · key assumptions
         </Link>
       </p>
     </div>
