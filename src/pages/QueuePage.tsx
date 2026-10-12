@@ -45,14 +45,14 @@ export function QueuePage() {
       </div>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
-        <Metric label="Pending" value={String(pending.length)} />
+        <Metric label="Needs review" value={String(pending.length)} />
         <Metric label="SLA at risk" value={String(atRisk.length)} warn={atRisk.length > 0} />
         <Metric label="In queue (all)" value={String(visibleRequests.length)} />
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
         {([
-          ['pending', 'Pending'],
+          ['pending', 'Needs review'],
           ['declined', 'Declined'],
           ['approved', 'Approved'],
           ['all', 'All'],

@@ -40,7 +40,7 @@ export const RISK_LABELS: Record<RiskTier, string> = {
 
 /** Submitter-facing + reviewer disposition labels (Approve / Decline only). */
 export const STATUS_LABELS: Record<RequestStatus, string> = {
-  pending: 'Pending',
+  pending: 'Needs review',
   changes_requested: 'Declined',
   approved: 'Approved',
   rejected: 'Declined',
