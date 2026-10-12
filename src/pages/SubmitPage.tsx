@@ -319,7 +319,7 @@ export function SubmitPage() {
               id="creative-file"
               type="file"
               accept="image/png,image/jpeg,image/webp,image/gif"
-              className="mt-2 block w-full text-sm text-navy-800 file:mr-3 file:rounded-[5px] file:border-0 file:bg-steel-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-steel-800 hover:file:bg-steel-200"
+              className="mt-2 block w-full text-sm text-navy-800 outline-none file:mr-3 file:cursor-pointer file:rounded-[5px] file:border-0 file:bg-steel-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-steel-800 file:hover:bg-steel-200"
               onChange={(e) => void onCreativeFile(e.target.files?.[0])}
             />
             {creativeImage ? (
