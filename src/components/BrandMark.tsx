@@ -1,9 +1,9 @@
 import { cn } from '@/lib/cn'
+import { useId } from 'react'
 
 /**
- * Company mark inspired by Webdings capital “P” (national park / twin-pine glyph),
- * mirrored on the vertical axis (`scaleX(-1)`), colored forest.
- * Rendered as SVG so it works where Webdings is not installed.
+ * ClearPath park-sign mark (tree + winding path), forest via currentColor.
+ * Path cutout uses a mask so it reads on mesh/canvas backgrounds.
  */
 export function BrandMark({
   className,
@@ -12,21 +12,38 @@ export function BrandMark({
   className?: string
   size?: number
 }) {
+  const maskId = useId()
   return (
     <svg
+      xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 32 32"
       width={size}
       height={size}
-      className={cn('shrink-0 scale-x-[-1] text-forest-400', className)}
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
+      className={cn('shrink-0 text-forest-400', className)}
       aria-hidden
     >
-      {/* Twin pines — Webdings “P” national-park silhouette */}
-      <path d="M12 3.2 7.1 11.2h2.6L5.4 18h2.5L3.2 27h17.4l-4.7-9h2.5l-4.3-6.8h2.6L12 3.2z" />
-      <path d="M21.2 6.4 17.4 12.5h2.1l-3.5 5.4h2l-3.4 7.1h12.6l-3.3-7.1h2l-3.4-5.4h2.1L21.2 6.4z" />
-      <rect x="10.6" y="27" width="2.6" height="2.8" rx="0.35" />
-      <rect x="19.8" y="25" width="2.2" height="4.8" rx="0.35" />
+      <defs>
+        <mask id={maskId}>
+          <rect width="32" height="32" fill="white" />
+          <path
+            d="M 30,16
+               C 24,14 20,24 14,24
+               C 10,24 8,19 2,19
+               L 2,25
+               L 30,25
+               Z"
+            fill="black"
+          />
+        </mask>
+      </defs>
+
+      <g fill="currentColor" mask={`url(#${maskId})`}>
+        <rect x="2" y="10" width="28" height="15" />
+        <rect x="15" y="6" width="2" height="5" />
+        <polygon points="11,11 21,11 16,7" />
+        <polygon points="12,8 20,8 16,5" />
+        <polygon points="13,5 19,5 16,2" />
+      </g>
     </svg>
   )
 }
