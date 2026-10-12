@@ -247,7 +247,7 @@ Persistence: `localStorage` with seed dataset reset.
 - Buttons: default steel-400; hover navy-800; loading mist-200; approve forest-400; focus = **soft halo**; label weight **500**
 - Secondary ghost: no fill/border; always Phosphor icon + label
 - Text contrast: navy-800/900 on light surfaces; no light steel body/link text
-- Background: mesh on `#f5f8fa` — large, Highnote-like, **distinct** steel vs mint-forest blobs
+- Background mesh **locked:** BR3 bottom-right steel stack (top clear), steel peak opacity `0.53`, forest bottom ellipse `72%` wide — CSS in PRD §10.7
 - Icons: **Phosphor Icons** only; **no emoji**
 - Buttons: minimally rounded (not pills); hover / focus / loading states required
 - Motion: subtle queue enter, SLA pulse, decision confirmation

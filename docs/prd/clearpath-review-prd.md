@@ -237,7 +237,16 @@ Page field may use brand canvas `#f5f8fa` (slightly cooler than canvas-50) or ca
 
 **Contrast:** Body/UI text = navy-800/900 on light surfaces. No light steel/navy text for paragraphs or links.
 
-**Mesh:** base `#f5f8fa`; Highnote-like — large blobs with **distinct hues** (cool steel `#85c1df` / `#b9daec` vs mint forest `#97e8c7` / `#cbf3e1`), spatially separated so colors don’t muddy into gray-green.
+**Mesh (locked — BR3 mid @ 0.53 / 72%):** base `#f5f8fa`; bottom-right tall steel stack (cleared top); steel-dominant; forest along bottom at **72%** width; peak steel opacity **0.53**.
+
+```css
+background-color: #f5f8fa;
+background-image:
+  radial-gradient(ellipse 54% 56% at 90% 60%, rgba(133,193,223,0.53) 0%, rgba(133,193,223,0.26) 38%, transparent 66%),
+  radial-gradient(ellipse 50% 48% at 95% 80%, rgba(185,218,236,0.46) 0%, rgba(185,218,236,0.20) 42%, transparent 70%),
+  radial-gradient(ellipse 72% 34% at 78% 100%, rgba(151,232,199,0.36) 0%, rgba(130,201,172,0.22) 46%, transparent 72%),
+  radial-gradient(ellipse 48% 28% at 92% 96%, rgba(151,232,199,0.32) 0%, transparent 68%);
+```
 
 ### 10.8 Typography
 
@@ -310,6 +319,7 @@ Only components tied to FR1–FR10:
 | Pre-approved library assumed; AM completeness gate upstream | Locked |
 | Persona-aware homes + scoped submitter visibility | Locked |
 | Landing Option A — role cards first | Locked |
-| Branding tokens | **Locked** (palette, Sen/Spectral, Phosphor, mesh, button states) |
-| Component set / review layout | **Discussing** |
+| Branding tokens | **Locked** (palette scales, Sen/Spectral, Phosphor, buttons, soft halo) |
+| Mesh composition | **Locked** — BR3 bottom-right, steel 0.53, forest 72% wide |
+| Component set / review layout | **Discussing next** |
 | Implement main app revision | **Blocked until components agreed** |
