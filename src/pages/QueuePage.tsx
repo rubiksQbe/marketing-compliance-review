@@ -96,7 +96,7 @@ export function QueuePage() {
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <RiskBadge tier={req.riskTier} short />
+                    {req.status === 'pending' && <RiskBadge tier={req.riskTier} short />}
                     <StatusBadge status={req.status} />
                     {req.status === 'pending' && (
                       <span

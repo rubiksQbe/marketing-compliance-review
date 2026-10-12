@@ -128,14 +128,16 @@ export function ReviewPage() {
             </Link>
             <span className="inline-flex items-center gap-1.5">
               {isReviewer ? (
-                <>
-                  <RiskBadge tier={request.riskTier} short />
-                  {request.status === 'pending' && (
+                request.status === 'pending' ? (
+                  <>
+                    <RiskBadge tier={request.riskTier} short />
                     <span className="rounded px-1.5 py-0.5 text-[10px] font-medium leading-tight bg-warn-soft text-warn">
                       {formatSla(request)}
                     </span>
-                  )}
-                </>
+                  </>
+                ) : (
+                  <StatusBadge status={request.status} />
+                )
               ) : (
                 <StatusBadge status={request.status} />
               )}
