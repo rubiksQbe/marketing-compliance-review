@@ -308,32 +308,31 @@ export function SubmitPage() {
           </div>
         </fieldset>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <Label htmlFor="risk">Risk tier</Label>
-            <Select
-              id="risk"
-              className="mt-1"
-              value={riskOverride}
-              onChange={(e) => setRiskOverride((e.target.value || '') as RiskTier | '')}
-            >
-              <option value="">Suggested: {RISK_LABELS[suggested]}</option>
-              {(Object.keys(RISK_LABELS) as RiskTier[]).map((t) => (
-                <option key={t} value={t}>
-                  Override: {RISK_LABELS[t]}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="notes">Intake notes (optional)</Label>
-            <Input
-              id="notes"
-              className="mt-1"
-              value={intakeNotes}
-              onChange={(e) => setIntakeNotes(e.target.value)}
-            />
-          </div>
+        <div>
+          <Label htmlFor="risk">Risk tier</Label>
+          <Select
+            id="risk"
+            className="mt-1 sm:max-w-[calc(50%-0.375rem)]"
+            value={riskOverride}
+            onChange={(e) => setRiskOverride((e.target.value || '') as RiskTier | '')}
+          >
+            <option value="">Suggested: {RISK_LABELS[suggested]}</option>
+            {(Object.keys(RISK_LABELS) as RiskTier[]).map((t) => (
+              <option key={t} value={t}>
+                Override: {RISK_LABELS[t]}
+              </option>
+            ))}
+          </Select>
+        </div>
+
+        <div>
+          <Label htmlFor="notes">Intake notes (optional)</Label>
+          <Textarea
+            id="notes"
+            className="mt-1 min-h-20"
+            value={intakeNotes}
+            onChange={(e) => setIntakeNotes(e.target.value)}
+          />
         </div>
 
         <FieldError>{error}</FieldError>
