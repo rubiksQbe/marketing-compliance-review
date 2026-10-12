@@ -8,8 +8,8 @@ export interface RiskSuggestion {
 
 /** Weighted demo scoring — mirrors a simple compliance intake matrix. */
 export function scoreRisk(input: {
-  product: Product
-  channel: Channel
+  product?: Product | ''
+  channel?: Channel | ''
   claimFlags: ClaimFlag[]
 }): RiskSuggestion {
   const { product, channel, claimFlags } = input
@@ -59,8 +59,8 @@ export function scoreRisk(input: {
 }
 
 export function suggestRiskTier(input: {
-  product: Product
-  channel: Channel
+  product?: Product | ''
+  channel?: Channel | ''
   claimFlags: ClaimFlag[]
 }): RiskTier {
   return scoreRisk(input).tier

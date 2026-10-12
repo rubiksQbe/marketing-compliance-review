@@ -95,8 +95,11 @@ export function SubmitPage() {
 
   const visual = isVisualAsset(assetType)
 
+  const hasCreativeSubstance = Boolean(body.trim() || (visual && creativeImage))
+  const copyRequired = !visual || !creativeImage
+
   const risk = useMemo(() => {
-    if (!product || !channel) return null
+    if (!product && !channel && claimFlags.length === 0) return null
     return scoreRisk({ product, channel, claimFlags })
   }, [product, channel, claimFlags])
 
@@ -139,12 +142,16 @@ export function SubmitPage() {
       setError('Select product and channel before submitting.')
       return
     }
-    if (!title.trim() || !audience.trim() || !body.trim() || !destinationUrl.trim() || !disclosures.trim()) {
+    if (!title.trim() || !audience.trim() || !destinationUrl.trim() || !disclosures.trim()) {
       setError('Complete all required fields before submitting.')
       return
     }
-    if (visual && !creativeImage) {
-      setError('Upload the creative image for this asset type.')
+    if (!hasCreativeSubstance) {
+      setError(
+        visual
+          ? 'Include a creative file, exact copy, or both.'
+          : 'Add the exact creative copy for this text-only asset.',
+      )
       return
     }
     if (source === 'affiliate' && !partnerName.trim()) {
@@ -305,62 +312,79 @@ export function SubmitPage() {
           />
         </div>
 
-        {visual && (
+        <div className="space-y-3">
           <div>
-            <Label htmlFor="creative-file" required>
-              Creative file
-            </Label>
-            <p className="mt-0.5 text-xs text-steel-600">
-              Image of the banner, social post, or affiliate creative (PNG, JPG, WebP, or GIF · under
-              900 KB).
+            <p className="text-sm font-medium text-navy-800">
+              Creative <span className="text-danger">*</span>
             </p>
-            <input
-              ref={fileInputRef}
-              id="creative-file"
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif"
-              className="mt-2 block w-full text-sm text-navy-800 outline-none file:mr-3 file:cursor-pointer file:rounded-[5px] file:border-0 file:bg-steel-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-steel-800 file:hover:bg-steel-200"
-              onChange={(e) => void onCreativeFile(e.target.files?.[0])}
-            />
-            {creativeImage ? (
-              <div className="mt-3 overflow-hidden rounded-[5px] border border-mist-200 bg-canvas">
-                <img
-                  src={creativeImage}
-                  alt="Uploaded creative preview"
-                  className="max-h-48 w-full object-contain"
-                />
-                <div className="flex items-center justify-between gap-2 border-t border-mist-200 px-3 py-2">
-                  <span className="inline-flex items-center gap-1.5 text-xs text-steel-600">
-                    <ImageIcon size={14} /> Ready for review
-                  </span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    icon={<Trash size={14} />}
-                    className="h-auto px-1.5 py-1 text-xs"
-                    onClick={() => {
-                      setCreativeImage(undefined)
-                      if (fileInputRef.current) fileInputRef.current.value = ''
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            ) : null}
+            <p className="mt-0.5 text-xs text-steel-600">
+              {visual
+                ? 'Include a creative file, exact copy, or both — at least one is required.'
+                : 'Text-only assets need the exact copy shown to consumers.'}
+            </p>
           </div>
-        )}
 
-        <div>
-          <Label htmlFor="body" required>
-            {visual ? 'On-creative / accompanying copy' : 'Creative copy (exact)'}
-          </Label>
-          <Textarea
-            id="body"
-            className="mt-1 min-h-24"
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-          />
+          {visual && (
+            <div>
+              <Label htmlFor="creative-file">Creative file (optional)</Label>
+              <p className="mt-0.5 text-xs text-steel-600">
+                Banner, social, or affiliate image (PNG, JPG, WebP, or GIF · under 900 KB).
+              </p>
+              <input
+                ref={fileInputRef}
+                id="creative-file"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                className="mt-2 block w-full text-sm text-navy-800 outline-none file:mr-3 file:cursor-pointer file:rounded-[5px] file:border-0 file:bg-steel-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-steel-800 file:hover:bg-steel-200"
+                onChange={(e) => void onCreativeFile(e.target.files?.[0])}
+              />
+              {creativeImage ? (
+                <div className="mt-3 overflow-hidden rounded-[5px] border border-mist-200 bg-canvas">
+                  <img
+                    src={creativeImage}
+                    alt="Uploaded creative preview"
+                    className="max-h-48 w-full object-contain"
+                  />
+                  <div className="flex items-center justify-between gap-2 border-t border-mist-200 px-3 py-2">
+                    <span className="inline-flex items-center gap-1.5 text-xs text-steel-600">
+                      <ImageIcon size={14} /> Ready for review
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      icon={<Trash size={14} />}
+                      className="h-auto px-1.5 py-1 text-xs"
+                      onClick={() => {
+                        setCreativeImage(undefined)
+                        if (fileInputRef.current) fileInputRef.current.value = ''
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          )}
+
+          <div>
+            <Label htmlFor="body" required={copyRequired}>
+              {visual ? 'Creative copy' : 'Creative copy (exact)'}
+            </Label>
+            {visual ? (
+              <p className="mt-0.5 text-xs text-steel-600">
+                {creativeImage
+                  ? 'Optional if the file already shows the claims — add any accompanying text.'
+                  : 'Required when no file is uploaded.'}
+              </p>
+            ) : null}
+            <Textarea
+              id="body"
+              className="mt-1 min-h-24"
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+            />
+          </div>
         </div>
 
         <div>
@@ -429,7 +453,7 @@ export function SubmitPage() {
             </div>
           ) : (
             <p className="mt-1.5 text-sm text-steel-600">
-              Select product and channel to score. Claim flags update the tier live.
+              Select product, channel, or claim flags to see a suggestion.
             </p>
           )}
         </div>
