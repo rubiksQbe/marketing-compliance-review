@@ -175,37 +175,68 @@ Affiliate portal, library CMS, notifications integrations, multi-approver matrix
 
 **Direction:** airy fintech-ops surface inspired by mesh-gradient product landings (Highnote-like atmosphere), adapted for an internal compliance tool — not a consumer loan promo site.
 
-### 10.1 Core palette (restored)
+### 10.1 Brand anchors
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| `navy` | `#1a3a5c` | Primary text/ink; button **hover** fill |
-| `steel` | `#5a8faa` | **Default** primary button fill |
-| `steelBright` | `#7eb3cc` | Mesh blob (brighter steel) |
-| `mist` | `#c9d4dc` | Borders; button **loading** fill |
-| `canvas` | `#f5f8fa` | Page base / mesh field |
-| `forest` | `#2d4a3e` | Deep positive on light surfaces; approve hover |
-| `forestBright` | `#3f7a5c` | **Approve** button; mesh blob |
+| Token | Hex | Role |
+|-------|-----|------|
+| `navy` | `#1a3a5c` | ≈ navy-800 band — primary ink |
+| `steel` | `#5a8faa` | ≈ steel-400 — default button |
+| `mist` | `#c9d4dc` | ≈ mist-200 — borders / loading |
+| `canvas` | `#f5f8fa` | ≈ canvas-50 — page / mesh field |
+| `forest` | `#2d4a3e` | ≈ forest-800 — deep positive |
 
-### 10.2 Interaction states
+Use **scale steps** below for hover, soft surfaces, mesh, and halos (not one-off hexes).
 
-| State | Rule | Fill | Text |
-|-------|------|------|------|
-| Default (primary) | steel | `#5a8faa` | `#ffffff` |
-| Hover | navy | `#1a3a5c` | `#ffffff` |
-| Focus | **soft halo** (not hard border) | `#5a8faa` + `box-shadow: 0 0 0 4px rgba(90,143,170,0.32)` | `#ffffff` |
-| Loading | mist | `#c9d4dc` | `#1a3a5c` |
-| Approve default | forestBright | `#3f7a5c` | `#ffffff` |
-| Approve hover | forest | `#2d4a3e` | `#ffffff` |
-| Approve focus | soft green halo | `#3f7a5c` + `0 0 0 4px rgba(63,122,92,0.32)` | `#ffffff` |
-| Danger | — | `#9b2c2c` | `#ffffff` |
-| Warning / SLA | — | `#f3e7d3` / `#9a6b2f` | dark ink |
+### 10.2 Navy scale (`--navy-*`)
 
-**Focus:** soft halo only (translucent box-shadow ring). No high-contrast border stack.
+| 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
+|----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| `#f1f6fa` | `#dee9f6` | `#bfd7f2` | `#92bbea` | `#5296df` | `#3a74b2` | `#2d5d90` | `#234973` | `#183757` | `#12283f` | `#091726` |
 
-**Contrast rules:** Body/UI text uses **navy** (`#1a3a5c`) on canvas/white. No light-blue paragraph/link text — steel/steelBright are for fills, mesh, and halos.
+### 10.3 Steel scale (`--steel-*`)
 
-**Mesh:** base `#f5f8fa` with brighter steel/forest blobs (placement TBD — choose from companion variations).
+| 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
+|----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| `#f1f6f9` | `#dbebf3` | `#b9daec` | `#85c1df` | `#629bb8` | `#4b788f` | `#3b6073` | `#2e4c5c` | `#213945` | `#182932` | `#0d181d` |
+
+### 10.4 Mist scale (`--mist-*`)
+
+| 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
+|----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| `#f3f6f8` | `#e1e9ef` | `#c6d7e3` | `#9ebcd0` | `#7697ac` | `#5b7686` | `#495e6c` | `#394a56` | `#2a3740` | `#1e282e` | `#11171b` |
+
+### 10.5 Canvas scale (`--canvas-*`)
+
+| 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
+|----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| `#f3f5f7` | `#e4e9ec` | `#cbd6de` | `#a8bac7` | `#8195a4` | `#647480` | `#4f5d67` | `#3e4951` | `#2e373d` | `#21272c` | `#131719` |
+
+Page field may use brand canvas `#f5f8fa` (slightly cooler than canvas-50) or canvas-50 — pick one in implementation and stay consistent (`#f5f8fa` preferred).
+
+### 10.6 Forest scale (`--forest-*`)
+
+| 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
+|----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| `#ebf9f3` | `#cbf3e1` | `#97e8c7` | `#82c9ac` | `#67a089` | `#4f7d6a` | `#3e6454` | `#304f42` | `#233b31` | `#192b23` | `#0e1914` |
+
+### 10.7 Interaction states (mapped to scales)
+
+| State | Fill | Text | Notes |
+|-------|------|------|-------|
+| Default (primary) | steel-400 `#629bb8` (or brand steel `#5a8faa`) | `#ffffff` | |
+| Hover | navy-800 `#183757` (or brand navy) | `#ffffff` | |
+| Focus | same as default + **soft halo** `0 0 0 4px` steel-300 @ ~35% | `#ffffff` | No hard border stack |
+| Loading | mist-200 `#c6d7e3` | navy-800 | |
+| Approve default | forest-400 `#67a089` | `#ffffff` | Brighter approve |
+| Approve hover | forest-600 `#3e6454` | `#ffffff` | |
+| Approve focus | approve + soft forest-300 halo | `#ffffff` | |
+| Surfaces / cards | `#ffffff` or canvas | navy-800 text | Borders mist-200 |
+| Danger | `#9b2c2c` | `#ffffff` | |
+| Warning / SLA | warm soft + `#9a6b2f` | dark ink | |
+
+**Contrast:** Body/UI text = navy-800/900 on light surfaces. No light steel/navy text for paragraphs or links.
+
+**Mesh:** base `#f5f8fa`; blobs **bigger and brighter** — steel-200/300 and forest-200/300 at high opacity, large ellipses (see companion).
 
 ### 10.3 Typography
 
