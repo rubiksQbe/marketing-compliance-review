@@ -25,6 +25,8 @@ interface StoreValue {
   getRequest: (id: string) => ReviewRequest | undefined
   visibleRequests: ReviewRequest[]
   submitRequest: (input: SubmitInput) => ReviewRequest
+  resubmitRequest: (id: string, input: SubmitInput) => ReviewRequest | undefined
+  deleteRequest: (id: string) => void
   decide: (id: string, input: DecisionInput) => ReviewRequest | undefined
   markOpened: (id: string, actor: string) => void
   resetDemo: () => void
@@ -87,6 +89,58 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [requests, session],
   )
 
+  const resubmitRequest = useCallback(
+    (id: string, input: SubmitInput) => {
+      if (!session || session.role !== 'submitter') {
+        throw new Error('Only submitters can edit requests')
+      }
+      let updated: ReviewRequest | undefined
+      const now = new Date().toISOString()
+      setRequests((prev) =>
+        prev.map((req) => {
+          if (req.id !== id || req.submitter !== session.name) return req
+          updated = {
+            ...req,
+            ...input,
+            partnerName: input.source === 'affiliate' ? input.partnerName?.trim() : undefined,
+            status: 'pending',
+            slaHours: slaHoursForTier(input.riskTier),
+            submittedAt: now,
+            updatedAt: now,
+            assignee: undefined,
+            events: [
+              ...req.events,
+              {
+                id: createId('evt'),
+                at: now,
+                actor: session.name,
+                action: 'resubmitted',
+                detail: 'Edited and resubmitted for approval.',
+              },
+            ],
+          }
+          return updated
+        }),
+      )
+      return updated
+    },
+    [session],
+  )
+
+  const deleteRequest = useCallback(
+    (id: string) => {
+      if (!session) return
+      setRequests((prev) =>
+        prev.filter((req) => {
+          if (req.id !== id) return true
+          if (session.role === 'reviewer') return false
+          return req.submitter !== session.name
+        }),
+      )
+    },
+    [session],
+  )
+
   const markOpened = useCallback((id: string, actor: string) => {
     setRequests((prev) =>
       prev.map((req) => {
@@ -112,7 +166,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const now = new Date().toISOString()
         updated = {
           ...req,
-          status: input.action === 'approved' ? 'approved' : 'changes_requested',
+          status: input.action === 'approved' ? 'approved' : 'rejected',
           updatedAt: now,
           assignee: input.actor,
           events: [
@@ -145,6 +199,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       getRequest,
       visibleRequests,
       submitRequest,
+      resubmitRequest,
+      deleteRequest,
       decide,
       markOpened,
       resetDemo,
@@ -156,6 +212,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       getRequest,
       visibleRequests,
       submitRequest,
+      resubmitRequest,
+      deleteRequest,
       decide,
       markOpened,
       resetDemo,

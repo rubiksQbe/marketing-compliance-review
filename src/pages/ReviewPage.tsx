@@ -1,4 +1,4 @@
-import { RiskBadge } from '@/components/StatusBadge'
+import { RiskBadge, StatusBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/field'
 import { FINDINGS, fixesForCodes } from '@/data/findings'
@@ -7,21 +7,22 @@ import {
   ASSET_LABELS,
   CHANNEL_LABELS,
   CLAIM_LABELS,
-  KIND_LABELS,
   PRODUCT_LABELS,
+  REASON_LABELS,
+  isDeclinedStatus,
   isVisualAsset,
 } from '@/lib/labels'
 import { useStore } from '@/lib/store'
 import { formatSla } from '@/lib/time'
 import type { ReasonCode } from '@/lib/types'
-import { ArrowLeft, Path } from '@phosphor-icons/react'
+import { ArrowLeft, PencilSimple, Trash } from '@phosphor-icons/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 export function ReviewPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
-  const { getRequest, decide, markOpened, session, visibleRequests } = useStore()
+  const { getRequest, decide, markOpened, session, visibleRequests, deleteRequest } = useStore()
   const request = getRequest(id)
 
   const [selected, setSelected] = useState<ReasonCode[]>([])
@@ -39,35 +40,53 @@ export function ReviewPage() {
       (session.role === 'reviewer' || visibleRequests.some((r) => r.id === request.id)),
   )
 
-  const actionable = Boolean(
-    session?.role === 'reviewer' &&
-      request &&
-      (request.status === 'pending' || request.status === 'changes_requested'),
+  const isReviewer = session?.role === 'reviewer'
+  const isSubmitter = session?.role === 'submitter'
+
+  const actionable = Boolean(isReviewer && request && request.status === 'pending')
+
+  const lastDecision = useMemo(() => {
+    if (!request) return undefined
+    return [...request.events]
+      .reverse()
+      .find((e) => e.action === 'approved' || e.action === 'changes_requested' || e.action === 'rejected')
+  }, [request])
+
+  const declinedCodes = lastDecision?.reasonCodes ?? []
+  const declinedNotes = lastDecision?.detail ?? ''
+  const declinedFixes = useMemo(() => fixesForCodes(declinedCodes), [declinedCodes])
+  const requestDeclined = Boolean(request && isDeclinedStatus(request.status))
+  const requestApproved = request?.status === 'approved'
+  const canSubmitterEdit = Boolean(
+    isSubmitter && request && (request.status === 'pending' || requestDeclined),
   )
 
   const requestedFixes = useMemo(() => fixesForCodes(selected), [selected])
 
   useEffect(() => {
-    if (request && session?.role === 'reviewer') {
+    if (request && isReviewer && session) {
       markOpened(request.id, session.name)
     }
-  }, [request, session, markOpened])
+  }, [request, isReviewer, session, markOpened])
 
   if (!session) return <Navigate to="/" replace />
   if (!request || !canAccess) {
     return (
       <div className="rounded-md border border-dashed border-mist-200 bg-white/70 px-6 py-16 text-center animate-in">
         <h1 className="font-serif text-2xl text-navy-800">Request not found</h1>
-        <p className="mt-2 text-sm text-steel-600">It may be outside your visibility or cleared by a demo reset.</p>
-        <Link to={session.role === 'reviewer' ? '/queue' : '/mine'} className="mt-4 inline-block text-sm font-medium text-navy-800 underline underline-offset-2">
+        <p className="mt-2 text-sm text-steel-600">It may be outside your visibility or cleared.</p>
+        <Link
+          to={session.role === 'reviewer' ? '/queue' : '/mine'}
+          className="mt-4 inline-block text-sm font-medium text-navy-800 underline underline-offset-2"
+        >
           Back
         </Link>
       </div>
     )
   }
 
-  const backTo = session.role === 'reviewer' ? '/queue' : '/mine'
-  const backLabel = session.role === 'reviewer' ? 'Queue' : 'Your requests'
+  const backTo = isReviewer ? '/queue' : '/mine'
+  const backLabel = isReviewer ? 'Queue' : 'Requests'
   const visual = isVisualAsset(request.assetType)
   const declining = selected.length > 0
 
@@ -86,12 +105,12 @@ export function ReviewPage() {
       return
     }
     decide(request!.id, {
-      action: declining ? 'changes_requested' : 'approved',
+      action: declining ? 'rejected' : 'approved',
       detail: notes.trim() || undefined,
       reasonCodes: declining ? selected : undefined,
       actor: session.name,
     })
-    navigate(`/audit/${request!.id}`)
+    navigate(isReviewer ? '/queue' : `/review/${request!.id}`)
   }
 
   return (
@@ -106,11 +125,17 @@ export function ReviewPage() {
               <ArrowLeft size={12} /> {backLabel} · {request.id}
             </Link>
             <span className="inline-flex items-center gap-1.5">
-              <RiskBadge tier={request.riskTier} short />
-              {request.status === 'pending' && (
-                <span className="rounded px-1.5 py-0.5 text-[10px] font-medium leading-tight bg-warn-soft text-warn">
-                  {formatSla(request)}
-                </span>
+              {isReviewer ? (
+                <>
+                  <RiskBadge tier={request.riskTier} short />
+                  {request.status === 'pending' && (
+                    <span className="rounded px-1.5 py-0.5 text-[10px] font-medium leading-tight bg-warn-soft text-warn">
+                      {formatSla(request)}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <StatusBadge status={request.status} />
               )}
             </span>
           </div>
@@ -206,64 +231,102 @@ export function ReviewPage() {
 
           <aside className="flex min-h-0 flex-col bg-white">
             <div ref={rightRef} className="scroll-pane min-h-0 flex-1 overflow-auto px-3.5 pt-3.5 pb-2">
-              <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
+              {isReviewer && (
+                <>
+                  <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
+                  {FINDINGS.map((f) => (
+                    <label
+                      key={f.code}
+                      className="grid grid-cols-[16px_1fr] items-center gap-1.5 border-t border-mist-100 py-1.5 text-[11px] leading-snug first:border-t-0 first:pt-0"
+                    >
+                      <input
+                        type="checkbox"
+                        className="accent-navy-800"
+                        checked={selected.includes(f.code)}
+                        disabled={!actionable}
+                        onChange={() => toggle(f.code)}
+                      />
+                      <span className="font-medium text-navy-800">{f.label}</span>
+                    </label>
+                  ))}
 
-              {FINDINGS.map((f) => (
-                <label
-                  key={f.code}
-                  className="grid grid-cols-[16px_1fr] items-center gap-1.5 border-t border-mist-100 py-1.5 text-[11px] leading-snug first:border-t-0 first:pt-0"
-                >
-                  <input
-                    type="checkbox"
-                    className="accent-navy-800"
-                    checked={selected.includes(f.code)}
-                    disabled={!actionable}
-                    onChange={() => toggle(f.code)}
-                  />
-                  <span className="font-medium text-navy-800">{f.label}</span>
-                </label>
-              ))}
+                  {declining && (
+                    <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
+                      <p className="font-medium text-navy-800">Requested changes</p>
+                      <ul className="mt-1 list-disc space-y-0.5 pl-4 font-normal">
+                        {requestedFixes.map((fix) => (
+                          <li key={fix}>{fix}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
-              {declining && (
-                <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
-                  <p className="font-medium text-navy-800">Requested changes</p>
-                  <ul className="mt-1 list-disc space-y-0.5 pl-4 font-normal">
-                    {requestedFixes.map((fix) => (
-                      <li key={fix}>{fix}</li>
-                    ))}
-                  </ul>
-                </div>
+                  <div className="mt-2">
+                    <p className="mb-1 text-[11px] font-medium text-navy-800">Additional notes</p>
+                    <Textarea
+                      className="min-h-12 text-[11px]"
+                      placeholder="Optional comments…"
+                      value={notes}
+                      disabled={!actionable}
+                      onChange={(e) => setNotes(e.target.value)}
+                    />
+                  </div>
+
+                  {error && <p className="mt-2 text-[11px] text-danger">{error}</p>}
+
+                  {!actionable && requestApproved && (
+                    <p className="mt-3 text-[11px] text-steel-600">Approved. See history in the package events if needed.</p>
+                  )}
+                  {!actionable && requestDeclined && (
+                    <p className="mt-3 text-[11px] text-steel-600">Already declined.</p>
+                  )}
+                </>
               )}
 
-              <div className="mt-2">
-                <p className="mb-1 text-[11px] font-medium text-navy-800">Additional notes</p>
-                <Textarea
-                  className="min-h-12 text-[11px]"
-                  placeholder="Optional comments…"
-                  value={notes}
-                  disabled={!actionable}
-                  onChange={(e) => setNotes(e.target.value)}
-                />
-              </div>
+              {isSubmitter && requestDeclined && (
+                <>
+                  <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
+                  {declinedCodes.length === 0 ? (
+                    <p className="text-[11px] text-steel-600">No coded reasons recorded.</p>
+                  ) : (
+                    declinedCodes.map((code) => (
+                      <div
+                        key={code}
+                        className="grid grid-cols-[16px_1fr] items-center gap-1.5 border-t border-mist-100 py-1.5 text-[11px] leading-snug first:border-t-0 first:pt-0"
+                      >
+                        <input type="checkbox" className="accent-navy-800" checked readOnly disabled />
+                        <span className="font-medium text-navy-800">{REASON_LABELS[code]}</span>
+                      </div>
+                    ))
+                  )}
 
-              {error && <p className="mt-2 text-[11px] text-danger">{error}</p>}
+                  {declinedFixes.length > 0 && (
+                    <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
+                      <p className="font-medium text-navy-800">Requested changes</p>
+                      <ul className="mt-1 list-disc space-y-0.5 pl-4 font-normal">
+                        {declinedFixes.map((fix) => (
+                          <li key={fix}>{fix}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
-              {!actionable && (
-                <p className="mt-3 text-[11px] text-steel-600">
-                  {session.role === 'submitter'
-                    ? `Viewing as ${session.name} (${KIND_LABELS[session.kind]}). Decisions are made by compliance.`
-                    : 'This item is already decided. See audit trail for history.'}
-                </p>
+                  <div className="mt-2">
+                    <p className="mb-1 text-[11px] font-medium text-navy-800">Additional notes</p>
+                    <p className="rounded-[5px] border border-mist-200 bg-canvas px-2 py-2 text-[11px] text-navy-800 leading-snug whitespace-pre-wrap">
+                      {declinedNotes || '—'}
+                    </p>
+                  </div>
+                </>
               )}
 
-              <Button
-                variant="ghost"
-                icon={<Path size={14} />}
-                className="mt-3 w-full justify-start px-0"
-                onClick={() => navigate(`/audit/${request.id}`)}
-              >
-                Audit trail
-              </Button>
+              {isSubmitter && requestApproved && (
+                <p className="text-[11px] text-steel-600">This package was approved.</p>
+              )}
+
+              {isSubmitter && request.status === 'pending' && (
+                <p className="text-[11px] text-steel-600">Awaiting compliance decision.</p>
+              )}
             </div>
 
             {actionable && (
@@ -275,6 +338,34 @@ export function ReviewPage() {
                   onClick={onDecide}
                 >
                   {declining ? 'Decline' : 'Approve'}
+                </Button>
+              </div>
+            )}
+
+            {canSubmitterEdit && (
+              <div className="shrink-0 border-t border-mist-100 px-3.5 py-3.5 flex flex-col gap-2">
+                <Button
+                  type="button"
+                  variant="primary"
+                  className="w-full"
+                  icon={<PencilSimple size={16} />}
+                  onClick={() => navigate(`/submit/${request.id}`)}
+                >
+                  Edit & resubmit
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full"
+                  icon={<Trash size={16} />}
+                  onClick={() => {
+                    if (window.confirm(`Delete ${request.id}? This cannot be undone.`)) {
+                      deleteRequest(request.id)
+                      navigate('/mine')
+                    }
+                  }}
+                >
+                  Delete request
                 </Button>
               </div>
             )}

@@ -10,7 +10,7 @@ export function AssumptionsPage() {
     <div className="animate-in">
       <h1 className="font-serif text-2xl text-navy-800">Assumptions</h1>
       <p className="mt-1 max-w-2xl text-sm text-steel-600">
-        Product and operating assumptions behind ClearPath Review — kept visible so demos stay honest.
+        Product and operating assumptions behind this marketing compliance review tool — kept visible so demos stay honest.
       </p>
       <ul className="mt-6 space-y-3">
         {ASSUMPTIONS.map((a) => (

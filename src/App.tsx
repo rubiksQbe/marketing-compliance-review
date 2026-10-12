@@ -21,6 +21,7 @@ export default function App() {
             <Route path="queue" element={<QueuePage />} />
             <Route path="mine" element={<MinePage />} />
             <Route path="submit" element={<SubmitPage />} />
+            <Route path="submit/:id" element={<SubmitPage />} />
             <Route path="review/:id" element={<ReviewPage />} />
             <Route path="audit/:id" element={<AuditPage />} />
             <Route path="assumptions" element={<AssumptionsPage />} />

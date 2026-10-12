@@ -6,6 +6,7 @@ import {
   CLAIM_LABELS,
   PRODUCT_LABELS,
   RISK_LABELS,
+  isDeclinedStatus,
 } from '@/lib/labels'
 import { suggestRiskTier } from '@/lib/risk'
 import { useStore } from '@/lib/store'
@@ -18,14 +19,17 @@ import type {
   SubmissionSource,
 } from '@/lib/types'
 import { PaperPlaneTilt } from '@phosphor-icons/react'
-import { useMemo, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 
 const CLAIMS = Object.keys(CLAIM_LABELS) as ClaimFlag[]
 
 export function SubmitPage() {
-  const { session, submitRequest } = useStore()
+  const { id } = useParams<{ id?: string }>()
+  const { session, submitRequest, resubmitRequest, getRequest } = useStore()
   const navigate = useNavigate()
+  const existing = id ? getRequest(id) : undefined
+  const editing = Boolean(id && existing)
 
   const [title, setTitle] = useState('')
   const [product, setProduct] = useState<Product>('personal_loans')
@@ -43,6 +47,28 @@ export function SubmitPage() {
   const [intakeNotes, setIntakeNotes] = useState('')
   const [riskOverride, setRiskOverride] = useState<RiskTier | ''>('')
   const [error, setError] = useState<string | null>(null)
+  const [hydrated, setHydrated] = useState(!id)
+
+  useEffect(() => {
+    if (!id || !existing) {
+      setHydrated(true)
+      return
+    }
+    setTitle(existing.title)
+    setProduct(existing.product)
+    setChannel(existing.channel)
+    setAssetType(existing.assetType)
+    setAudience(existing.audience)
+    setBody(existing.body)
+    setDestinationUrl(existing.destinationUrl)
+    setDisclosures(existing.disclosures)
+    setClaimFlags(existing.claimFlags)
+    setSource(existing.source)
+    setPartnerName(existing.partnerName ?? '')
+    setIntakeNotes(existing.intakeNotes ?? '')
+    setRiskOverride(existing.riskTier)
+    setHydrated(true)
+  }, [id, existing])
 
   const suggested = useMemo(
     () => suggestRiskTier({ product, channel, claimFlags }),
@@ -52,6 +78,16 @@ export function SubmitPage() {
 
   if (!session) return <Navigate to="/" replace />
   if (session.role !== 'submitter') return <Navigate to="/queue" replace />
+  if (id && hydrated && (!existing || existing.submitter !== session.name)) {
+    return <Navigate to="/mine" replace />
+  }
+  if (editing && existing && existing.status === 'approved') {
+    return <Navigate to={`/review/${existing.id}`} replace />
+  }
+  if (editing && existing && !(existing.status === 'pending' || isDeclinedStatus(existing.status))) {
+    return <Navigate to="/mine" replace />
+  }
+  if (!hydrated) return null
 
   function toggleClaim(flag: ClaimFlag) {
     setClaimFlags((prev) =>
@@ -77,7 +113,7 @@ export function SubmitPage() {
       return
     }
 
-    const created = submitRequest({
+    const payload = {
       title: title.trim(),
       product,
       channel,
@@ -91,15 +127,27 @@ export function SubmitPage() {
       source,
       partnerName: partnerName.trim() || undefined,
       intakeNotes: intakeNotes.trim() || undefined,
-    })
+    }
+
+    if (editing && id) {
+      const updated = resubmitRequest(id, payload)
+      if (updated) navigate(`/review/${updated.id}`)
+      return
+    }
+
+    const created = submitRequest(payload)
     navigate(`/review/${created.id}`)
   }
 
   return (
     <div className="mx-auto max-w-2xl animate-in">
-      <h1 className="font-serif text-2xl text-navy-800">Submit for review</h1>
+      <h1 className="font-serif text-2xl text-navy-800">
+        {editing ? 'Edit & resubmit' : 'Submit for review'}
+      </h1>
       <p className="mt-1 text-sm text-steel-600">
-        Structured intake — incomplete packets are blocked so compliance gets a review-ready package.
+        {editing
+          ? 'Update the package and resubmit — it returns to Pending for compliance.'
+          : 'Structured intake — incomplete packets are blocked so compliance gets a review-ready package.'}
       </p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-md border border-mist-200 bg-white/90 p-5">
@@ -296,7 +344,7 @@ export function SubmitPage() {
         <FieldError>{error}</FieldError>
 
         <Button type="submit" variant="primary" icon={<PaperPlaneTilt size={16} />} className="w-full sm:w-auto">
-          Submit for compliance review
+          {editing ? 'Resubmit for approval' : 'Submit for compliance review'}
         </Button>
       </form>
     </div>

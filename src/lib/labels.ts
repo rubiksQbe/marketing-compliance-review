@@ -38,11 +38,16 @@ export const RISK_LABELS: Record<RiskTier, string> = {
   high: 'High',
 }
 
+/** Submitter-facing + reviewer disposition labels (Approve / Decline only). */
 export const STATUS_LABELS: Record<RequestStatus, string> = {
   pending: 'Pending',
-  changes_requested: 'Changes requested',
+  changes_requested: 'Declined',
   approved: 'Approved',
   rejected: 'Declined',
+}
+
+export function isDeclinedStatus(status: RequestStatus): boolean {
+  return status === 'changes_requested' || status === 'rejected'
 }
 
 export const CLAIM_LABELS: Record<ClaimFlag, string> = {

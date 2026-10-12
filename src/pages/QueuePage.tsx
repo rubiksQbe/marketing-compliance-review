@@ -1,27 +1,27 @@
 import { RiskBadge, StatusBadge } from '@/components/StatusBadge'
-import {
-  ASSET_LABELS,
-  CHANNEL_LABELS,
-  PRODUCT_LABELS,
-} from '@/lib/labels'
+import { ASSET_LABELS, CHANNEL_LABELS, PRODUCT_LABELS, isDeclinedStatus } from '@/lib/labels'
 import { useStore } from '@/lib/store'
 import { formatSla, formatWhen, remainingFor } from '@/lib/time'
-import type { RequestStatus, RiskTier } from '@/lib/types'
+import type { RiskTier } from '@/lib/types'
 import { Clock, WarningCircle } from '@phosphor-icons/react'
 import { useMemo, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 
 const RISK_ORDER: Record<RiskTier, number> = { high: 0, medium: 1, low: 2 }
 
+type Filter = 'pending' | 'declined' | 'approved' | 'all'
+
 export function QueuePage() {
   const { session, visibleRequests } = useStore()
-  const [statusFilter, setStatusFilter] = useState<RequestStatus | 'all'>('pending')
+  const [statusFilter, setStatusFilter] = useState<Filter>('pending')
 
   const filtered = useMemo(() => {
-    const list =
-      statusFilter === 'all'
-        ? visibleRequests
-        : visibleRequests.filter((r) => r.status === statusFilter)
+    const list = visibleRequests.filter((r) => {
+      if (statusFilter === 'all') return true
+      if (statusFilter === 'pending') return r.status === 'pending'
+      if (statusFilter === 'approved') return r.status === 'approved'
+      return isDeclinedStatus(r.status)
+    })
     return [...list].sort((a, b) => {
       const risk = RISK_ORDER[a.riskTier] - RISK_ORDER[b.riskTier]
       if (risk !== 0) return risk
@@ -40,33 +40,34 @@ export function QueuePage() {
       <div className="mb-6">
         <h1 className="font-serif text-2xl text-navy-800">Review queue</h1>
         <p className="mt-1 text-sm text-steel-600">
-          Org-wide workbench — prioritize by risk tier and SLA.
+          Prioritized by risk tier (High → Low), then nearest SLA deadline.
         </p>
       </div>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
         <Metric label="Pending" value={String(pending.length)} />
-        <Metric
-          label="SLA at risk"
-          value={String(atRisk.length)}
-          warn={atRisk.length > 0}
-        />
+        <Metric label="SLA at risk" value={String(atRisk.length)} warn={atRisk.length > 0} />
         <Metric label="In queue (all)" value={String(visibleRequests.length)} />
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
-        {(['pending', 'changes_requested', 'approved', 'rejected', 'all'] as const).map((s) => (
+        {([
+          ['pending', 'Pending'],
+          ['declined', 'Declined'],
+          ['approved', 'Approved'],
+          ['all', 'All'],
+        ] as const).map(([key, label]) => (
           <button
-            key={s}
+            key={key}
             type="button"
-            onClick={() => setStatusFilter(s)}
+            onClick={() => setStatusFilter(key)}
             className={`rounded-[5px] px-2.5 py-1 text-xs font-medium ${
-              statusFilter === s
+              statusFilter === key
                 ? 'bg-navy-800 text-white'
                 : 'bg-white/80 text-steel-600 border border-mist-200 hover:border-steel-400'
             }`}
           >
-            {s === 'all' ? 'All' : s === 'changes_requested' ? 'Changes' : s === 'rejected' ? 'Declined' : s[0].toUpperCase() + s.slice(1)}
+            {label}
           </button>
         ))}
       </div>

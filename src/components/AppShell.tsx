@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { KIND_LABELS } from '@/lib/labels'
 import { useStore } from '@/lib/store'
-import { SignOut, Trash } from '@phosphor-icons/react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { SignOut } from '@phosphor-icons/react'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 
 export function AppShell() {
-  const { session, setSession, resetDemo } = useStore()
+  const { session, setSession } = useStore()
   const navigate = useNavigate()
 
   if (!session) {
@@ -18,40 +18,11 @@ export function AppShell() {
     <div className="min-h-screen">
       <header className="border-b border-mist-200/80 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <div className="min-w-0">
-            <p className="font-brand text-xs font-medium tracking-tight text-forest-500 whitespace-nowrap sm:text-sm">
+          <Link to={home} className="min-w-0">
+            <p className="font-brand text-base font-medium tracking-tight text-forest-500 whitespace-nowrap sm:text-lg">
               ClearPath Financial
             </p>
-            <p className="mt-0.5 font-serif text-lg text-navy-800 leading-tight">ClearPath Review</p>
-          </div>
-          <nav className="flex flex-wrap items-center gap-1 text-sm">
-            <NavLink
-              to={home}
-              className={({ isActive }) =>
-                `rounded-[5px] px-2.5 py-1.5 font-medium ${isActive ? 'bg-mist-100 text-navy-800' : 'text-steel-600 hover:bg-navy-800/5'}`
-              }
-            >
-              {session.role === 'reviewer' ? 'Queue' : 'Your requests'}
-            </NavLink>
-            {session.role === 'submitter' && (
-              <NavLink
-                to="/submit"
-                className={({ isActive }) =>
-                  `rounded-[5px] px-2.5 py-1.5 font-medium ${isActive ? 'bg-mist-100 text-navy-800' : 'text-steel-600 hover:bg-navy-800/5'}`
-                }
-              >
-                Submit
-              </NavLink>
-            )}
-            <NavLink
-              to="/assumptions"
-              className={({ isActive }) =>
-                `rounded-[5px] px-2.5 py-1.5 font-medium ${isActive ? 'bg-mist-100 text-navy-800' : 'text-steel-600 hover:bg-navy-800/5'}`
-              }
-            >
-              Assumptions
-            </NavLink>
-          </nav>
+          </Link>
           <div className="flex flex-wrap items-center gap-2">
             <div className="text-right text-xs leading-snug">
               <p className="font-medium text-navy-800">{session.name}</p>
@@ -65,17 +36,7 @@ export function AppShell() {
                 navigate('/')
               }}
             >
-              Switch
-            </Button>
-            <Button
-              variant="ghost"
-              icon={<Trash size={16} weight="regular" />}
-              onClick={() => {
-                resetDemo()
-              }}
-              title="Reset demo data"
-            >
-              Reset
+              Log out
             </Button>
           </div>
         </div>

@@ -84,7 +84,7 @@ export interface SubmitInput {
 }
 
 export interface DecisionInput {
-  action: 'approved' | 'changes_requested'
+  action: 'approved' | 'rejected'
   detail?: string
   reasonCodes?: ReasonCode[]
   actor: string
