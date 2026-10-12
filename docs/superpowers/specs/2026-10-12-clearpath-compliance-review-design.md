@@ -148,10 +148,10 @@ We treat the product as an **operating system for review decisions**, not a mark
 - Purpose: help reviewers pull the highest-value next item
 - **Not shown to marketers as their landing view**
 
-### 4.1b My submissions (marketer home)
-- List scoped to the current marketer’s requests only
+### 4.1b My submissions (submitter home — internal marketer or affiliate manager)
+- List scoped to the current employee submitter’s requests only
 - Status + latest feedback/reason codes visible per item
-- CTA to submit new material
+- CTA to submit new material (`Source: Internal | Affiliate partner`)
 - Purpose: relevant progress tracking without exposing peers’ in-flight work (A1b)
 
 ### 4.2 Submit request
@@ -184,8 +184,28 @@ We treat the product as an **operating system for review decisions**, not a mark
 /assumptions      → Living assumptions log (transparency)
 ```
 
-Roles simulated via a simple persona switcher (Reviewer / Marketer) — no login (A7).  
-Demo actors: reviewer `Jordan Lee` (sees all); marketers `Sam Ortiz` / `Ava Chen` (each sees only their submissions).
+### Landing & identity (decision)
+
+**Landing (locked — Option A):** full-screen **role cards first** — ClearPath Review brand, then two choices: **Compliance reviewer** or **Submitter**.  
+If Submitter, next step is demo employee identity (Ava / Sam), then **Your submitted requests**.  
+That split is intentional: the two jobs need different homes; a shared queue is the wrong first screen for submitters.
+
+**Submitter home practice:** prefer **“Your submitted requests”** (scoped to the current person), not an org-wide list with name tags.
+
+| Approach | Fits submitter goals? | Confidentiality (A1b) | Auth cost |
+|----------|----------------------|------------------------|-----------|
+| Personalized “Your requests” | Best — status/feedback on *my* work | Good | Needs identity |
+| Org-wide list + “submitted by” tags | Weak — noisy, wrong default | Weak | None |
+
+**v1 delivery compromise (A7):** no real login/backend on GitHub Pages. Instead:
+1. Landing role picker (Reviewer vs Submitter)
+2. If Submitter — pick a **demo employee identity** (e.g. Sam Ortiz — Affiliate manager, Ava Chen — Internal marketer)
+3. Home shows only requests where `submitter === selected identity`
+4. Reviewer identity (Jordan Lee) sees the org-wide queue
+
+This preserves the *correct product shape* (personalized submitter home) without shipping authentication. A production build would replace the demo identity picker with SSO/login; the IA stays the same.
+
+Demo actors: reviewer `Jordan Lee` (sees all); submitters `Sam Ortiz` (affiliate manager) / `Ava Chen` (internal marketer) (each sees only their submissions).
 
 ---
 
