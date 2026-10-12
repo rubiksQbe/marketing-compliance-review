@@ -305,7 +305,7 @@ export function SubmitPage() {
         </fieldset>
 
         <div>
-          <p className="text-sm font-medium text-navy-800">Risk tier</p>
+          <p className="text-sm font-medium text-navy-800">Auto-suggested risk tier</p>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <RiskBadge tier={riskTier} />
             <span className="text-xs text-steel-600">
