@@ -35,11 +35,11 @@ export function Select({ className, style, ...props }: SelectHTMLAttributes<HTML
     <select
       className={cn(control, 'appearance-none pr-10', className)}
       style={{
+        ...style,
         backgroundImage: SELECT_CHEVRON,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'right 12px center',
         backgroundSize: '12px 12px',
-        ...style,
       }}
       {...props}
     />
