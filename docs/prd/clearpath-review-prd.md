@@ -223,20 +223,21 @@ Page field may use brand canvas `#f5f8fa` (slightly cooler than canvas-50) or ca
 
 | State | Fill | Text | Notes |
 |-------|------|------|-------|
-| Default (primary) | steel-400 `#629bb8` (or brand steel `#5a8faa`) | `#ffffff` | |
-| Hover | navy-800 `#183757` (or brand navy) | `#ffffff` | |
+| Default (primary) | steel-400 `#629bb8` (or brand steel `#5a8faa`) | `#ffffff` | Font weight **500** |
+| Hover | navy-800 `#183757` (or brand navy) | `#ffffff` | Weight 500 |
 | Focus | same as default + **soft halo** `0 0 0 4px` steel-300 @ ~35% | `#ffffff` | No hard border stack |
-| Loading | mist-200 `#c6d7e3` | navy-800 | |
-| Approve default | forest-400 `#67a089` | `#ffffff` | Brighter approve |
+| Loading | mist-200 `#c6d7e3` | navy-800 | Weight 500 |
+| Approve default | forest-400 `#67a089` | `#ffffff` | Weight 500 |
 | Approve hover | forest-600 `#3e6454` | `#ffffff` | |
 | Approve focus | approve + soft forest-300 halo | `#ffffff` | |
+| **Secondary (ghost)** | **none** — no fill, no border | navy-800 | **Must** include Phosphor icon; never text-only. Hover: navy @ ~6–8% wash. Weight 500. Keeps filled accents attention-grabbing. |
 | Surfaces / cards | `#ffffff` or canvas | navy-800 text | Borders mist-200 |
 | Danger | `#9b2c2c` | `#ffffff` | |
 | Warning / SLA | warm soft + `#9a6b2f` | dark ink | |
 
 **Contrast:** Body/UI text = navy-800/900 on light surfaces. No light steel/navy text for paragraphs or links.
 
-**Mesh:** base `#f5f8fa`; blobs **bigger and brighter** — steel-200/300 and forest-200/300 at high opacity, large ellipses (see companion).
+**Mesh:** base `#f5f8fa`; Highnote-like — large blobs with **distinct hues** (cool steel `#85c1df` / `#b9daec` vs mint forest `#97e8c7` / `#cbf3e1`), spatially separated so colors don’t muddy into gray-green.
 
 ### 10.8 Typography
 
