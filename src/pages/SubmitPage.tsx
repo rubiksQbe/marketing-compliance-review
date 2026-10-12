@@ -315,12 +315,18 @@ export function SubmitPage() {
 
         <div>
           <p className="text-sm font-medium text-navy-800">Auto-suggested risk tier</p>
-          <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            <RiskBadge tier={riskTier} short />
-            <span className="text-xs text-steel-600">
-              From product, channel, and claim flags
-            </span>
-          </div>
+          {riskReady ? (
+            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+              <RiskBadge tier={riskTier} short />
+              <span className="text-xs text-steel-600">
+                From product, channel, and claim flags
+              </span>
+            </div>
+          ) : (
+            <p className="mt-1.5 text-sm text-steel-600">
+              Complete the package fields above to see a suggestion.
+            </p>
+          )}
         </div>
 
         <div>
