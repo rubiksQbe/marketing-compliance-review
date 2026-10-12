@@ -270,6 +270,104 @@ Subtle enter on lists; soft SLA pulse; decision confirmation — presence, not n
 
 ---
 
+## 10b. Research notes — compliance review platforms (v1 implications)
+
+### How mature platforms work
+
+Industry tools (e.g. Red Oak, Ruleguard, Adclear-class pre-publication systems) converge on:
+
+1. **Structured intake** — required metadata + asset + disclosures before the item enters a queue  
+2. **Risk-based routing / prioritised queue** — not inbox order  
+3. **Single review surface** — creative preview + context + disposition controls together  
+4. **Human final sign-off** — AI/rules may flag; a qualified reviewer decides  
+5. **Immutable audit trail** — who / when / what version / rationale  
+6. **Structured feedback** — findings with remediation, not freeform email only  
+
+**Layout implication:** Reviewer home = prioritised queue. Review workspace = **asset + package context + disposition** in one composition. Because reviewers are **trained and judgment-capable**, v1 should not teach statute text; it should **accelerate disposition** with common finding codes + suggested fixes.
+
+### Complete submission package (what “review-ready” means)
+
+A complete package for ClearPath Review (consumer-finance marketing / affiliate creative) should include:
+
+| Package element | Why reviewers need it |
+|-----------------|----------------------|
+| **Piece title** | Queue identity / search |
+| **Product** | Which offer rules apply (loans / cards / mortgage prequal) |
+| **Channel / medium** | Disclosure placement differs (email vs paid social vs affiliate LP) |
+| **Asset type** | Banner, LP, email, social, affiliate creative |
+| **Audience / targeting notes** | Net impression & suitability context |
+| **Creative copy (exact)** | What consumers will actually see |
+| **Destination URL / CTA target** | Offer must match landing experience |
+| **Required disclosures (as they will appear)** | Clear & conspicuous check |
+| **Claim flags** (APR/rate, fees, approval odds, comparison, urgency, testimonial) | Focus review depth |
+| **Source** (Internal vs Affiliate partner + partner name) | Third-party / entanglement context |
+| **Intended first-use / go-live** (optional in v1) | SLA & exam chronology |
+| **Supporting notes / substantiation pointer** (optional) | Where rate/fee claims come from |
+
+Incomplete packages are blocked at intake (or by the affiliate manager upstream).
+
+### Reviewer workflow (streamlined)
+
+1. Pull next item from risk/SLA queue  
+2. Scan **package context** (product, channel, claims, source)  
+3. Read **creative + disclosures** for **net impression**  
+4. Decide: **Approve** / **Changes requested** / **Decline** (reject)  
+5. If not approved: select **finding codes** + optional note; each code carries a **suggested fix** for the submitter  
+6. Decision writes to **audit trail** automatically  
+
+### Vocabulary (roles & systems)
+
+| Term | Meaning |
+|------|---------|
+| **Piece / creative / asset** | The marketing item under review |
+| **Submission / intake** | Request entering the review system |
+| **Submitter** | Internal marketer or affiliate manager who files the package |
+| **Reviewer / compliance reviewer** | Person performing pre-publication review |
+| **Pre-publication approval / pre-use approval** | Must be approved before first use |
+| **Queue / work queue** | Prioritised list of pending reviews |
+| **Risk tier** | Review depth / SLA class (low / medium / high) |
+| **SLA / turnaround** | Time expectation for a decision |
+| **Net impression** | Overall takeaway a reasonable consumer gets from the ad as a whole |
+| **Clear and conspicuous** | Disclosure must be noticeable and understandable in context |
+| **Triggering terms** | Credit ad terms that require additional Reg Z / TILA disclosures |
+| **Substantiation** | Evidence on file *before* a claim runs |
+| **Claim / representation** | Express or implied statement about the product |
+| **Material omission** | Missing fact that would change the net impression |
+| **Disclosure** | Qualifying/required language accompanying a claim |
+| **Finding / exception** | Specific issue noted by the reviewer |
+| **Remediation / required revision** | What the submitter must change |
+| **Changes requested** (aka send back) | Returned for revision; not a final decline |
+| **Approve / approval** | Cleared for use (this version) |
+| **Decline / reject** | Not approvable as submitted (or prohibited) |
+| **Audit trail / books & records** | Timestamped history for exams |
+| **First use** | Earliest date the piece will be published/used |
+| **Version** | Specific creative iteration under review |
+
+### Common findings → suggested fixes (checkbox disposition list)
+
+Used on non-approvals. Reviewer selects one or more; submitter sees **finding + fix**.
+
+| Code | Finding (reviewer language) | Suggested fix (submitter-facing) |
+|------|----------------------------|----------------------------------|
+| `missing_disclosure` | Required disclosure missing or incomplete | Add the product/channel-required disclosure in full; keep it with the claim |
+| `not_clear_conspicuous` | Disclosure not clear and conspicuous | Move disclosure proximate to the claim; increase prominence; avoid bury-in-footer-only |
+| `unsubstantiated_claim` | Claim lacks substantiation | Remove/qualify the claim or attach approved substantiation source before resubmit |
+| `misleading_net_impression` | Net impression likely misleading | Rewrite headline/visual so it matches actual terms; disclosure cannot cure a false headline |
+| `absolute_language` | Absolute/guaranteed language unsupported | Replace “guaranteed / always / everyone approved” with accurate, conditional wording |
+| `trigger_terms_incomplete` | Triggering credit terms without required additions | Add Reg Z–style required terms (e.g. APR presentation / accompanying terms) or remove triggers |
+| `fee_cost_omission` | Material fee/cost condition omitted | Disclose material fees/conditions prominently where the benefit is claimed |
+| `affiliate_relationship_unclear` | Affiliate/partner relationship unclear | State paid relationship / partner nature clearly near the offer |
+| `offer_landing_mismatch` | Creative offer doesn’t match destination | Align CTA/destination terms with the creative, or update the creative to match the LP |
+| `wrong_product_terms` | Incorrect product terms | Correct rate/fee/eligibility language to approved product source |
+| `testimonial_issues` | Testimonial/endorsement issues | Add required endorsement disclosures or remove testimonial |
+| `fair_lending_udaap_flag` | Fair lending / UDAAP concern | Revise targeting/claims that could be unfair, deceptive, or abusive; escalate if needed |
+| `firm_policy` | Fails internal ClearPath marketing policy | Follow marked policy guidance in reviewer note |
+| `other` | Other | See reviewer note |
+
+**Approve** does not require finding codes. **Changes requested** and **Decline** require ≥1 code.
+
+---
+
 ## 11. Component inventory (for discussion)
 
 Only components tied to FR1–FR10:
