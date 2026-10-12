@@ -16,7 +16,7 @@ import {
 import { useStore } from '@/lib/store'
 import { formatSla } from '@/lib/time'
 import type { ReasonCode } from '@/lib/types'
-import { ArrowLeft, PencilSimple, Trash } from '@phosphor-icons/react'
+import { ArrowLeft, Path, PencilSimple, Trash } from '@phosphor-icons/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
@@ -285,11 +285,20 @@ export function ReviewPage() {
                   {error && <p className="mt-2 text-[11px] text-danger">{error}</p>}
 
                   {!actionable && requestApproved && (
-                    <p className="mt-3 text-[11px] text-steel-600">Approved. See history in the package events if needed.</p>
+                    <p className="mt-3 text-[11px] text-steel-600">Approved.</p>
                   )}
                   {!actionable && requestDeclined && (
                     <p className="mt-3 text-[11px] text-steel-600">Already declined.</p>
                   )}
+
+                  <Button
+                    variant="ghost"
+                    icon={<Path size={14} />}
+                    className="mt-3 w-full justify-start px-0"
+                    onClick={() => navigate(`/audit/${request.id}`)}
+                  >
+                    Audit trail
+                  </Button>
                 </>
               )}
 
