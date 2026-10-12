@@ -238,7 +238,7 @@ Page field may use brand canvas `#f5f8fa` (slightly cooler than canvas-50) or ca
 
 **Mesh:** base `#f5f8fa`; blobs **bigger and brighter** — steel-200/300 and forest-200/300 at high opacity, large ellipses (see companion).
 
-### 10.3 Typography
+### 10.8 Typography
 
 | Role | Font | Weight | Notes |
 |------|------|--------|-------|
@@ -246,14 +246,14 @@ Page field may use brand canvas `#f5f8fa` (slightly cooler than canvas-50) or ca
 | Serif display / product emphasis | **Spectral** | Regular 400 | Product name, select headings |
 | UI / body | Sen (or Sen + system fallback) | 400/600 | Dense ops readability |
 
-### 10.4 Iconography & controls
+### 10.9 Iconography & controls
 
 - **Phosphor Icons** only where icons aid scanning (status, nav, SLA, actions). **No emoji.**
 - Buttons: **minimally rounded** corners (≈4–6px), not pills.
-- Buttons must implement **hover, focus (soft halo), and loading** states.
-- Background: **mesh gradient** on `#f5f8fa` with brighter steel/forest blobs — atmospheric, not a flat fill.
+- Buttons must implement **hover, focus (soft halo), and loading** states using scale steps.
+- Background: **mesh gradient** on `#f5f8fa` with **bigger, brighter** steel-200/300 and forest-200/300 blobs.
 
-### 10.5 Motion
+### 10.10 Motion
 
 Subtle enter on lists; soft SLA pulse; decision confirmation — presence, not noise.
 
