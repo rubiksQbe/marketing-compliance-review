@@ -132,7 +132,7 @@ export const ASSUMPTIONS: Assumption[] = [
     text: 'Submitters may edit & resubmit or soft-withdraw while pending or declined; approved packets are locked.',
     implication:
       'Withdraw sets status Withdrawn (not hard delete): hidden from the active review queue, payload + Activity retained. Resubmit returns pending items to Needs review.',
-  }
+  },
 
   // —— Personas & IA ——
   {
