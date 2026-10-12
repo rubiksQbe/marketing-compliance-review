@@ -50,7 +50,7 @@ export function IdentityPage() {
           className="mt-2 text-sm font-medium text-steel-600 hover:text-navy-800"
           onClick={() => navigate('/')}
         >
-          ← Back to roles
+          ← Back
         </button>
       </div>
     </div>
