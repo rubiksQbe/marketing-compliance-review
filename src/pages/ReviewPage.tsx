@@ -117,8 +117,8 @@ export function ReviewPage() {
 
   return (
     <div className="animate-in -mx-4 sm:-mx-6">
-      <div className="mx-auto flex max-w-6xl flex-col rounded-md border border-mist-200 bg-canvas sm:mx-6 lg:h-[calc(100vh-7.5rem)] lg:overflow-hidden">
-        <header className="shrink-0 border-b border-mist-200 bg-white px-[18px] py-4">
+      <div className="mx-auto flex max-w-6xl flex-col overflow-hidden rounded-md border border-mist-200 bg-canvas sm:mx-6 lg:h-[calc(100vh-7.5rem)]">
+        <header className="shrink-0 rounded-t-md border-b border-mist-200 bg-white px-[18px] py-4">
           <div className="mb-2 flex items-center justify-between gap-2">
             <Link
               to={backTo}
