@@ -14,6 +14,54 @@ ClearPath’s compliance marketing review runs on **Excel trackers + email threa
 
 **Secondary goal:** Intuitive UX so reviewers decide in one focused screen and marketers submit review-ready work.
 
+### Operating model assumption (submitter paths)
+
+**Submitters into this portal are ClearPath employees only:**
+- **Internal marketers** — ClearPath-owned campaigns (email, web, paid, etc.)
+- **Affiliate managers** — partner/custom affiliate creatives, submitted *on behalf of* affiliates
+
+**External affiliates are not portal users in v1.**
+
+We also assume a **pre-approved creative library** already exists (or is being stood up in parallel). Affiliates should use those assets whenever possible. Custom (non-library) affiliate creatives follow:
+
+1. Affiliate formats a complete custom-creative request (copy, URL, channel, disclosures, etc.).
+2. Affiliate forwards it to their **affiliate manager**.
+3. Affiliate manager checks completeness and sends it back if incomplete — **before** compliance ever sees it.
+4. Only then does the affiliate manager **submit into ClearPath Review** for compliance decisioning.
+5. Compliance reviews in a risk-tiered queue; status/feedback return to the affiliate manager (who relays to the partner).
+
+Internal marketers may submit directly into the portal (no affiliate-manager gate), still using the same structured intake.
+
+### As-is process (assumed)
+
+Today’s review loop is informal and dual-channel:
+
+1. Internal marketers and affiliate managers send promotional materials via email — copy, links, screenshots, attachments, often incomplete; affiliates often email managers in similarly unstructured ways.
+2. Compliance marketing **manually logs** those items into a spreadsheet (owner, status, dates are inconsistent).
+3. Reviewers work the pile in a **non-standardized order** while checking consumer-protection requirements (UDAAP, Reg Z / TILA advertising triggers, affiliate relationship clarity, firm policy).
+4. Feedback goes back **via email**, often without structured reason codes.
+5. Status for submitters is opaque; audit evidence is scattered across inbox + spreadsheet.
+
+### To-be process (Approach A)
+
+1. **Upstream completeness (outside or at the edge of this product)** — affiliate manager rejects incomplete partner packets before portal entry; portal intake also blocks incomplete fields.
+2. **Standardized portal intake** — internal marketers and affiliate managers submit review-ready packets (`Source: Internal | Affiliate partner`).
+3. **Shared risk-tiered compliance queue** — compliance pulls by risk + SLA urgency.
+4. **One-screen review** — asset + checklist + decision together.
+5. **Structured feedback + status** — visible to the submitting marketer/affiliate manager on **their** items only.
+6. **Automatic audit trail** — who decided what, when, and why.
+
+### Scope boundary (explicit)
+
+| In scope (this portal) | Out of scope (v1) |
+|------------------------|-------------------|
+| Compliance reviewer queue + decide + audit | External affiliate self-serve portal |
+| Structured intake for internal marketers & affiliate managers | Building/managing the pre-approved creative library UI |
+| Status/feedback for the employee submitter | Affiliate ↔ affiliate manager collaboration workspace |
+| Risk tiering / reason codes | Live post-publication affiliate monitoring |
+
+**Bottleneck honesty:** Making compliance faster can surface the next constraint in the affiliate → affiliate manager intake loop. That may become the new bottleneck — and fixing *that* is a different product (partner portal / AM intake tool). This task’s goal is compliance-team throughput; we design the portal so incomplete affiliate work is filtered **before** it consumes reviewer time, without trying to rebuild the whole partner channel stack.
+
 ---
 
 ## 1b. Pain-point assumptions (customer jobs & friction)
@@ -29,7 +77,7 @@ These are the exact assumptions about *who hurts* and *how*. They drive Approach
 | P5 | **Not all assets deserve equal review depth.** An APR affiliate banner ≠ a brand awareness ad with no claims. | Risk-tiering is standard in compliance ops; uniform full review is the throughput killer. | High-risk gets deep checklist; low-risk clears faster. |
 | P6 | **Unstructured feedback doesn’t scale learning.** Freeform email comments don’t prevent the next marketer from repeating the mistake. | Recurring reject reasons (disclosures, firm policy, misleading claims) dominate real programs. | Reason codes + notes marketers can act on. |
 | P7 | **Auditability is non-negotiable**, even when speed is the goal. Exam/inquiry readiness is part of the job. | CFPB/Reg Z programs expect documented review before use; “approved in Slack” fails under scrutiny. | Every decision writes who / when / what / why. |
-| P8 | **Marketers and reviewers share one workflow but different jobs.** Marketers need “submit correctly”; reviewers need “decide quickly.” | Dual-persona ops tools beat separate systems that recreate email handoffs. | Submit vs Review surfaces; one underlying request object. |
+| P8 | **Marketers and reviewers share one workflow but different jobs.** Marketers need “submit correctly + track my items”; reviewers need “decide quickly across the org queue.” | Dual-persona ops tools beat separate systems that recreate email handoffs. | Persona-aware homes; one underlying request object; scoped marketer visibility (A1b). |
 | P9 | Solving creative production or full campaign ops **does not unlock** the stated bottleneck. | Brief says Excel/email *review* is the constraint. | No campaign builder / CMS / CRM in v1. |
 | P10 | A thin demo with real workflow shape beats a broad platform shell. | For this deliverable, persuasion = walk a request from intake → decision → audit. | Four purposeful screens only. |
 
@@ -41,7 +89,11 @@ These are the exact assumptions about *who hurts* and *how*. They drive Approach
 
 | ID | Assumption | Design implication |
 |----|------------|--------------------|
-| A1 | Primary daily user is the **compliance reviewer**; marketers submit; leads need queue health | Default home = reviewer queue; submit + audit are secondary surfaces |
+| A1 | Primary daily user is the **compliance reviewer**; marketers are secondary submitters | **Persona-aware home:** reviewers land on the full risk-tiered queue; marketers land on **My submissions** (not the team queue) |
+| A1b | Employee submitters should not see peers’ in-flight reviews by default (pre-launch claims, unreleased offers, partner-specific creatives) | Submitter visibility is scoped to requests they submitted; compliance retains org-wide queue visibility |
+| A1c | Portal submitters are **internal marketers** and **affiliate managers** only; external affiliates are not users | Submit form includes `Source: Internal \| Affiliate partner` (+ partner name when affiliate) |
+| A1d | A **pre-approved creative library** exists (or is being stood up); custom affiliate work is the exception path | Product copy/empty states reinforce “use library first”; portal optimizes custom-review throughput, not library browsing |
+| A1e | Affiliate managers perform a completeness gate **before** portal submission | Compliance queue receives fewer incomplete affiliate packets; AM↔affiliate tooling stays out of scope |
 | A2 | Assets span ads, emails, LPs, social, affiliate creatives across loans / cards / mortgage | Intake captures product + channel + asset type |
 | A3 | Human sign-off and timestamped audit trail are mandatory for regulated claims | Approve/reject/changes-requested produce immutable event log (client-side demo) |
 | A4 | Risk-tiered routing raises throughput more than raw headcount | Auto-suggest risk tier from product/channel/claims; SLA differs by tier |
@@ -90,10 +142,17 @@ We treat the product as an **operating system for review decisions**, not a mark
 
 ## 4. Product surfaces (only what serves the goals)
 
-### 4.1 Queue (home)
-- Filterable list: status, risk tier, product, SLA urgency
+### 4.1 Reviewer queue (reviewer home)
+- Filterable org-wide list: status, risk tier, product, SLA urgency
 - Metrics strip: pending count, at-risk SLA, median wait (seeded/demo)
 - Purpose: help reviewers pull the highest-value next item
+- **Not shown to marketers as their landing view**
+
+### 4.1b My submissions (marketer home)
+- List scoped to the current marketer’s requests only
+- Status + latest feedback/reason codes visible per item
+- CTA to submit new material
+- Purpose: relevant progress tracking without exposing peers’ in-flight work (A1b)
 
 ### 4.2 Submit request
 - Marketer form: title, product, channel, asset type, audience, claim flags, copy/URL, disclosures
@@ -116,14 +175,17 @@ We treat the product as an **operating system for review decisions**, not a mark
 ## 5. Information architecture
 
 ```
-/                 → Queue (default)
+/                 → Persona-aware home
+                    Reviewer  → org-wide risk-tiered queue
+                    Marketer  → My submissions (scoped)
 /submit           → Structured intake
-/review/:id       → Review workspace
-/audit/:id        → Audit trail for a request
+/review/:id       → Review workspace (reviewer; marketer read-only on own items)
+/audit/:id        → Audit trail (reviewer: any; marketer: own items only)
 /assumptions      → Living assumptions log (transparency)
 ```
 
-Roles simulated via a simple persona switcher (Reviewer / Marketer) — no login (A7).
+Roles simulated via a simple persona switcher (Reviewer / Marketer) — no login (A7).  
+Demo actors: reviewer `Jordan Lee` (sees all); marketers `Sam Ortiz` / `Ava Chen` (each sees only their submissions).
 
 ---
 
