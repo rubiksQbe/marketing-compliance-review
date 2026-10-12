@@ -1,5 +1,4 @@
-import { BrandWordmark } from '@/components/BrandMark'
-import { ArrowRight, ClipboardText, UserCircle } from '@phosphor-icons/react'
+import { ArrowRight, ClipboardText, FileArrowUp } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
 const cardClass =
@@ -9,19 +8,15 @@ export function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div className="mb-10 text-center animate-in">
-        <BrandWordmark
-          className="justify-center"
-          markSize={34}
-          textClassName="text-xl sm:text-2xl"
-        />
-        <h1 className="mt-3 font-serif text-3xl text-navy-800 sm:text-4xl">
+        <p className="font-brand text-xl text-forest-400 sm:text-2xl">ClearPath Financial</p>
+        <h1 className="mt-2 font-serif text-3xl text-navy-800 sm:text-4xl">
           Marketing Compliance Review
         </h1>
       </div>
 
       <div className="grid w-full max-w-3xl gap-4 sm:grid-cols-2 animate-in-delay">
         <Link to="/entry/submitter" className={cardClass}>
-          <UserCircle size={28} className="text-forest-400" weight="regular" />
+          <FileArrowUp size={28} className="text-forest-400" weight="regular" />
           <h2 className="mt-4 flex items-center gap-2 font-serif text-xl text-navy-800">
             Submit
             <ArrowRight
