@@ -2,6 +2,10 @@ import type { ReviewRequest } from '@/lib/types'
 
 const hoursAgo = (h: number) => new Date(Date.now() - h * 60 * 60 * 1000).toISOString()
 
+/** submittedAt for a pending item that comes due `dueInHours` from seed load. */
+const submittedForDueIn = (dueInHours: number, slaHours: number) =>
+  hoursAgo(slaHours - dueInHours)
+
 export const SEED_REQUESTS: ReviewRequest[] = [
   {
     id: 'CP-1042',
@@ -122,6 +126,71 @@ export const SEED_REQUESTS: ReviewRequest[] = [
         actor: 'Ava Chen',
         action: 'submitted',
         detail: 'No rate, fee, or approval claims.',
+      },
+    ],
+  },
+  // CP-1043 comes due 12h after seed load (medium 24h clock, submitted 12h ago).
+  // CP-1044 comes due 24h after seed load (low 48h clock, submitted 24h ago).
+  // Both stay Needs review after the window; the queue clock flips to overdue.
+  {
+    id: 'CP-1043',
+    title: 'Affiliate display — rewards comparison',
+    product: 'credit_cards',
+    channel: 'affiliate',
+    assetType: 'banner',
+    audience: 'Shoppers comparing cash-back cards',
+    body: 'ClearPath Rewards earns more on groceries than a typical store card — see the comparison.',
+    destinationUrl:
+      'https://partners.clearpath.example/cards/compare?utm_source=ratebeacon&utm_campaign=rewards-compare',
+    disclosures:
+      'Comparison based on published grocery cash-back rates as of the current card terms sheet CC-441. Rates subject to change. Offer subject to credit approval. ClearPath Financial may receive compensation from partners.',
+    claimFlags: ['comparison'],
+    riskTier: 'medium',
+    status: 'pending',
+    slaHours: 24,
+    submittedAt: submittedForDueIn(12, 24),
+    updatedAt: submittedForDueIn(12, 24),
+    submitter: 'Sam Ortiz',
+    source: 'affiliate',
+    partnerName: 'RateBeacon Partners',
+    intakeNotes:
+      'Partner comparison banner. Grocery cash-back rates match card terms sheet CC-441; no APR or approval-odds language.',
+    events: [
+      {
+        id: 'evt-1043-1',
+        at: submittedForDueIn(12, 24),
+        actor: 'Sam Ortiz',
+        action: 'submitted',
+        detail: 'Affiliate comparison creative; grocery cash-back claim only.',
+      },
+    ],
+  },
+  {
+    id: 'CP-1044',
+    title: 'Web module — planning tools, no rate',
+    product: 'personal_loans',
+    channel: 'web',
+    assetType: 'landing_page',
+    audience: 'Site visitors researching borrowing options',
+    body: 'Plan a personal loan around your timeline. Estimate a payment, then apply when you are ready.',
+    destinationUrl: 'https://www.clearpath.example/loans/plan',
+    disclosures:
+      'Payment estimates are illustrative and not a commitment to lend. ClearPath Financial. Member FDIC (demo).',
+    claimFlags: [],
+    riskTier: 'low',
+    status: 'pending',
+    slaHours: 48,
+    submittedAt: submittedForDueIn(24, 48),
+    updatedAt: submittedForDueIn(24, 48),
+    submitter: 'Ava Chen',
+    source: 'internal',
+    events: [
+      {
+        id: 'evt-1044-1',
+        at: submittedForDueIn(24, 48),
+        actor: 'Ava Chen',
+        action: 'submitted',
+        detail: 'Planning module with no rate, fee, or approval claims.',
       },
     ],
   },
