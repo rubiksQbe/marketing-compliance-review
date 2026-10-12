@@ -51,7 +51,7 @@ This doc flags what is solid for a demo, what is stretched, and how a real produ
 5. **Workload caps** — auto-pause Low intake when High backlog exceeds N.
 6. **Measure it** — track decisions/hour and rework rate by tier; drop or retune scoring if High isn’t harder, only louder.
 
-Current demo only does (priority sort + due window). Checklist depth by tier is the strongest next lever.
+**Now in product:** priority sort + due window **and** tiered checklists (`findingsForTier`): Low = disclosures / net impression / other; Medium adds substantiation, clear & conspicuous, offer–landing; High adds affiliate relationship + triggering terms. Review rail shows stamp / standard / full depth copy. Changing risk mid-review swaps the checklist.
 
 ### D3 — Auto risk from claim types (now: suggestion + reviewer override)
 
@@ -122,6 +122,7 @@ Single-person Mine lists are for **demo simplicity**. An evolution would introdu
 |--------|-------------------|
 | Reviewer risk override on pending review header | D3 |
 | Visual assets require creative file | D7 |
+| Tiered checklist depth (Low stamp / Med standard / High full) + queue priority | D2 |
 | This evolution doc | All stretch items above |
 
 Keep `src/data/assumptions.ts` in sync when rules change; link demos to **Key assumptions** on the landing page.

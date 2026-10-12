@@ -2,7 +2,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { RiskBadge, StatusBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { Select, Textarea } from '@/components/ui/field'
-import { FINDINGS, fixesForCodes } from '@/data/findings'
+import { FINDINGS, REVIEW_DEPTH_COPY, findingsForTier, fixesForCodes } from '@/data/findings'
 import { useAutoHideScroll } from '@/hooks/useAutoHideScroll'
 import {
   ASSET_LABELS,
@@ -72,6 +72,11 @@ export function ReviewPage() {
     isSubmitter && request && (request.status === 'pending' || requestDeclined),
   )
 
+  const checklist = useMemo(
+    () => (request ? findingsForTier(request.riskTier) : FINDINGS),
+    [request],
+  )
+  const depthCopy = request ? REVIEW_DEPTH_COPY[request.riskTier] : null
   const requestedFixes = useMemo(() => fixesForCodes(selected), [selected])
 
   useEffect(() => {
@@ -79,6 +84,11 @@ export function ReviewPage() {
       markOpened(request.id, session.name)
     }
   }, [request, isReviewer, session, markOpened])
+
+  useEffect(() => {
+    const allowed = new Set(checklist.map((f) => f.code))
+    setSelected((prev) => prev.filter((code) => allowed.has(code)))
+  }, [checklist])
 
   if (!session) return <Navigate to="/" replace />
   if (!request || !canAccess) {
@@ -284,8 +294,15 @@ export function ReviewPage() {
                 <>
                   {actionable && (
                     <>
-                      <p className="mb-2 text-[11px] font-medium text-navy-800">Compliance issues</p>
-                      {FINDINGS.map((f) => (
+                      <p className="mb-1 text-[11px] font-medium text-navy-800">Compliance issues</p>
+                      {depthCopy ? (
+                        <p className="mb-2 text-[10px] leading-snug text-steel-600">
+                          <span className="font-medium text-navy-800">{depthCopy.title}</span>
+                          {' · '}
+                          {depthCopy.hint}
+                        </p>
+                      ) : null}
+                      {checklist.map((f) => (
                         <label
                           key={f.code}
                           className="grid grid-cols-[16px_1fr] items-center gap-1.5 border-t border-mist-100 py-1.5 text-[11px] leading-snug first:border-t-0 first:pt-0"

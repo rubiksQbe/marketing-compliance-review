@@ -74,8 +74,9 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'D2',
-    text: 'Risk-tiered routing raises throughput more than raw headcount.',
-    implication: 'Queue sorts High → Low, then nearest due time within the same tier.',
+    text: 'Risk-tiered routing raises throughput when paired with tiered review depth.',
+    implication:
+      'Queue sorts High → Low, then nearest due. Disposition checklist is short for Low (stamp), fuller for Medium, complete for High — not the same checklist with a different clock.',
   },
   {
     id: 'D3',

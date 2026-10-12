@@ -40,7 +40,7 @@ export function QueuePage() {
       <div className="mb-6">
         <h1 className="font-serif text-2xl text-navy-800">Review queue</h1>
         <p className="mt-1 text-sm text-steel-600">
-          Prioritized by risk tier (High → Low), then nearest SLA deadline.
+          High → Low, then nearest due. Higher risk opens a deeper compliance checklist.
         </p>
       </div>
 
