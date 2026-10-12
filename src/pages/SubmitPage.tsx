@@ -72,6 +72,15 @@ export function SubmitPage() {
     [product, channel, claimFlags],
   )
 
+  /** Don’t surface a tier from bare defaults (e.g. channel=affiliate → Medium). */
+  const riskReady = Boolean(
+    title.trim() &&
+      audience.trim() &&
+      body.trim() &&
+      destinationUrl.trim() &&
+      disclosures.trim(),
+  )
+
   if (!session) return <Navigate to="/" replace />
   if (session.role !== 'submitter') return <Navigate to="/queue" replace />
   if (id && hydrated && (!existing || existing.submitter !== session.name)) {
