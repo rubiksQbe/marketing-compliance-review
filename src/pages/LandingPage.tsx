@@ -8,8 +8,10 @@ export function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div className="mb-10 text-center animate-in">
-        <p className="font-brand text-xl text-forest-500 sm:text-2xl">ClearPath Financial</p>
-        <h1 className="mt-2 font-serif text-3xl text-navy-800 sm:text-4xl">
+        <p className="font-brand text-lg font-medium tracking-tight text-forest-500 whitespace-nowrap sm:text-xl">
+          ClearPath Financial
+        </p>
+        <h1 className="mt-1.5 font-serif text-3xl text-navy-800 sm:text-4xl">
           Marketing Compliance Review
         </h1>
       </div>

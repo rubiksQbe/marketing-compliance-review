@@ -19,8 +19,10 @@ export function AppShell() {
       <header className="border-b border-mist-200/80 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="min-w-0">
-            <p className="font-brand text-sm text-forest-500">ClearPath Financial</p>
-            <p className="font-serif text-lg text-navy-800 leading-tight">ClearPath Review</p>
+            <p className="font-brand text-xs font-medium tracking-tight text-forest-500 whitespace-nowrap sm:text-sm">
+              ClearPath Financial
+            </p>
+            <p className="mt-0.5 font-serif text-lg text-navy-800 leading-tight">ClearPath Review</p>
           </div>
           <nav className="flex flex-wrap items-center gap-1 text-sm">
             <NavLink
