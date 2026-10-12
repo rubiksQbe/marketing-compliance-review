@@ -1,7 +1,7 @@
 import { StatusBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { fixesForCodes } from '@/data/findings'
-import { REASON_LABELS } from '@/lib/labels'
+import { EVENT_ACTION_LABELS, REASON_LABELS } from '@/lib/labels'
 import { useStore } from '@/lib/store'
 import { formatWhen } from '@/lib/time'
 import { ArrowLeft } from '@phosphor-icons/react'
@@ -60,11 +60,11 @@ export function AuditPage() {
                 <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-steel-400" />
                 <p className="text-xs text-steel-600">{formatWhen(evt.at)}</p>
                 <p className="font-medium text-navy-800">
-                  {evt.action.replace('_', ' ')} · {evt.actor}
+                  {EVENT_ACTION_LABELS[evt.action]} · {evt.actor}
                 </p>
                 {evt.reasonCodes?.length ? (
                   <p className="mt-1 text-xs text-steel-600">
-                    Codes: {evt.reasonCodes.map((c) => REASON_LABELS[c]).join(', ')}
+                    Reasons: {evt.reasonCodes.map((c) => REASON_LABELS[c]).join(', ')}
                   </p>
                 ) : null}
                 {fixes.length > 0 && (

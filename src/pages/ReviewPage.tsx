@@ -229,7 +229,7 @@ export function ReviewPage() {
 
               {request.intakeNotes ? (
                 <>
-                  <SectionLabel>Reviewer notes (intake)</SectionLabel>
+                  <SectionLabel>Intake notes</SectionLabel>
                   <p className="text-xs text-navy-800 leading-snug">{request.intakeNotes}</p>
                 </>
               ) : null}
@@ -243,52 +243,59 @@ export function ReviewPage() {
             >
               {isReviewer && (
                 <>
-                  <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
-                  {FINDINGS.map((f) => (
-                    <label
-                      key={f.code}
-                      className="grid grid-cols-[16px_1fr] items-center gap-1.5 border-t border-mist-100 py-1.5 text-[11px] leading-snug first:border-t-0 first:pt-0"
-                    >
-                      <input
-                        type="checkbox"
-                        className="accent-navy-800"
-                        checked={selected.includes(f.code)}
-                        disabled={!actionable}
-                        onChange={() => toggle(f.code)}
-                      />
-                      <span className="font-medium text-navy-800">{f.label}</span>
-                    </label>
-                  ))}
+                  {actionable && (
+                    <>
+                      <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
+                      {FINDINGS.map((f) => (
+                        <label
+                          key={f.code}
+                          className="grid grid-cols-[16px_1fr] items-center gap-1.5 border-t border-mist-100 py-1.5 text-[11px] leading-snug first:border-t-0 first:pt-0"
+                        >
+                          <input
+                            type="checkbox"
+                            className="accent-navy-800"
+                            checked={selected.includes(f.code)}
+                            onChange={() => toggle(f.code)}
+                          />
+                          <span className="font-medium text-navy-800">{f.label}</span>
+                        </label>
+                      ))}
 
-                  {declining && (
-                    <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
-                      <p className="font-medium text-navy-800">Requested changes</p>
-                      <ul className="mt-1 list-disc space-y-0.5 pl-4 font-normal">
-                        {requestedFixes.map((fix) => (
-                          <li key={fix}>{fix}</li>
-                        ))}
-                      </ul>
-                    </div>
+                      {declining && (
+                        <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
+                          <p className="font-medium text-navy-800">Requested changes</p>
+                          <ul className="mt-1 list-disc space-y-0.5 pl-4 font-normal">
+                            {requestedFixes.map((fix) => (
+                              <li key={fix}>{fix}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className="mt-2">
+                        <p className="mb-1 text-[11px] font-medium text-navy-800">Additional notes</p>
+                        <Textarea
+                          className="min-h-12 text-[11px]"
+                          placeholder="Optional comments…"
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                        />
+                      </div>
+
+                      {error && <p className="mt-2 text-[11px] text-danger">{error}</p>}
+                    </>
                   )}
-
-                  <div className="mt-2">
-                    <p className="mb-1 text-[11px] font-medium text-navy-800">Additional notes</p>
-                    <Textarea
-                      className="min-h-12 text-[11px]"
-                      placeholder="Optional comments…"
-                      value={notes}
-                      disabled={!actionable}
-                      onChange={(e) => setNotes(e.target.value)}
-                    />
-                  </div>
-
-                  {error && <p className="mt-2 text-[11px] text-danger">{error}</p>}
 
                   {!actionable && requestApproved && (
-                    <p className="mt-3 text-[11px] text-steel-600">Approved.</p>
+                    <p className="text-[11px] text-steel-600">Approved.</p>
                   )}
+
                   {!actionable && requestDeclined && (
-                    <p className="mt-3 text-[11px] text-steel-600">Declined.</p>
+                    <DeclinedReasonsPanel
+                      codes={declinedCodes}
+                      fixes={declinedFixes}
+                      notes={declinedNotes}
+                    />
                   )}
 
                   <Button
@@ -303,40 +310,11 @@ export function ReviewPage() {
               )}
 
               {isSubmitter && requestDeclined && (
-                <>
-                  <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
-                  {declinedCodes.length === 0 ? (
-                    <p className="text-[11px] text-steel-600">No coded reasons recorded.</p>
-                  ) : (
-                    declinedCodes.map((code) => (
-                      <div
-                        key={code}
-                        className="grid grid-cols-[16px_1fr] items-center gap-1.5 border-t border-mist-100 py-1.5 text-[11px] leading-snug first:border-t-0 first:pt-0"
-                      >
-                        <input type="checkbox" className="accent-navy-800" checked readOnly disabled />
-                        <span className="font-medium text-navy-800">{REASON_LABELS[code]}</span>
-                      </div>
-                    ))
-                  )}
-
-                  {declinedFixes.length > 0 && (
-                    <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
-                      <p className="font-medium text-navy-800">Requested changes</p>
-                      <ul className="mt-1 list-disc space-y-0.5 pl-4 font-normal">
-                        {declinedFixes.map((fix) => (
-                          <li key={fix}>{fix}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <div className="mt-2">
-                    <p className="mb-1 text-[11px] font-medium text-navy-800">Additional notes</p>
-                    <p className="rounded-[5px] border border-mist-200 bg-canvas px-2 py-2 text-[11px] text-navy-800 leading-snug whitespace-pre-wrap">
-                      {declinedNotes || '—'}
-                    </p>
-                  </div>
-                </>
+                <DeclinedReasonsPanel
+                  codes={declinedCodes}
+                  fixes={declinedFixes}
+                  notes={declinedNotes}
+                />
               )}
 
               {isSubmitter && requestApproved && (
@@ -399,6 +377,53 @@ export function ReviewPage() {
         }}
       />
     </div>
+  )
+}
+
+function DeclinedReasonsPanel({
+  codes,
+  fixes,
+  notes,
+}: {
+  codes: ReasonCode[]
+  fixes: string[]
+  notes: string
+}) {
+  return (
+    <>
+      <p className="mb-2 text-[11px] font-medium text-navy-800">Rejection reasons</p>
+      {codes.length === 0 ? (
+        <p className="text-[11px] text-steel-600">No coded reasons recorded.</p>
+      ) : (
+        codes.map((code) => (
+          <div
+            key={code}
+            className="grid grid-cols-[16px_1fr] items-center gap-1.5 border-t border-mist-100 py-1.5 text-[11px] leading-snug first:border-t-0 first:pt-0"
+          >
+            <input type="checkbox" className="accent-navy-800" checked readOnly disabled />
+            <span className="font-medium text-navy-800">{REASON_LABELS[code]}</span>
+          </div>
+        ))
+      )}
+
+      {fixes.length > 0 && (
+        <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
+          <p className="font-medium text-navy-800">Requested changes</p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-4 font-normal">
+            {fixes.map((fix) => (
+              <li key={fix}>{fix}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="mt-2">
+        <p className="mb-1 text-[11px] font-medium text-navy-800">Additional notes</p>
+        <p className="rounded-[5px] border border-mist-200 bg-canvas px-2 py-2 text-[11px] text-navy-800 leading-snug whitespace-pre-wrap">
+          {notes || '—'}
+        </p>
+      </div>
+    </>
   )
 }
 

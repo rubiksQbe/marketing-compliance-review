@@ -75,6 +75,19 @@ export const SOURCE_LABELS: Record<SubmissionSource, string> = {
   affiliate: 'Affiliate partner',
 }
 
+/** Audit / activity log action labels (UI-facing). */
+export const EVENT_ACTION_LABELS: Record<
+  'submitted' | 'opened' | 'approved' | 'changes_requested' | 'rejected' | 'resubmitted',
+  string
+> = {
+  submitted: 'Submitted',
+  opened: 'Opened',
+  approved: 'Approved',
+  changes_requested: 'Declined',
+  rejected: 'Declined',
+  resubmitted: 'Resubmitted',
+}
+
 export const KIND_LABELS: Record<IdentityKind, string> = {
   reviewer: 'Compliance reviewer',
   internal_marketer: 'Internal marketer',

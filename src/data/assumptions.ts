@@ -55,4 +55,29 @@ export const ASSUMPTIONS: Assumption[] = [
     text: 'v1 is a demoable static app for GitHub Pages; no real auth/backend.',
     implication: 'Role cards + demo identity picker stand in for SSO; localStorage persistence.',
   },
+  {
+    id: 'V1',
+    text: 'Vocabulary candidate: label decline reasons “Decline reasons” (not “Rejection reasons”) to match Approve / Decline CTAs.',
+    implication: 'Keeps disposition language consistent; legal teams may still prefer “rejection” in audit exports.',
+  },
+  {
+    id: 'V2',
+    text: 'Vocabulary candidate: rename “Requested changes” → “Required fixes” (or “Remediation”).',
+    implication: 'Avoids implying a separate changes-requested status after Decline was locked as the only negative disposition.',
+  },
+  {
+    id: 'V3',
+    text: 'Vocabulary candidate: “Claims flagged” → “Claim types” or “Risk triggers.”',
+    implication: 'Matches how marketers classify packets before send; “flagged” can sound like a prior finding.',
+  },
+  {
+    id: 'V4',
+    text: 'Vocabulary candidate: “SLA” / “SLA at risk” → “Due” / “Due soon” in submitter-facing UI.',
+    implication: 'SLA is ops jargon; due timing is clearer for marketers.',
+  },
+  {
+    id: 'V5',
+    text: 'Vocabulary candidate: “Audit trail” → “Activity” for day-to-day review; keep “Audit” in export/compliance contexts.',
+    implication: 'Aligns with how reviewers narrate the workbench without diluting regulatory meaning.',
+  },
 ]
