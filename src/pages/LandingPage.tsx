@@ -17,7 +17,7 @@ export function LandingPage() {
       <div className="grid w-full max-w-3xl gap-4 sm:grid-cols-2 animate-in-delay">
         <Link to="/entry/submitter" className={cardClass}>
           <FileArrowUp size={28} className="text-forest-400" weight="regular" />
-          <h2 className="mt-4 flex items-center gap-2 font-serif text-xl text-navy-800">
+          <h2 className="mt-4 flex items-center gap-2 font-serif text-2xl text-navy-800">
             Submit
             <ArrowRight
               size={18}
@@ -34,7 +34,7 @@ export function LandingPage() {
 
         <Link to="/entry/reviewer" className={cardClass}>
           <ClipboardText size={28} className="text-steel-400" weight="regular" />
-          <h2 className="mt-4 flex items-center gap-2 font-serif text-xl text-navy-800">
+          <h2 className="mt-4 flex items-center gap-2 font-serif text-2xl text-navy-800">
             Review
             <ArrowRight
               size={18}
