@@ -1,3 +1,4 @@
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { RiskBadge, StatusBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/field'
@@ -28,6 +29,7 @@ export function ReviewPage() {
   const [selected, setSelected] = useState<ReasonCode[]>([])
   const [notes, setNotes] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const leftRef = useRef<HTMLDivElement>(null)
   const rightRef = useRef<HTMLDivElement>(null)

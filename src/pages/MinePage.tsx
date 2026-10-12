@@ -1,14 +1,18 @@
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { StatusBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { ASSET_LABELS, CHANNEL_LABELS, PRODUCT_LABELS, isDeclinedStatus } from '@/lib/labels'
 import { useStore } from '@/lib/store'
 import { formatWhen } from '@/lib/time'
+import type { ReviewRequest } from '@/lib/types'
 import { PencilSimple, Plus, Trash } from '@phosphor-icons/react'
+import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 export function MinePage() {
   const { session, visibleRequests, deleteRequest } = useStore()
   const navigate = useNavigate()
+  const [pendingDelete, setPendingDelete] = useState<ReviewRequest | null>(null)
 
   if (!session) return <Navigate to="/" replace />
   if (session.role !== 'submitter') return <Navigate to="/queue" replace />
@@ -60,11 +64,7 @@ export function MinePage() {
                         className="px-1 py-1"
                         aria-label="Delete"
                         title="Delete"
-                        onClick={() => {
-                          if (window.confirm(`Delete ${req.id}? This cannot be undone.`)) {
-                            deleteRequest(req.id)
-                          }
-                        }}
+                        onClick={() => setPendingDelete(req)}
                       />
                     </div>
                   </div>
@@ -82,6 +82,21 @@ export function MinePage() {
           </li>
         )}
       </ul>
+
+      <ConfirmDialog
+        open={Boolean(pendingDelete)}
+        title="Delete request?"
+        body={
+          pendingDelete
+            ? `${pendingDelete.id} — ${pendingDelete.title}. This cannot be undone.`
+            : undefined
+        }
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={() => {
+          if (pendingDelete) deleteRequest(pendingDelete.id)
+          setPendingDelete(null)
+        }}
+      />
     </div>
   )
 }
