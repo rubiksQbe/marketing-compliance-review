@@ -239,12 +239,15 @@ Persistence: `localStorage` with seed dataset reset.
 
 ---
 
-## 8. Visual direction
+## 8. Visual direction (locked)
 
-- Brand: **ClearPath Financial** + product name **ClearPath Review**
-- Direction: precise fintech ops — deep slate, clear teal accent, warm paper surfaces (avoid purple gradients, cream+terracotta cliché, broadsheet density)
-- Typography: expressive but readable — e.g. "Fraunces" for brand wordmark, "Source Sans 3" for UI
-- Motion: subtle queue row enter, SLA pulse for at-risk, decision confirmation
+- Brand wordmark: **ClearPath Financial** in **Sen Regular 400**
+- Product emphasis: **ClearPath Review** with **Spectral Regular 400** for serif moments
+- Palette: `#1a3a5c` navy · `#5a8faa` steel · `#c9d4dc` mist · `#f5f8fa` canvas · `#2d4a3e` forest (+ expanded hover/focus/loading shades in PRD §10)
+- Background: mesh gradient on `#f5f8fa` (soft navy/steel/forest blobs), Highnote-like atmosphere
+- Icons: **Phosphor Icons** only; **no emoji**
+- Buttons: minimally rounded (not pills); hover / focus / loading states required
+- Motion: subtle queue enter, SLA pulse, decision confirmation
 
 ---
 

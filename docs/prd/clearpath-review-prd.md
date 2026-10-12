@@ -171,23 +171,52 @@ Affiliate portal, library CMS, notifications integrations, multi-approver matrix
 
 ---
 
-## 10. Branding (for discussion)
+## 10. Branding (locked)
 
-**Direction:** trustworthy consumer-finance **ops** tool — calm, precise, not consumer marketing flash.
+**Direction:** airy fintech-ops surface inspired by mesh-gradient product landings (Highnote-like atmosphere), adapted for an internal compliance tool — not a consumer loan promo site.
 
-| Token | Proposal | Rationale |
-|-------|----------|-----------|
-| Brand | ClearPath Financial | Company |
-| Product | ClearPath Review | Job-to-be-done name |
-| Display type | Fraunces | Distinctive wordmark; not Inter/Roboto |
-| UI type | Source Sans 3 | Readable dense ops UI |
-| Accent | Teal `#0F766E` | Clarity / “path” without purple AI cliché |
-| Ink / paper | Slate on cool paper gradients | Professional, light, operational |
-| Motion | Subtle enter + SLA pulse | Hierarchy, not noise |
+### 10.1 Core palette
 
-**Avoid:** purple gradients, cream+terracotta serif kitsch, broadsheet hairlines, emoji, dashboard-stat theater in the hero.
+| Token | Hex | Use |
+|-------|-----|-----|
+| `navy` | `#1a3a5c` | Primary ink, primary buttons, key headings |
+| `steel` | `#5a8faa` | Secondary accent, links, selected chips |
+| `mist` | `#c9d4dc` | Borders, dividers, disabled tracks |
+| `canvas` | `#f5f8fa` | Page base / mesh field |
+| `forest` | `#2d4a3e` | Success / approve / positive status |
 
-*Branding options to validate in visual companion before implementation.*
+### 10.2 Expanded interaction states
+
+| State | Derived from | Hex (working) |
+|-------|--------------|---------------|
+| Primary hover | navy darker | `#142c47` |
+| Primary active/pressed | navy deepest | `#0f2238` |
+| Primary focus ring | steel | `#5a8faa` @ 40% outline |
+| Primary loading wash | steel mid | `#4a7a94` |
+| Secondary hover | mist → steel tint | `#b8c7d2` bg |
+| Danger | saturated complement | `#9b2c2c` |
+| Danger soft | — | `#fde8e8` |
+| Warning / SLA | warm tempered | `#9a6b2f` / `#f3e7d3` |
+| Forest hover | forest darker | `#243c32` |
+
+### 10.3 Typography
+
+| Role | Font | Weight | Notes |
+|------|------|--------|-------|
+| Logo / company wordmark | **Sen** | Regular 400 | Exact string: `ClearPath Financial` |
+| Serif display / product emphasis | **Spectral** | Regular 400 | Product name, select headings |
+| UI / body | Sen (or Sen + system fallback) | 400/600 | Dense ops readability |
+
+### 10.4 Iconography & controls
+
+- **Phosphor Icons** only where icons aid scanning (status, nav, SLA, actions). **No emoji.**
+- Buttons: **minimally rounded** corners (≈4–6px), not pills.
+- Buttons must implement **hover, focus, and loading** states using the expanded palette.
+- Background: **mesh gradient** on `#f5f8fa` with soft navy / steel / forest blobs (upper field), similar structure to the reference landing — atmospheric, not a flat fill.
+
+### 10.5 Motion
+
+Subtle enter on lists; soft SLA pulse; decision confirmation — presence, not noise.
 
 ---
 
@@ -240,6 +269,6 @@ Only components tied to FR1–FR10:
 | Pre-approved library assumed; AM completeness gate upstream | Locked |
 | Persona-aware homes + scoped submitter visibility | Locked |
 | Landing Option A — role cards first | Locked |
-| Branding tokens | **Discussing** |
+| Branding tokens | **Locked** (palette, Sen/Spectral, Phosphor, mesh, button states) |
 | Component set / review layout | **Discussing** |
-| Implement main app revision | **Blocked until branding + components agreed** |
+| Implement main app revision | **Blocked until components agreed** |
