@@ -179,25 +179,29 @@ Affiliate portal, library CMS, notifications integrations, multi-approver matrix
 
 | Token | Hex | Use |
 |-------|-----|-----|
-| `navy` | `#1a3a5c` | Primary ink, primary buttons, key headings |
-| `steel` | `#5a8faa` | Secondary accent, links, selected chips |
-| `mist` | `#c9d4dc` | Borders, dividers, disabled tracks |
+| `navy` | `#1a3a5c` | Primary text/ink, key headings, button **hover** fill |
+| `steel` | `#5a8faa` | Base accent; **default** primary button fill |
+| `steelBright` | `#7eb3cc` | Mesh blob (brighter steel) — decorative only |
+| `mist` | `#c9d4dc` | Borders, dividers; button **loading** fill |
 | `canvas` | `#f5f8fa` | Page base / mesh field |
-| `forest` | `#2d4a3e` | Success / approve / positive status |
+| `forest` | `#2d4a3e` | Deep positive text on light surfaces |
+| `forestBright` | `#3f7a5c` | **Approve** button fill; mesh blob (brighter forest) |
 
 ### 10.2 Expanded interaction states
 
-| State | Derived from | Hex (working) |
-|-------|--------------|---------------|
-| Primary hover | navy darker | `#142c47` |
-| Primary active/pressed | navy deepest | `#0f2238` |
-| Primary focus ring | steel | `#5a8faa` @ 40% outline |
-| Primary loading wash | steel mid | `#4a7a94` |
-| Secondary hover | mist → steel tint | `#b8c7d2` bg |
-| Danger | saturated complement | `#9b2c2c` |
-| Danger soft | — | `#fde8e8` |
-| Warning / SLA | warm tempered | `#9a6b2f` / `#f3e7d3` |
-| Forest hover | forest darker | `#243c32` |
+| State | Rule | Hex (working) | Text on fill |
+|-------|------|---------------|-------------|
+| Default (primary) | steel fill | `#5a8faa` | `#ffffff` (high contrast — not light blue) |
+| Hover | navy fill | `#1a3a5c` | `#ffffff` |
+| Focus | **one-layer** border only (no outer glow/ring stack) | `2px solid #1a3a5c` on steel fill | `#ffffff` |
+| Loading | mist fill | `#c9d4dc` | `#1a3a5c` (dark ink on mist) |
+| Approve default | forestBright | `#3f7a5c` | `#ffffff` |
+| Approve hover | forest | `#2d4a3e` | `#ffffff` |
+| Danger | — | `#9b2c2c` | `#ffffff` |
+| Danger soft bg | — | `#fde8e8` | `#9b2c2c` |
+| Warning / SLA | — | `#9a6b2f` / `#f3e7d3` | dark on soft |
+
+**Contrast rules:** All body/UI text uses navy (`#1a3a5c`) or darker on canvas/white. **Avoid light-blue text** (`steel`/`steelBright` are for fills, borders, and mesh — not paragraph/link copy on light backgrounds). Links use navy + underline or navy weight change.
 
 ### 10.3 Typography
 
