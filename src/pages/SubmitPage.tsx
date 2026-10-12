@@ -1,3 +1,4 @@
+import { RiskBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { FieldError, Input, Label, Select, Textarea } from '@/components/ui/field'
 import {
@@ -5,7 +6,6 @@ import {
   CHANNEL_LABELS,
   CLAIM_LABELS,
   PRODUCT_LABELS,
-  RISK_LABELS,
   isDeclinedStatus,
 } from '@/lib/labels'
 import { suggestRiskTier } from '@/lib/risk'
@@ -15,7 +15,6 @@ import type {
   Channel,
   ClaimFlag,
   Product,
-  RiskTier,
   SubmissionSource,
 } from '@/lib/types'
 import { FileArrowUp } from '@phosphor-icons/react'
@@ -45,7 +44,6 @@ export function SubmitPage() {
   )
   const [partnerName, setPartnerName] = useState('')
   const [intakeNotes, setIntakeNotes] = useState('')
-  const [riskOverride, setRiskOverride] = useState<RiskTier | ''>('')
   const [error, setError] = useState<string | null>(null)
   const [hydrated, setHydrated] = useState(!id)
 
@@ -66,15 +64,13 @@ export function SubmitPage() {
     setSource(existing.source)
     setPartnerName(existing.partnerName ?? '')
     setIntakeNotes(existing.intakeNotes ?? '')
-    setRiskOverride(existing.riskTier)
     setHydrated(true)
   }, [id, existing])
 
-  const suggested = useMemo(
+  const riskTier = useMemo(
     () => suggestRiskTier({ product, channel, claimFlags }),
     [product, channel, claimFlags],
   )
-  const riskTier = riskOverride || suggested
 
   if (!session) return <Navigate to="/" replace />
   if (session.role !== 'submitter') return <Navigate to="/queue" replace />
@@ -309,20 +305,13 @@ export function SubmitPage() {
         </fieldset>
 
         <div>
-          <Label htmlFor="risk">Risk tier</Label>
-          <Select
-            id="risk"
-            className="mt-1 sm:max-w-[calc(50%-0.375rem)]"
-            value={riskOverride}
-            onChange={(e) => setRiskOverride((e.target.value || '') as RiskTier | '')}
-          >
-            <option value="">Suggested: {RISK_LABELS[suggested]}</option>
-            {(Object.keys(RISK_LABELS) as RiskTier[]).map((t) => (
-              <option key={t} value={t}>
-                Override: {RISK_LABELS[t]}
-              </option>
-            ))}
-          </Select>
+          <p className="text-sm font-medium text-navy-800">Risk tier</p>
+          <div className="mt-1.5 flex flex-wrap items-center gap-2">
+            <RiskBadge tier={riskTier} />
+            <span className="text-xs text-steel-600">
+              From product, channel, and claim flags
+            </span>
+          </div>
         </div>
 
         <div>
