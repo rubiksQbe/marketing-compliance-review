@@ -1,28 +1,32 @@
-import { ASSUMPTIONS } from '@/data/assumptions'
-import { Navigate } from 'react-router-dom'
-import { useStore } from '@/lib/store'
+import { KEY_ASSUMPTIONS } from '@/data/assumptions'
+import { ArrowLeft } from '@phosphor-icons/react'
+import { Link } from 'react-router-dom'
 
 export function AssumptionsPage() {
-  const { session } = useStore()
-  if (!session) return <Navigate to="/" replace />
-
   return (
-    <div className="animate-in">
-      <h1 className="font-serif text-2xl text-navy-800">Assumptions & decisions</h1>
-      <p className="mt-1 max-w-2xl text-sm text-steel-600">
-        Operating assumptions and locked design decisions for this demo. Source of truth:{' '}
-        <code className="text-[12px]">src/data/assumptions.ts</code> — update that file when product
-        rules change. Branding detail lives in the PRD.
+    <div className="mx-auto min-h-screen max-w-2xl px-4 py-10 sm:px-6">
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1 text-xs text-steel-600 hover:text-navy-800"
+      >
+        <ArrowLeft size={12} /> Back to landing
+      </Link>
+
+      <h1 className="mt-4 font-serif text-2xl text-navy-800">Key assumptions</h1>
+      <p className="mt-1 text-sm text-steel-600">
+        The decisions that most shape this demo. Full log:{' '}
+        <code className="text-[12px]">src/data/assumptions.ts</code>.
       </p>
-      <ul className="mt-6 space-y-3">
-        {ASSUMPTIONS.map((a) => (
+
+      <ol className="mt-6 list-none space-y-3">
+        {KEY_ASSUMPTIONS.map((a) => (
           <li key={a.id} className="rounded-md border border-mist-200 bg-white/90 px-4 py-3">
             <p className="text-xs font-medium text-steel-600">{a.id}</p>
             <p className="mt-1 text-sm font-medium text-navy-800">{a.text}</p>
             <p className="mt-1 text-xs text-steel-600">{a.implication}</p>
           </li>
         ))}
-      </ul>
+      </ol>
     </div>
   )
 }

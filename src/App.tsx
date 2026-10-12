@@ -17,6 +17,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/entry/:role" element={<IdentityPage />} />
+          <Route path="/assumptions" element={<AssumptionsPage />} />
           <Route element={<AppShell />}>
             <Route path="queue" element={<QueuePage />} />
             <Route path="mine" element={<MinePage />} />
@@ -24,7 +25,6 @@ export default function App() {
             <Route path="submit/:id" element={<SubmitPage />} />
             <Route path="review/:id" element={<ReviewPage />} />
             <Route path="audit/:id" element={<AuditPage />} />
-            <Route path="assumptions" element={<AssumptionsPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -51,6 +51,15 @@ export function LandingPage() {
           </p>
         </Link>
       </div>
+
+      <p className="mt-10 animate-in-delay text-center">
+        <Link
+          to="/assumptions"
+          className="text-[11px] text-steel-600/80 underline-offset-2 hover:text-steel-600 hover:underline"
+        >
+          Demo notes · key assumptions
+        </Link>
+      </p>
     </div>
   )
 }

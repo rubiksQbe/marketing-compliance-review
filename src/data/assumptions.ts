@@ -6,8 +6,22 @@ export interface Assumption {
 
 /**
  * Canonical log of operating assumptions and locked design decisions.
- * Shown in-app at /assumptions; keep this file current when product rules change.
+ * Full list in this file; /assumptions shows KEY_ASSUMPTIONS for demos.
+ * Keep current when product rules change.
  */
+export const KEY_ASSUMPTION_IDS = [
+  'P1',
+  'D1',
+  'D3',
+  'D4',
+  'A1c',
+  'A3',
+  'D9',
+  'A6',
+  'D7',
+  'A7',
+] as const
+
 export const ASSUMPTIONS: Assumption[] = [
   // —— Operating model ——
   {
@@ -162,3 +176,9 @@ export const ASSUMPTIONS: Assumption[] = [
     implication: 'Aligns with how reviewers narrate the workbench without diluting regulatory meaning.',
   },
 ]
+
+export const KEY_ASSUMPTIONS: Assumption[] = KEY_ASSUMPTION_IDS.map((id) => {
+  const found = ASSUMPTIONS.find((a) => a.id === id)
+  if (!found) throw new Error(`Missing key assumption ${id}`)
+  return found
+})
