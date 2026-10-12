@@ -89,7 +89,7 @@ export const EVENT_ACTION_LABELS: Record<
 }
 
 export const KIND_LABELS: Record<IdentityKind, string> = {
-  reviewer: 'Compliance reviewer',
+  reviewer: 'Marketing Compliance Specialist',
   internal_marketer: 'Internal marketer',
   affiliate_manager: 'Affiliate manager',
 }
