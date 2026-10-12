@@ -26,12 +26,6 @@ export const FINDINGS: Finding[] = [
     fromTier: 'low',
   },
   {
-    code: 'other',
-    label: 'Other',
-    fix: 'See additional notes.',
-    fromTier: 'low',
-  },
-  {
     code: 'unsubstantiated_claim',
     label: 'Unsubstantiated claim',
     fix: 'Remove/qualify the claim or attach approved substantiation.',
@@ -60,6 +54,12 @@ export const FINDINGS: Finding[] = [
     label: 'Triggering terms incomplete',
     fix: 'Add required credit terms or remove triggers.',
     fromTier: 'high',
+  },
+  {
+    code: 'other',
+    label: 'Other',
+    fix: 'See additional notes.',
+    fromTier: 'low',
   },
 ]
 
