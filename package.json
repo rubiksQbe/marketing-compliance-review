@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 43123 --host 127.0.0.1",
+    "dev": "vite --port 43123 --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview --port 43123 --host 127.0.0.1",
+    "preview": "vite preview --port 43123 --host 0.0.0.0",
     "wireframes": "npm --prefix wireframes exec -- designflow dev",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

@@ -17,10 +17,14 @@ export default defineConfig({
   },
   server: {
     port: 43123,
-    host: '127.0.0.1',
+    // Listen on all interfaces so Cursor/cloud port forwarding can reach the app.
+    host: '0.0.0.0',
+    strictPort: true,
   },
   preview: {
     port: 43123,
-    host: '127.0.0.1',
+    host: '0.0.0.0',
+    strictPort: true,
   },
 })
+
