@@ -416,7 +416,7 @@ Only components tied to FR1–FR10:
 - Vite + React + TypeScript + Tailwind  
 - Static deploy: GitHub Pages (`base: './'`, HashRouter)  
 - Client-only state: seed data + localStorage  
-- Design artifacts: Superpowers companion + DesignFlow wireframes (not production)
+- Design artifacts: Superpowers companion mocks (not production)
 
 ---
 

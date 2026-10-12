@@ -7,7 +7,6 @@ import type {
   ReasonCode,
   RequestStatus,
   RiskTier,
-  SubmissionSource,
 } from './types'
 
 export const PRODUCT_LABELS: Record<Product, string> = {
@@ -68,11 +67,6 @@ export const REASON_LABELS: Record<ReasonCode, string> = {
   misleading_net_impression: 'Misleading net impression',
   trigger_terms_incomplete: 'Triggering terms incomplete',
   other: 'Other',
-}
-
-export const SOURCE_LABELS: Record<SubmissionSource, string> = {
-  internal: 'Internal',
-  affiliate: 'Affiliate partner',
 }
 
 /** Audit / activity log action labels (UI-facing). */

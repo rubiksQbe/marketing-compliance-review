@@ -144,11 +144,6 @@ export function SubmitPage() {
       <h1 className="font-serif text-2xl text-navy-800">
         {editing ? 'Edit & resubmit' : 'Submit for review'}
       </h1>
-      <p className="mt-1 text-sm text-steel-600">
-        {editing
-          ? 'Update the package and resubmit — it returns to Needs review for compliance.'
-          : 'Structured intake — incomplete packets are blocked so compliance gets a review-ready package.'}
-      </p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-md border border-mist-200 bg-white/90 p-5">
         <div>
