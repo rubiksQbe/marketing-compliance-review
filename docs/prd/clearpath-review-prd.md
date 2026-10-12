@@ -249,9 +249,10 @@ Page field may use brand canvas `#f5f8fa` (slightly cooler than canvas-50) or ca
 ### 10.9 Iconography & controls
 
 - **Phosphor Icons** only where icons aid scanning (status, nav, SLA, actions). **No emoji.**
-- Buttons: **minimally rounded** corners (≈4–6px), not pills.
-- Buttons must implement **hover, focus (soft halo), and loading** states using scale steps.
-- Background: **mesh gradient** on `#f5f8fa` with **bigger, brighter** steel-200/300 and forest-200/300 blobs.
+- Buttons: **minimally rounded** corners (≈4–6px), not pills; label weight **500**.
+- Primary / approve: filled; hover / focus (soft halo) / loading via scale steps.
+- **Secondary ghost:** no background, no border; always icon + label (Phosphor).
+- Background: **mesh** on `#f5f8fa` — large, Highnote-like, **distinct** steel vs forest hues.
 
 ### 10.10 Motion
 
