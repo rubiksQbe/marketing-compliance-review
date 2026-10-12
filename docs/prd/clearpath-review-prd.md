@@ -179,29 +179,66 @@ Affiliate portal, library CMS, notifications integrations, multi-approver matrix
 
 | Token | Hex | Use |
 |-------|-----|-----|
-| `navy` | `#1a3a5c` | Primary text/ink, key headings, button **hover** fill |
-| `steel` | `#5a8faa` | Base accent; **default** primary button fill |
-| `steelBright` | `#7eb3cc` | Mesh blob (brighter steel) — decorative only |
-| `mist` | `#c9d4dc` | Borders, dividers; button **loading** fill |
-| `canvas` | `#f5f8fa` | Page base / mesh field |
-| `forest` | `#2d4a3e` | Deep positive text on light surfaces |
-| `forestBright` | `#3f7a5c` | **Approve** button fill; mesh blob (brighter forest) |
+| `canvas` | `#f7f2e9` | Page base / mesh field |
+| `blue` | `#008ad4` | Primary accent; **default** button |
+| `green` | `#52a993` | Secondary accent; **Approve** button; mesh |
 
-### 10.2 Expanded interaction states
+### 10.2 Blue scale (`--blue-*`)
 
-| State | Rule | Hex (working) | Text on fill |
-|-------|------|---------------|-------------|
-| Default (primary) | steel fill | `#5a8faa` | `#ffffff` (high contrast — not light blue) |
-| Hover | navy fill | `#1a3a5c` | `#ffffff` |
-| Focus | **one-layer** border only (no outer glow/ring stack) | `2px solid #1a3a5c` on steel fill | `#ffffff` |
-| Loading | mist fill | `#c9d4dc` | `#1a3a5c` (dark ink on mist) |
-| Approve default | forestBright | `#3f7a5c` | `#ffffff` |
-| Approve hover | forest | `#2d4a3e` | `#ffffff` |
+| Step | Hex |
+|------|-----|
+| 50 | `#eff6fd` |
+| 100 | `#d6ebfc` |
+| 200 | `#addaff` |
+| 300 | `#6dc0ff` |
+| 400 | `#009aec` |
+| 500 | `#0078b9` |
+| 600 | `#006095` |
+| 700 | `#004c78` |
+| 800 | `#00395b` |
+| 900 | `#042942` |
+| 950 | `#031827` |
+
+Brand anchor `#008ad4` sits between 400–500; UI uses named steps below.
+
+### 10.3 Green scale (`--green-*`)
+
+| Step | Hex |
+|------|-----|
+| 50 | `#e7faf4` |
+| 100 | `#bbf7e5` |
+| 200 | `#76eecf` |
+| 300 | `#65cdb3` |
+| 400 | `#4fa48f` |
+| 500 | `#3c806f` |
+| 600 | `#2f6758` |
+| 700 | `#245146` |
+| 800 | `#193d34` |
+| 900 | `#132c25` |
+| 950 | `#0a1915` |
+
+Brand anchor `#52a993` sits near 300–400.
+
+### 10.4 Interaction states
+
+| State | Rule | Fill | Text |
+|-------|------|------|------|
+| Default (primary) | blue brand | `#008ad4` | `#ffffff` |
+| Hover | blue-600 | `#006095` | `#ffffff` |
+| Focus | soft halo (not hard border) | `#008ad4` + `box-shadow: 0 0 0 4px rgba(0,138,212,0.28)` | `#ffffff` |
+| Loading | blue-100 | `#d6ebfc` | `#042942` (blue-900) |
+| Approve default | green brand | `#52a993` | `#ffffff` |
+| Approve hover | green-500 | `#3c806f` | `#ffffff` |
+| Approve focus | soft green halo | `#52a993` + `0 0 0 4px rgba(82,169,147,0.30)` | `#ffffff` |
+| Secondary / ghost | canvas or white + border blue-100 | — | blue-900 |
 | Danger | — | `#9b2c2c` | `#ffffff` |
-| Danger soft bg | — | `#fde8e8` | `#9b2c2c` |
-| Warning / SLA | — | `#9a6b2f` / `#f3e7d3` | dark on soft |
+| Warning / SLA | warm on canvas | `#f3e7d3` / `#9a6b2f` | dark ink |
 
-**Contrast rules:** All body/UI text uses navy (`#1a3a5c`) or darker on canvas/white. **Avoid light-blue text** (`steel`/`steelBright` are for fills, borders, and mesh — not paragraph/link copy on light backgrounds). Links use navy + underline or navy weight change.
+**Focus:** soft halo only (single translucent ring via box-shadow). No high-contrast multi-layer border stack.
+
+**Contrast rules:** Body/UI text uses **blue-900** (`#042942`) or darker on canvas/white. Do **not** use light blue (`blue-300`/`#008ad4`) for paragraph or link text on light backgrounds — use blue-900 with underline/weight for links. Accent blues/greens are for fills, mesh, icons on dark fills, and focus halos.
+
+**Mesh:** base `#f7f2e9` with soft blobs from brighter blue (`#6dc0ff` / `#addaff`) and brighter green (`#76eecf` / `#65cdb3`).
 
 ### 10.3 Typography
 
