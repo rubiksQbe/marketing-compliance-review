@@ -8,9 +8,11 @@ export function AssumptionsPage() {
 
   return (
     <div className="animate-in">
-      <h1 className="font-serif text-2xl text-navy-800">Assumptions</h1>
+      <h1 className="font-serif text-2xl text-navy-800">Assumptions & decisions</h1>
       <p className="mt-1 max-w-2xl text-sm text-steel-600">
-        Product and operating assumptions behind this marketing compliance review tool — kept visible so demos stay honest.
+        Operating assumptions and locked design decisions for this demo. Source of truth:{' '}
+        <code className="text-[12px]">src/data/assumptions.ts</code> — update that file when product
+        rules change. Branding detail lives in the PRD.
       </p>
       <ul className="mt-6 space-y-3">
         {ASSUMPTIONS.map((a) => (

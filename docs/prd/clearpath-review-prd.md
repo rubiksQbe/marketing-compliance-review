@@ -73,17 +73,13 @@ Intuitive flows for both personas: reviewers decide quickly; submitters submit c
 
 ---
 
-## 5. Operating model assumptions
+## 5. Operating model assumptions & locked decisions
 
-| ID | Assumption |
-|----|------------|
-| P1–P10 | Pain model in design spec (volume > headcount, rework, ownership, incomplete intake, risk tiers, reason codes, audit, dual jobs, no campaign suite, sharp demo) |
-| A1–A10 | Product/delivery assumptions in design spec |
-| A1b | Submitters do not see peers’ in-flight reviews by default |
-| A1c | Portal submitters = internal marketers + affiliate managers only |
-| A1d | Pre-approved creative library exists (or is stood up in parallel); custom affiliate work is the exception path |
-| A1e | Affiliate managers completeness-gate partner packets **before** portal submission |
-| Landing A | Role cards first, then submitter identity |
+**Canonical log (keep current):** `src/data/assumptions.ts`, also rendered in-app at `/assumptions`.
+
+Includes operating assumptions (P/A*), locked product decisions (D* — e.g. risk vs publish gate, SLA derived from tier at 8h/24h/48h, creative file-or-copy, Approve/Decline only), and vocabulary candidates (V*).
+
+Pain-model narrative and earlier A1–A10 write-ups also appear in `docs/superpowers/specs/2026-10-12-clearpath-compliance-review-design.md`. Branding tokens remain in §10 of this PRD.
 
 **Upstream bottleneck honesty:** Speeding compliance may surface affiliate → AM intake as the next constraint. Fixing that is out of scope for this portal.
 

@@ -16,7 +16,8 @@ Compliance marketing review via **Excel + email** bottlenecks growth: lost owner
 4. **Automatic audit trail** — every decision is timestamped with reason codes  
 
 PRD: `docs/prd/clearpath-review-prd.md`  
-Design spec: `docs/superpowers/specs/2026-10-12-clearpath-compliance-review-design.md`
+Design spec: `docs/superpowers/specs/2026-10-12-clearpath-compliance-review-design.md`  
+Assumptions & locked decisions: `src/data/assumptions.ts` (also **Assumptions** in the app header after sign-in)
 
 ## Run locally
 
