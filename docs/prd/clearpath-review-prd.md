@@ -240,7 +240,7 @@ Brand anchor `#52a993` sits near 300–400.
 
 **Mesh:** base `#f7f2e9` with soft blobs from brighter blue (`#6dc0ff` / `#addaff`) and brighter green (`#76eecf` / `#65cdb3`).
 
-### 10.3 Typography
+### 10.5 Typography
 
 | Role | Font | Weight | Notes |
 |------|------|--------|-------|
@@ -248,14 +248,14 @@ Brand anchor `#52a993` sits near 300–400.
 | Serif display / product emphasis | **Spectral** | Regular 400 | Product name, select headings |
 | UI / body | Sen (or Sen + system fallback) | 400/600 | Dense ops readability |
 
-### 10.4 Iconography & controls
+### 10.6 Iconography & controls
 
 - **Phosphor Icons** only where icons aid scanning (status, nav, SLA, actions). **No emoji.**
 - Buttons: **minimally rounded** corners (≈4–6px), not pills.
-- Buttons must implement **hover, focus, and loading** states using the expanded palette.
-- Background: **mesh gradient** on `#f5f8fa` with soft navy / steel / forest blobs (upper field), similar structure to the reference landing — atmospheric, not a flat fill.
+- Buttons must implement **hover, focus (soft halo), and loading** states using the blue/green scales.
+- Background: **mesh gradient** on `#f7f2e9` with brighter blue/green blobs — atmospheric, not a flat fill.
 
-### 10.5 Motion
+### 10.7 Motion
 
 Subtle enter on lists; soft SLA pulse; decision confirmation — presence, not noise.
 
