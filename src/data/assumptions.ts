@@ -122,9 +122,9 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'A6',
-    text: 'Structured rejection reasons beat freeform email.',
+    text: 'Structured compliance issues beat freeform email.',
     implication:
-      'Decline requires ≥1 finding; submitters (and reviewers on decided items) see marked reasons plus autopopulated requested-change fixes.',
+      'Decline requires ≥1 issue; submitters (and reviewers on decided items) see marked issues plus autopopulated remediation.',
   },
   {
     id: 'D10',
