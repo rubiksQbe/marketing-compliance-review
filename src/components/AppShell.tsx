@@ -19,7 +19,7 @@ export function AppShell() {
       <header className="border-b border-mist-200/80 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2.5 sm:gap-3 sm:px-6 sm:py-3">
           <Link to={home} className="min-w-0 truncate">
-            <p className="font-brand text-sm font-medium tracking-tight text-forest-500 whitespace-nowrap sm:text-lg">
+            <p className="font-brand text-sm font-medium tracking-tight text-steel-400 whitespace-nowrap sm:text-lg">
               ClearPath Financial
             </p>
           </Link>
