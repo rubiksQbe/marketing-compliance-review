@@ -25,13 +25,25 @@ export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElem
   return <input className={cn(control, className)} {...props} />
 }
 
-/** Native select arrows ignore padding; paint a custom chevron with room from the edge. */
-const selectChevron =
-  "appearance-none bg-[length:12px_12px] bg-[right_12px_center] bg-no-repeat pr-10 " +
-  "bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 fill=%22none%22 viewBox=%220 0 12 12%22%3E%3Cpath stroke=%22%234a6d8c%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%221.5%22 d=%22m3 4.5 3 3 3-3%22/%3E%3C/svg%3E')]"
+/** Native select arrows ignore padding; paint a custom chevron inset from the edge. */
+const SELECT_CHEVRON = `url("data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 12 12"><path stroke="#4a6d8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m3 4.5 3 3 3-3"/></svg>',
+)}")`
 
-export function Select({ className, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={cn(control, selectChevron, className)} {...props} />
+export function Select({ className, style, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <select
+      className={cn(control, 'appearance-none pr-10', className)}
+      style={{
+        backgroundImage: SELECT_CHEVRON,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'right 12px center',
+        backgroundSize: '12px 12px',
+        ...style,
+      }}
+      {...props}
+    />
+  )
 }
 
 export function Textarea({ className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
