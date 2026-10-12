@@ -38,7 +38,14 @@ export interface AuditEvent {
   id: string
   at: string
   actor: string
-  action: 'submitted' | 'opened' | 'approved' | 'changes_requested' | 'rejected' | 'resubmitted'
+  action:
+    | 'submitted'
+    | 'opened'
+    | 'approved'
+    | 'changes_requested'
+    | 'rejected'
+    | 'resubmitted'
+    | 'risk_updated'
   detail?: string
   reasonCodes?: ReasonCode[]
 }

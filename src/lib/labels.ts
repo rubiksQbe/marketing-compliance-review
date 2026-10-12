@@ -71,7 +71,13 @@ export const REASON_LABELS: Record<ReasonCode, string> = {
 
 /** Audit / activity log action labels (UI-facing). */
 export const EVENT_ACTION_LABELS: Record<
-  'submitted' | 'opened' | 'approved' | 'changes_requested' | 'rejected' | 'resubmitted',
+  | 'submitted'
+  | 'opened'
+  | 'approved'
+  | 'changes_requested'
+  | 'rejected'
+  | 'resubmitted'
+  | 'risk_updated',
   string
 > = {
   submitted: 'Submitted',
@@ -80,6 +86,7 @@ export const EVENT_ACTION_LABELS: Record<
   changes_requested: 'Declined',
   rejected: 'Declined',
   resubmitted: 'Resubmitted',
+  risk_updated: 'Risk updated',
 }
 
 export const KIND_LABELS: Record<IdentityKind, string> = {

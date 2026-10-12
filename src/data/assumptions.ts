@@ -79,9 +79,9 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'D3',
-    text: 'Risk tier is auto-scored from product, channel, and claim flags (weighted demo matrix).',
+    text: 'Risk tier is auto-suggested from product, channel, and claim types; compliance may override.',
     implication:
-      'Submitters see a read-only suggestion; they cannot override tier. Score updates live as those fields change.',
+      'Submitters see a read-only suggestion. Reviewers can change tier on pending items (Activity: Risk updated; due window recalculated from original submit).',
   },
   {
     id: 'D4',
@@ -103,9 +103,9 @@ export const ASSUMPTIONS: Assumption[] = [
   // —— Intake / creative ——
   {
     id: 'D7',
-    text: 'Creative substance requires at least one of: uploaded file or exact copy.',
+    text: 'Visual assets require a creative file; text-only assets require exact copy.',
     implication:
-      'Visual asset types (banner, social, affiliate creative) may attach an optional image; text-only types (email, landing) require copy and hide file upload.',
+      'Banner / social / affiliate creative → file required, accompanying copy optional. Email / landing → copy required, no file field.',
   },
   {
     id: 'D8',

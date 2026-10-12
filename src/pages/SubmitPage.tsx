@@ -95,8 +95,9 @@ export function SubmitPage() {
 
   const visual = isVisualAsset(assetType)
 
-  const hasCreativeSubstance = Boolean(body.trim() || (visual && creativeImage))
-  const copyRequired = !visual || !creativeImage
+  /** Visual assets require a file; text-only assets require copy. */
+  const hasCreativeSubstance = visual ? Boolean(creativeImage) : Boolean(body.trim())
+  const copyRequired = !visual
 
   const risk = useMemo(() => {
     if (!product && !channel && claimFlags.length === 0) return null
@@ -191,7 +192,7 @@ export function SubmitPage() {
     if (!hasCreativeSubstance) {
       setError(
         visual
-          ? 'Include a creative file, exact copy, or both.'
+          ? 'Upload the creative file for this visual asset.'
           : 'Add the exact creative copy for this text-only asset.',
       )
       return
@@ -361,14 +362,16 @@ export function SubmitPage() {
             </p>
             <p className="mt-0.5 text-xs text-steel-600">
               {visual
-                ? 'Include a creative file, exact copy, or both — at least one is required.'
+                ? 'Visual assets require the creative file. Accompanying copy is optional.'
                 : 'Text-only assets need the exact copy shown to consumers.'}
             </p>
           </div>
 
           {visual && (
             <div>
-              <Label htmlFor="creative-file">Creative file (optional)</Label>
+              <Label htmlFor="creative-file" required>
+                Creative file
+              </Label>
               <p className="mt-0.5 text-xs text-steel-600">
                 Banner, social, or affiliate image (PNG, JPG, WebP, or GIF · under 900 KB).
               </p>
@@ -411,13 +414,11 @@ export function SubmitPage() {
 
           <div>
             <Label htmlFor="body" required={copyRequired}>
-              {visual ? 'Creative copy' : 'Creative copy (exact)'}
+              {visual ? 'Accompanying copy (optional)' : 'Creative copy (exact)'}
             </Label>
             {visual ? (
               <p className="mt-0.5 text-xs text-steel-600">
-                {creativeImage
-                  ? 'Optional if the file already shows the claims — add any accompanying text.'
-                  : 'Required when no file is uploaded.'}
+                Add on-image or landing text if it isn’t fully readable from the file alone.
               </p>
             ) : null}
             <Textarea

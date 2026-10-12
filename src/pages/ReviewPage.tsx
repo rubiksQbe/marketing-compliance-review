@@ -1,7 +1,7 @@
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { RiskBadge, StatusBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/field'
+import { Select, Textarea } from '@/components/ui/field'
 import { FINDINGS, fixesForCodes } from '@/data/findings'
 import { useAutoHideScroll } from '@/hooks/useAutoHideScroll'
 import {
@@ -10,12 +10,13 @@ import {
   CLAIM_LABELS,
   PRODUCT_LABELS,
   REASON_LABELS,
+  RISK_LABELS,
   isDeclinedStatus,
   isVisualAsset,
 } from '@/lib/labels'
 import { useStore } from '@/lib/store'
 import { formatSla } from '@/lib/time'
-import type { ReasonCode } from '@/lib/types'
+import type { ReasonCode, RiskTier } from '@/lib/types'
 import { ArrowLeft, Path, PencilSimple, Trash } from '@phosphor-icons/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
@@ -23,7 +24,15 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 export function ReviewPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
-  const { getRequest, decide, markOpened, session, visibleRequests, deleteRequest } = useStore()
+  const {
+    getRequest,
+    decide,
+    markOpened,
+    updateRiskTier,
+    session,
+    visibleRequests,
+    deleteRequest,
+  } = useStore()
   const request = getRequest(id)
 
   const [selected, setSelected] = useState<ReasonCode[]>([])
@@ -130,13 +139,33 @@ export function ReviewPage() {
               {isReviewer ? (
                 request.status === 'pending' ? (
                   <>
-                    <RiskBadge tier={request.riskTier} short />
+                    <label className="inline-flex items-center gap-1">
+                      <span className="sr-only">Risk tier</span>
+                      <Select
+                        aria-label="Risk tier"
+                        className="w-auto py-0.5 pl-1.5 pr-8 text-[10px] font-medium leading-tight"
+                        value={request.riskTier}
+                        onChange={(e) => {
+                          if (!session) return
+                          updateRiskTier(request.id, e.target.value as RiskTier, session.name)
+                        }}
+                      >
+                        {(Object.keys(RISK_LABELS) as RiskTier[]).map((t) => (
+                          <option key={t} value={t}>
+                            {RISK_LABELS[t]}
+                          </option>
+                        ))}
+                      </Select>
+                    </label>
                     <span className="rounded px-1.5 py-0.5 text-[10px] font-medium leading-tight bg-warn-soft text-warn">
                       {formatSla(request)}
                     </span>
                   </>
                 ) : (
-                  <StatusBadge status={request.status} />
+                  <>
+                    <RiskBadge tier={request.riskTier} short />
+                    <StatusBadge status={request.status} />
+                  </>
                 )
               ) : (
                 <StatusBadge status={request.status} />

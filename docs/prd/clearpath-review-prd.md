@@ -75,9 +75,11 @@ Intuitive flows for both personas: reviewers decide quickly; submitters submit c
 
 ## 5. Operating model assumptions & locked decisions
 
-**Canonical log (keep current):** `src/data/assumptions.ts`, also rendered in-app at `/assumptions`.
+**Canonical log (keep current):** `src/data/assumptions.ts`, also rendered in-app at `/assumptions` (key subset from the landing page).
 
-Includes operating assumptions (P/A*), locked product decisions (D* — e.g. risk vs publish gate, SLA derived from tier at 8h/24h/48h, creative file-or-copy, Approve/Decline only), and vocabulary candidates (V*).
+Includes operating assumptions (P/A*), locked product decisions (D*), and applied vocabulary (V*).
+
+**Critique / evolution:** `docs/assumptions-evolution.md` — which assumptions are stretched, how they’d evolve (campaign teams, soft withdraw, tiered checklists, etc.), and what the demo already tightened (reviewer risk override; visual file required).
 
 Pain-model narrative and earlier A1–A10 write-ups also appear in `docs/superpowers/specs/2026-10-12-clearpath-compliance-review-design.md`. Branding tokens remain in §10 of this PRD.
 

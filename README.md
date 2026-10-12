@@ -17,7 +17,8 @@ Compliance marketing review via **Excel + email** bottlenecks growth: lost owner
 
 PRD: `docs/prd/clearpath-review-prd.md`  
 Design spec: `docs/superpowers/specs/2026-10-12-clearpath-compliance-review-design.md`  
-Assumptions & locked decisions: `src/data/assumptions.ts` (also **Assumptions** in the app header after sign-in)
+Assumptions & locked decisions: `src/data/assumptions.ts` (landing: **Demo notes · key assumptions**)  
+Critique & evolution notes: `docs/assumptions-evolution.md`
 
 ## Run locally
 

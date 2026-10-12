@@ -16,7 +16,13 @@ import {
   saveRequests,
   saveSession,
 } from './storage'
-import type { DecisionInput, ReviewRequest, SessionIdentity, SubmitInput } from './types'
+import type {
+  DecisionInput,
+  ReviewRequest,
+  RiskTier,
+  SessionIdentity,
+  SubmitInput,
+} from './types'
 
 interface StoreValue {
   requests: ReviewRequest[]
@@ -29,6 +35,7 @@ interface StoreValue {
   deleteRequest: (id: string) => void
   decide: (id: string, input: DecisionInput) => ReviewRequest | undefined
   markOpened: (id: string, actor: string) => void
+  updateRiskTier: (id: string, tier: RiskTier, actor: string) => void
   resetDemo: () => void
 }
 
@@ -187,6 +194,32 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return updated
   }, [])
 
+  const updateRiskTier = useCallback((id: string, tier: RiskTier, actor: string) => {
+    setRequests((prev) =>
+      prev.map((req) => {
+        if (req.id !== id || req.status !== 'pending' || req.riskTier === tier) return req
+        const now = new Date().toISOString()
+        return {
+          ...req,
+          riskTier: tier,
+          slaHours: slaHoursForTier(tier),
+          updatedAt: now,
+          assignee: actor,
+          events: [
+            ...req.events,
+            {
+              id: createId('evt'),
+              at: now,
+              actor,
+              action: 'risk_updated',
+              detail: `Risk set to ${tier} (${slaHoursForTier(tier)}h due window from original submit).`,
+            },
+          ],
+        }
+      }),
+    )
+  }, [])
+
   const resetDemo = useCallback(() => {
     setRequests(resetRequests())
   }, [])
@@ -203,6 +236,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       deleteRequest,
       decide,
       markOpened,
+      updateRiskTier,
       resetDemo,
     }),
     [
@@ -216,6 +250,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       deleteRequest,
       decide,
       markOpened,
+      updateRiskTier,
       resetDemo,
     ],
   )
