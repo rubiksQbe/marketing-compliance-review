@@ -10,8 +10,6 @@ export interface Assumption {
  * Keep current when product rules change.
  */
 export const KEY_ASSUMPTION_IDS = [
-  'P1',
-  'D1',
   'D3',
   'D4',
   'A1c',

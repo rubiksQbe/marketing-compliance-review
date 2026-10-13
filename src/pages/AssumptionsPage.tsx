@@ -12,7 +12,7 @@ export function AssumptionsPage() {
         <ArrowLeft size={12} /> Back to landing
       </Link>
 
-      <h1 className="mt-4 font-serif text-2xl text-navy-800">Key assumptions</h1>
+      <h1 className="mt-4 font-serif text-2xl text-navy-800">Key decisions</h1>
       <p className="mt-1 text-sm text-steel-600">
         The decisions that most shape this demo. Full log:{' '}
         <code className="text-[12px]">src/data/assumptions.ts</code>.
