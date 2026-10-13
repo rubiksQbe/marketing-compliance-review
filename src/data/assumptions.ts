@@ -88,7 +88,7 @@ export const ASSUMPTIONS: Assumption[] = [
     id: 'D4',
     text: 'SLA clock is derived from risk tier — not an independent submitter choice.',
     implication:
-      'High → 8h, Medium → 24h, Low → 48h (demo policy knobs: same-day / next-day / two-day). Stored as slaHours at submit/resubmit. A missed window does not close the request: it stays Needs review, the clock reads overdue, and it counts as SLA at risk until Approve, Decline, or Withdraw.',
+      'High → 8h, Medium → 24h, Low → 48h (demo policy knobs: same-day / next-day / two-day). Stored as slaHours at submit/resubmit. A missed window does not close the request: it stays Needs review, the clock reads overdue, and it counts as Due soon until Approve, Decline, or Withdraw.',
   },
   {
     id: 'D5',
@@ -97,7 +97,7 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'D6',
-    text: '“SLA at risk” means less than 25% of the tier window remains.',
+    text: '“Due soon” means less than 25% of the tier window remains.',
     implication: 'Queue metric and urgent styling highlight items nearing or past due — still not a second risk score.',
   },
 

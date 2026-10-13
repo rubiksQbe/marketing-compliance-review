@@ -57,8 +57,8 @@ export function QueuePage() {
 
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
         <Metric label="Needs review" value={String(pending.length)} />
-        <Metric label="SLA at risk" value={String(atRisk.length)} warn={atRisk.length > 0} />
-        <Metric label="In queue (all)" value={String(activeRequests.length)} />
+        <Metric label="Due soon" value={String(atRisk.length)} warn={atRisk.length > 0} />
+        <Metric label="All" value={String(activeRequests.length)} />
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">

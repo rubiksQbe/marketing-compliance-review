@@ -67,7 +67,7 @@ This doc flags what is solid for a demo, what is stretched, and how a real produ
 
 **Evolution:** Business-hour clocks, per-channel overrides, pause when waiting on submitter remediation, escalate when overdue.
 
-### D6 — “SLA at risk” at &lt;25% remaining
+### D6 — “Due soon” at &lt;25% remaining
 
 **Stretch:** Arbitrary threshold.
 
