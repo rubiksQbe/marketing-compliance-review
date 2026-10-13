@@ -1,4 +1,3 @@
-import type { AssetType } from './types'
 import { creativePacketCopy, missingCreativeErrors } from './creativePacket'
 
 function assert(cond: unknown, msg: string): asserts cond {
