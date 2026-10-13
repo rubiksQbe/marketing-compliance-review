@@ -59,6 +59,8 @@ export const SEED_REQUESTS: ReviewRequest[] = [
     updatedAt: hoursAgo(4),
     submitter: 'Ava Chen',
     source: 'internal',
+    intakeNotes:
+      'Legacy seed row (no proof image). New email submits require a screenshot or HTML render plus exact copy.',
     events: [
       {
         id: 'evt-1041-1',
@@ -184,6 +186,8 @@ export const SEED_REQUESTS: ReviewRequest[] = [
     updatedAt: submittedForDueIn(24, 48),
     submitter: 'Ava Chen',
     source: 'internal',
+    intakeNotes:
+      'Legacy seed row (no page capture). New landing submits require a page capture plus exact copy and destination URL.',
     events: [
       {
         id: 'evt-1044-1',

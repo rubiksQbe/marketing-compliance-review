@@ -95,7 +95,7 @@ These are the exact assumptions about *who hurts* and *how*. They drive Approach
 | A1d | A **pre-approved creative library** exists (or is being stood up); custom affiliate work is the exception path | Product copy/empty states reinforce “use library first”; portal optimizes custom-review throughput, not library browsing |
 | A1e | Affiliate managers perform a completeness gate **before** portal submission | Compliance queue receives fewer incomplete affiliate packets; AM↔affiliate tooling stays out of scope |
 | A2 | Assets span ads, emails, LPs, social, affiliate creatives across loans / cards / mortgage | Intake captures product + channel + asset type |
-| A3 | Human sign-off and timestamped audit trail are mandatory for regulated claims | Approve/reject/changes-requested produce immutable event log (client-side demo) |
+| A3 | Human sign-off and timestamped audit trail are mandatory for regulated claims | Approve / Decline write immutable events (Decline stores `rejected` + reason codes; client-side demo) |
 | A4 | Risk-tiered routing raises throughput more than raw headcount | Auto-suggest risk tier from product/channel/claims; SLA differs by tier |
 | A5 | Incomplete intake is a major rework driver | Block submit until required fields + disclosures present |
 | A6 | Structured rejection reasons beat freeform email | Decision requires reason codes; optional note |
@@ -144,7 +144,8 @@ We treat the product as an **operating system for review decisions**, not a mark
 
 ### 4.1 Reviewer queue (reviewer home)
 - Filterable org-wide list: status, risk tier, product, SLA urgency
-- Metrics strip: pending count, at-risk SLA, median wait (seeded/demo)
+- Metrics strip: **Needs review**, **Due soon** (<25% of tier window remaining, including overdue), **All**
+- Filter chips include match counts (e.g. `Needs review (5)`)
 - Purpose: help reviewers pull the highest-value next item
 - **Not shown to marketers as their landing view**
 
@@ -155,21 +156,23 @@ We treat the product as an **operating system for review decisions**, not a mark
 - Purpose: relevant progress tracking without exposing peers’ in-flight work (A1b)
 
 ### 4.2 Submit request
-- Marketer form: title, product, channel, asset type, audience, claim flags, copy/URL, disclosures
-- Auto risk suggestion with override
+- Marketer form: title, product, channel, asset type, audience, claim flags, source/partner, disclosures, destination URL
+- Creative packet (see `2026-10-13-submit-creative-packet-design.md`): proof image **and** copy required for every asset type; labels vary (creative file / email screenshot or HTML render / page capture)
+- Auto risk suggestion is **read-only** on submit; reviewers may override tier on pending review
 - Purpose: make every submission review-ready (A5)
 
 ### 4.3 Review workspace (locked)
 - One composition: left **2/3** package card | right **1/3** sticky disposition rail
 - Equal-height dual scroll; auto-hide scrollbars; action bar pinned
 - Header: back + risk/SLA chips → title → Submitted by (partner when affiliate)
-- Package: Creative (image or text by asset type) → Destination (link) → Disclosures → Classification → Claims → Intake notes
-- Exception checklist (findings); requested changes autopopulate as **fix text only**
-- Default **Approve**; any checked finding morphs action to **Decline** (codes stored in audit; not shown in requested-changes box)
+- Package: Creative (proof image when present + copy) → Destination (link) → Disclosures → Classification → Claims → Intake notes
+- Exception checklist (findings); **remediation** autopopulates as form text only
+- Default **Approve**; any checked finding morphs action to **Decline** (codes stored in audit; not shown in the remediation box)
 - Purpose: maximize decisions per hour (throughput)
 
-### 4.4 Audit trail
-- Per-request event history (submitted, reviewed, decided, reasons)
+### 4.4 Activity (audit history)
+- Per-request event history (submitted, opened, decided, risk updated, withdrawn, reasons)
+- UI label **Activity**; route `/audit/:id`
 - Purpose: satisfy A3 without Excel archaeology
 
 **Explicitly out of scope:** auth, multi-tenant admin, AI auto-approve, creative editor, affiliate portal, analytics warehouse, notifications integrations.
@@ -179,12 +182,14 @@ We treat the product as an **operating system for review decisions**, not a mark
 ## 5. Information architecture
 
 ```
-/                 → Persona-aware home
-                    Reviewer  → org-wide risk-tiered queue
-                    Marketer  → My submissions (scoped)
+/                 → Role cards (Review / Submit)
+/entry/:role      → Demo identity picker
+/queue            → Reviewer org-wide risk-tiered queue
+/mine             → Submitter “Your submitted requests” (scoped)
 /submit           → Structured intake
-/review/:id       → Review workspace (reviewer; marketer read-only on own items)
-/audit/:id        → Audit trail (reviewer: any; marketer: own items only)
+/submit/:id       → Edit & resubmit
+/review/:id       → Review workspace (reviewer; submitter read-only / edit on own items)
+/audit/:id        → Activity history (reviewer: any; submitter: own items only)
 /assumptions      → Living assumptions log (transparency)
 ```
 
@@ -215,30 +220,39 @@ Demo actors: reviewer `Jordan Lee` (sees all); submitters `Sam Ortiz` (affiliate
 
 ## 6. Data model (client)
 
+Matches `src/lib/types.ts` (`ReviewRequest` / `AuditEvent`). Risk suggestion is computed at intake and **not** persisted as a separate field.
+
 ```ts
-Request {
+ReviewRequest {
   id, title, product, channel, assetType, audience,
-  body, destinationUrl, disclosures[],
-  claimFlags[], riskTieruggested, riskTier,
-  status: draft|pending|changes_requested|approved|rejected,
+  body, creativeImage?, destinationUrl,
+  disclosures,              // string (as shown)
+  claimFlags[], riskTier,  // suggestion is ephemeral; only chosen/stored tier
+  status: pending | changes_requested | approved | rejected | withdrawn,
   slaHours, submittedAt, updatedAt,
+  submitter, source, partnerName?, intakeNotes?,
   assignee?,
   events: AuditEvent[]
 }
-AuditEvent { id, at, actor, action, detail?, reasonCodes? }
+AuditEvent {
+  id, at, actor,
+  action: submitted | opened | approved | changes_requested | rejected |
+          resubmitted | risk_updated | withdrawn,
+  detail?, reasonCodes?
+}
 ```
 
-Persistence: `localStorage` with seed dataset reset.
+Persistence: `localStorage` with seed dataset reset (bump key when seed shape/content must replace stale demos).
 
 ---
 
 ## 7. UX principles (tied to goals)
 
-1. **One job per screen** — queue picks work; review decides; submit intakes; audit proves.
+1. **One job per screen** — queue picks work; review decides; submit intakes; Activity proves.
 2. **No cards in hero/chrome noise** — operational density without dashboard theater.
 3. **Decision within one viewport** on desktop review screen.
-4. **Keyboard-friendly primary actions** on review (approve / changes / reject).
-5. **Empty, loading, error states** for queue and missing request IDs.
+4. **Approve / Decline only** on review (Decline after ≥1 finding); keyboard shortcuts are nice-to-have, not shipped in v1.
+5. **Empty / missing-request states** for queue and unknown IDs.
 6. **Everything justified** — if a control doesn’t raise throughput or auditability, cut it.
 
 ---
@@ -273,8 +287,9 @@ Persistence: `localStorage` with seed dataset reset.
 2. Reviewer can clear a pending item with structured decision in ≤3 clicks from queue
 3. Marketer cannot submit without required compliance fields
 4. Every decision writes an audit event
-5. Assumptions page documents A1–A10
+5. Assumptions page documents the curated key set from `src/data/assumptions.ts` (not only legacy A1–A10)
 6. No extraneous navigation or features beyond §4
+
 
 ---
 

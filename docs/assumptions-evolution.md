@@ -67,17 +67,17 @@ This doc flags what is solid for a demo, what is stretched, and how a real produ
 
 **Evolution:** Business-hour clocks, per-channel overrides, pause when waiting on submitter remediation, escalate when overdue.
 
-### D6 — “SLA at risk” at &lt;25% remaining
+### D6 — “Due soon” at &lt;25% remaining
 
 **Stretch:** Arbitrary threshold.
 
 **Evolution:** Configurable thresholds; separate “overdue” vs “due soon”; notify assignee.
 
-### D7 — Creative substance (now: file required for visual)
+### D7 — Creative substance (proof image + copy for every packet)
 
-**Was stretch:** File *or* copy for banners/social.
+**Was stretch:** File *or* copy for banners/social; email / landing copy-only with no proof image.
 
-**Now in product:** **Visual asset types require a creative file**; accompanying copy optional. Text-only (email / landing) still require exact copy and hide file upload.
+**Now in product:** **Every packet requires a proof image and consumer-facing copy** (labels vary by asset type). Banner / social / affiliate → creative file + accompanying copy (caption / CTA / alt). Email → screenshot or HTML render + exact copy. Landing → page capture + exact copy + destination URL. Multi-file proofs stay out of scope for this demo.
 
 **Further evolution:** Multi-file proofs, HTML email source, landing URL crawl, virus scan, object storage (not data URLs).
 

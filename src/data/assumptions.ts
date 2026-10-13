@@ -10,15 +10,12 @@ export interface Assumption {
  * Keep current when product rules change.
  */
 export const KEY_ASSUMPTION_IDS = [
-  'P1',
-  'D1',
   'D3',
   'D4',
   'A1c',
   'A3',
   'D9',
   'A6',
-  'D7',
   'A7',
 ] as const
 
@@ -86,9 +83,9 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'D4',
-    text: 'SLA clock is derived from risk tier — not an independent submitter choice.',
+    text: 'SLA (Service Level Agreement) clock is derived from risk tier — not an independent submitter choice.',
     implication:
-      'High → 8h, Medium → 24h, Low → 48h (demo policy knobs: same-day / next-day / two-day). Stored as slaHours at submit/resubmit. A missed window does not close the request: it stays Needs review, the clock reads overdue, and it counts as SLA at risk until Approve, Decline, or Withdraw.',
+      'High → 8h, Medium → 24h, Low → 48h (demo policy knobs: same-day / next-day / two-day). Stored as slaHours at submit/resubmit. A missed window does not close the request: it stays Needs review, the clock reads overdue, and it counts as Due soon until Approve, Decline, or Withdraw.',
   },
   {
     id: 'D5',
@@ -97,16 +94,16 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'D6',
-    text: '“SLA at risk” means less than 25% of the tier window remains.',
+    text: '“Due soon” means less than 25% of the tier window remains.',
     implication: 'Queue metric and urgent styling highlight items nearing or past due — still not a second risk score.',
   },
 
   // —— Intake / creative ——
   {
     id: 'D7',
-    text: 'Visual assets require a creative file; text-only assets require exact copy.',
+    text: 'Every packet needs a proof image and consumer-facing copy; labels vary by asset type.',
     implication:
-      'Banner / social / affiliate creative → file required, accompanying copy optional. Email / landing → copy required, no file field.',
+      'Banner / social / affiliate → creative file + accompanying copy (caption / CTA / alt). Email → screenshot or HTML render + exact copy. Landing → page capture + exact copy + destination URL. Multi-file proofs stay out of scope for this demo.',
   },
   {
     id: 'D8',

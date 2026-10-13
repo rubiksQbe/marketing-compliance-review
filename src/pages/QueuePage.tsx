@@ -41,7 +41,16 @@ export function QueuePage() {
   }, [activeRequests, statusFilter])
 
   const pending = activeRequests.filter((r) => r.status === 'pending')
+  const declined = activeRequests.filter((r) => isDeclinedStatus(r.status))
+  const approved = activeRequests.filter((r) => r.status === 'approved')
   const atRisk = pending.filter((r) => remainingFor(r) < r.slaHours * 0.25)
+
+  const filterOptions = [
+    ['pending', 'Needs review', pending.length],
+    ['declined', 'Declined', declined.length],
+    ['approved', 'Approved', approved.length],
+    ['all', 'All', activeRequests.length],
+  ] as const
 
   if (!session) return <Navigate to="/" replace />
   if (session.role !== 'reviewer') return <Navigate to="/mine" replace />
@@ -57,17 +66,12 @@ export function QueuePage() {
 
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
         <Metric label="Needs review" value={String(pending.length)} />
-        <Metric label="SLA at risk" value={String(atRisk.length)} warn={atRisk.length > 0} />
-        <Metric label="In queue (all)" value={String(activeRequests.length)} />
+        <Metric label="Due soon" value={String(atRisk.length)} warn={atRisk.length > 0} />
+        <Metric label="All" value={String(activeRequests.length)} />
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
-        {([
-          ['pending', 'Needs review'],
-          ['declined', 'Declined'],
-          ['approved', 'Approved'],
-          ['all', 'All'],
-        ] as const).map(([key, label]) => (
+        {filterOptions.map(([key, label, count]) => (
           <button
             key={key}
             type="button"
@@ -78,7 +82,7 @@ export function QueuePage() {
                 : 'bg-white/80 text-steel-600 border border-mist-200 hover:border-steel-400'
             }`}
           >
-            {label}
+            {label} ({count})
           </button>
         ))}
       </div>

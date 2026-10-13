@@ -1,13 +1,13 @@
 import { RiskBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { FieldError, Input, Label, Select, Textarea } from '@/components/ui/field'
+import { creativePacketCopy, missingCreativeErrors } from '@/lib/creativePacket'
 import {
   ASSET_LABELS,
   CHANNEL_LABELS,
   CLAIM_LABELS,
   PRODUCT_LABELS,
   isDeclinedStatus,
-  isVisualAsset,
 } from '@/lib/labels'
 import { scoreRisk } from '@/lib/risk'
 import { useStore } from '@/lib/store'
@@ -93,11 +93,7 @@ export function SubmitPage() {
     setHydrated(true)
   }, [id, existing])
 
-  const visual = isVisualAsset(assetType)
-
-  /** Visual assets require a file; text-only assets require copy. */
-  const hasCreativeSubstance = visual ? Boolean(creativeImage) : Boolean(body.trim())
-  const copyRequired = !visual
+  const packet = creativePacketCopy(assetType)
 
   const risk = useMemo(() => {
     if (!product && !channel && claimFlags.length === 0) return null
@@ -108,7 +104,7 @@ export function SubmitPage() {
     if (!editing || !existing) return true
     const flagsEqual =
       [...claimFlags].sort().join('|') === [...existing.claimFlags].sort().join('|')
-    const nextImage = isVisualAsset(assetType) ? creativeImage : undefined
+    const nextImage = creativeImage
     return !(
       title.trim() === existing.title &&
       product === existing.product &&
@@ -196,12 +192,9 @@ export function SubmitPage() {
       setError('Complete all required fields before submitting.')
       return
     }
-    if (!hasCreativeSubstance) {
-      setError(
-        visual
-          ? 'Upload the creative file for this visual asset.'
-          : 'Add the exact creative copy for this text-only asset.',
-      )
+    const creativeErrors = missingCreativeErrors({ assetType, creativeImage, body })
+    if (creativeErrors.length) {
+      setError(creativeErrors[0]!)
       return
     }
     if (source === 'affiliate' && !partnerName.trim()) {
@@ -224,7 +217,7 @@ export function SubmitPage() {
       assetType,
       audience: audience.trim(),
       body: body.trim(),
-      creativeImage: visual ? creativeImage : undefined,
+      creativeImage,
       destinationUrl: destinationUrl.trim(),
       disclosures: disclosures.trim(),
       claimFlags,
@@ -306,10 +299,6 @@ export function SubmitPage() {
               onChange={(e) => {
                 const next = e.target.value as AssetType
                 setAssetType(next)
-                if (!isVisualAsset(next)) {
-                  setCreativeImage(undefined)
-                  if (fileInputRef.current) fileInputRef.current.value = ''
-                }
               }}
             >
               {(Object.keys(ASSET_LABELS) as AssetType[]).map((a) => (
@@ -367,67 +356,59 @@ export function SubmitPage() {
             <p className="text-sm font-medium text-navy-800">
               Creative <span className="text-danger">*</span>
             </p>
-            <p className="mt-0.5 text-xs text-steel-600">
-              {visual
-                ? 'Visual assets require the creative file. Accompanying copy is optional.'
-                : 'Text-only assets need the exact copy shown to consumers.'}
+            <p className="mt-0.5 text-xs text-steel-600">{packet.sectionHint}</p>
+            <p className="mt-1 text-[11px] text-steel-600">
+              Production desks often take separate static, motion, and landing proofs; this demo
+              accepts one primary proof image.
             </p>
           </div>
 
-          {visual && (
-            <div>
-              <Label htmlFor="creative-file" required>
-                Creative file
-              </Label>
-              <p className="mt-0.5 text-xs text-steel-600">
-                Banner, social, or affiliate image (PNG, JPG, WebP, or GIF · under 900 KB).
-              </p>
-              <input
-                ref={fileInputRef}
-                id="creative-file"
-                type="file"
-                accept="image/png,image/jpeg,image/webp,image/gif"
-                className="mt-2 block w-full text-sm text-navy-800 outline-none file:mr-3 file:cursor-pointer file:rounded-[5px] file:border-0 file:bg-steel-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-steel-800 file:hover:bg-steel-200"
-                onChange={(e) => void onCreativeFile(e.target.files?.[0])}
-              />
-              {creativeImage ? (
-                <div className="mt-3 overflow-hidden rounded-[5px] border border-mist-200 bg-canvas">
-                  <img
-                    src={creativeImage}
-                    alt="Uploaded creative preview"
-                    className="max-h-48 w-full object-contain"
-                  />
-                  <div className="flex items-center justify-between gap-2 border-t border-mist-200 px-3 py-2">
-                    <span className="inline-flex items-center gap-1.5 text-xs text-steel-600">
-                      <ImageIcon size={14} /> Ready for review
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      icon={<Trash size={14} />}
-                      className="h-auto px-1.5 py-1 text-xs"
-                      onClick={() => {
-                        setCreativeImage(undefined)
-                        if (fileInputRef.current) fileInputRef.current.value = ''
-                      }}
-                    >
-                      Remove
-                    </Button>
-                  </div>
+          <div>
+            <Label htmlFor="creative-file" required>
+              {packet.fileLabel}
+            </Label>
+            <p className="mt-0.5 text-xs text-steel-600">{packet.fileHelp}</p>
+            <input
+              ref={fileInputRef}
+              id="creative-file"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              className="mt-2 block w-full text-sm text-navy-800 outline-none file:mr-3 file:cursor-pointer file:rounded-[5px] file:border-0 file:bg-steel-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-steel-800 file:hover:bg-steel-200"
+              onChange={(e) => void onCreativeFile(e.target.files?.[0])}
+            />
+            {creativeImage ? (
+              <div className="mt-3 overflow-hidden rounded-[5px] border border-mist-200 bg-canvas">
+                <img
+                  src={creativeImage}
+                  alt="Uploaded creative preview"
+                  className="max-h-48 w-full object-contain"
+                />
+                <div className="flex items-center justify-between gap-2 border-t border-mist-200 px-3 py-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-steel-600">
+                    <ImageIcon size={14} /> Ready for review
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    icon={<Trash size={14} />}
+                    className="h-auto px-1.5 py-1 text-xs"
+                    onClick={() => {
+                      setCreativeImage(undefined)
+                      if (fileInputRef.current) fileInputRef.current.value = ''
+                    }}
+                  >
+                    Remove
+                  </Button>
                 </div>
-              ) : null}
-            </div>
-          )}
+              </div>
+            ) : null}
+          </div>
 
           <div>
-            <Label htmlFor="body" required={copyRequired}>
-              {visual ? 'Accompanying copy (optional)' : 'Creative copy (exact)'}
+            <Label htmlFor="body" required>
+              {packet.bodyLabel}
             </Label>
-            {visual ? (
-              <p className="mt-0.5 text-xs text-steel-600">
-                Add on-image or landing text if it isn’t fully readable from the file alone.
-              </p>
-            ) : null}
+            <p className="mt-0.5 text-xs text-steel-600">{packet.bodyHelp}</p>
             <Textarea
               id="body"
               className="mt-1 min-h-24"
