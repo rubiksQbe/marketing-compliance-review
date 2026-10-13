@@ -101,9 +101,9 @@ export const ASSUMPTIONS: Assumption[] = [
   // —— Intake / creative ——
   {
     id: 'D7',
-    text: 'Visual assets require a creative file; text-only assets require exact copy.',
+    text: 'Every packet needs a proof image and consumer-facing copy; labels vary by asset type.',
     implication:
-      'Banner / social / affiliate creative → file required, accompanying copy optional. Email / landing → copy required, no file field.',
+      'Banner / social / affiliate → creative file + accompanying copy (caption / CTA / alt). Email → screenshot or HTML render + exact copy. Landing → page capture + exact copy + destination URL. Multi-file proofs stay out of scope for this demo.',
   },
   {
     id: 'D8',
