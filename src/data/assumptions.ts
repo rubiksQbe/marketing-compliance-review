@@ -16,7 +16,6 @@ export const KEY_ASSUMPTION_IDS = [
   'A3',
   'D9',
   'A6',
-  'D7',
   'A7',
 ] as const
 
