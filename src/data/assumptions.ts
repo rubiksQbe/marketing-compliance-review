@@ -86,7 +86,7 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'D4',
-    text: 'SLA clock is derived from risk tier — not an independent submitter choice.',
+    text: 'SLA (Service Level Agreement) clock is derived from risk tier — not an independent submitter choice.',
     implication:
       'High → 8h, Medium → 24h, Low → 48h (demo policy knobs: same-day / next-day / two-day). Stored as slaHours at submit/resubmit. A missed window does not close the request: it stays Needs review, the clock reads overdue, and it counts as Due soon until Approve, Decline, or Withdraw.',
   },
