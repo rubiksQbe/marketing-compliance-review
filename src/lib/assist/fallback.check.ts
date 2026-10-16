@@ -29,7 +29,9 @@ const request: ReviewRequest = {
 
 const result = fallbackAssist({ request })
 assert(result.source === 'fallback', 'source')
+assert(result.summary.trim().length > 20, 'summary required')
 assert(result.findings.length >= 2, 'expected multiple findings')
+assert(result.callouts.length >= 1, 'expected callouts')
 assert(
   result.findings.every((f) => f.reason.trim() && f.where.trim()),
   'each finding needs reason + where',
@@ -38,5 +40,13 @@ assert(
   result.findings.some((f) => f.code === 'unsubstantiated_claim' || f.code === 'misleading_net_impression'),
   'should flag guaranteed approval language',
 )
+assert(
+  result.callouts.every((c) => c.id && c.label && c.detail),
+  'callouts need id/label/detail',
+)
 
-console.log('fallbackAssist checks passed', result.findings.map((f) => f.code).join(','))
+console.log(
+  'fallbackAssist checks passed',
+  `findings=${result.findings.map((f) => f.code).join(',')}`,
+  `callouts=${result.callouts.length}`,
+)

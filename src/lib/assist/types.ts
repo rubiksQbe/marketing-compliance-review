@@ -6,8 +6,17 @@ export type AssistFinding = {
   where: string
 }
 
+export type AssistCallout = {
+  id: string
+  label: string
+  detail: string
+  relatedCodes?: ReasonCode[]
+}
+
 export type AssistResult = {
+  summary: string
   findings: AssistFinding[]
+  callouts: AssistCallout[]
   source: 'proxy' | 'local_key' | 'fallback'
 }
 

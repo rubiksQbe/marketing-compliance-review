@@ -382,21 +382,31 @@ export function ReviewPage() {
                           </button>
                         </div>
                         {assistLoading && (
-                          <p className="mt-1.5 text-[10px] text-steel-600">Reviewing packet…</p>
+                          <p className="mt-1.5 text-[10px] text-steel-600">Running triage…</p>
                         )}
                         {assistError && (
                           <p className="mt-1.5 text-[10px] text-danger">{assistError}</p>
                         )}
+                        {!assistLoading && assist?.summary && (
+                          <div className="mt-2">
+                            <p className="text-[10px] font-medium uppercase tracking-wide text-steel-600">
+                              Summary
+                            </p>
+                            <p className="mt-0.5 text-[10px] leading-snug text-navy-800">
+                              {assist.summary}
+                            </p>
+                          </div>
+                        )}
                         {!assistLoading && assist && assist.findings.length === 0 && (
-                          <p className="mt-1.5 text-[10px] text-steel-600">
-                            No issues flagged ({assist.source}). Confirm manually before Approve.
+                          <p className="mt-2 text-[10px] text-steel-600">
+                            No issues flagged. Confirm manually before Approve.
                           </p>
                         )}
                         {!assistLoading &&
                           assist?.findings.map((f) => (
                             <div
                               key={f.code}
-                              className="mt-2 border-t border-mist-100 pt-2 first:border-t-0 first:pt-0"
+                              className="mt-2 border-t border-mist-100 pt-2"
                             >
                               <p className="text-[11px] font-medium text-navy-800">
                                 {REASON_LABELS[f.code]}
@@ -409,9 +419,30 @@ export function ReviewPage() {
                               </p>
                             </div>
                           ))}
+                        {!assistLoading && assist && assist.callouts.length > 0 && (
+                          <div className="mt-2 border-t border-mist-100 pt-2">
+                            <p className="text-[10px] font-medium uppercase tracking-wide text-steel-600">
+                              Creative callouts
+                            </p>
+                            <ul className="mt-1 space-y-1.5">
+                              {assist.callouts.map((c) => (
+                                <li key={c.id} className="text-[10px] leading-snug text-steel-600">
+                                  <span className="font-medium text-navy-800">{c.label}</span>
+                                  <span className="mt-0.5 block">{c.detail}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                         {assist && !assistLoading && (
                           <p className="mt-2 text-[9px] text-steel-600">
-                            Source: {assist.source === 'proxy' ? 'API proxy' : assist.source === 'local_key' ? 'local key' : 'fallback rules'}
+                            Source:{' '}
+                            {assist.source === 'proxy'
+                              ? 'API proxy'
+                              : assist.source === 'local_key'
+                                ? 'local key (LLM/vision)'
+                                : 'fallback rules'}
+                            · triage only — you decide
                           </p>
                         )}
                       </div>

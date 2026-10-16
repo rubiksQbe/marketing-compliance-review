@@ -24,9 +24,10 @@ export function AssistSettingsPage() {
       </Link>
       <h1 className="mt-4 font-serif text-2xl text-navy-800">Assist settings</h1>
       <p className="mt-2 text-sm text-steel-600">
-        Production deployments must call <code className="text-[12px]">POST /api/assist</code> with
-        server-side credentials. A browser-held key is for local prototype trials only and is stored
-        in this browser’s localStorage.
+        Assist always runs desk-style triage (summary, findings, creative callouts) via heuristic
+        fallback. An optional OpenAI key upgrades wording and vision/OCR on proof images for local
+        trials. Production should call <code className="text-[12px]">POST /api/assist</code> with
+        server-side credentials — browser keys stay in this browser’s localStorage only.
       </p>
 
       <form

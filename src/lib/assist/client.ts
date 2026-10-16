@@ -1,7 +1,7 @@
 import type { ReasonCode } from '@/lib/types'
 import { fallbackAssist } from './fallback'
 import { getAssistApiKey } from './settings'
-import type { AssistFinding, AssistInput, AssistResult } from './types'
+import type { AssistCallout, AssistFinding, AssistInput, AssistResult } from './types'
 
 const MAX_IMAGE_CHARS = 120_000
 
@@ -16,7 +16,7 @@ const VALID = new Set<ReasonCode>([
   'other',
 ])
 
-function sanitize(findings: AssistFinding[]): AssistFinding[] {
+function sanitizeFindings(findings: AssistFinding[]): AssistFinding[] {
   const seen = new Set<ReasonCode>()
   const out: AssistFinding[] = []
   for (const f of findings) {
@@ -26,6 +26,48 @@ function sanitize(findings: AssistFinding[]): AssistFinding[] {
     out.push({ code: f.code, reason: f.reason.trim(), where: f.where.trim() })
   }
   return out
+}
+
+function sanitizeCallouts(raw: unknown): AssistCallout[] {
+  if (!Array.isArray(raw)) return []
+  const out: AssistCallout[] = []
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue
+    const c = item as Partial<AssistCallout>
+    if (!c.id?.trim() || !c.label?.trim() || !c.detail?.trim()) continue
+    const related = Array.isArray(c.relatedCodes)
+      ? c.relatedCodes.filter((code): code is ReasonCode => VALID.has(code as ReasonCode))
+      : undefined
+    out.push({
+      id: c.id.trim(),
+      label: c.label.trim(),
+      detail: c.detail.trim().slice(0, 400),
+      ...(related?.length ? { relatedCodes: related } : {}),
+    })
+    if (out.length >= 8) break
+  }
+  return out
+}
+
+function defaultSummary(findings: AssistFinding[], source: AssistResult['source']): string {
+  if (findings.length === 0) {
+    return `No issues returned (${source}). Confirm net impression and disclosures manually before Approve.`
+  }
+  return `Assist returned ${findings.length} finding(s) (${source}). Review where/reason and callouts; human decides Approve or Decline.`
+}
+
+function sanitizeResult(
+  data: { summary?: unknown; findings?: unknown; callouts?: unknown },
+  source: AssistResult['source'],
+): AssistResult | null {
+  if (!Array.isArray(data.findings)) return null
+  const findings = sanitizeFindings(data.findings as AssistFinding[])
+  const callouts = sanitizeCallouts(data.callouts)
+  const summary =
+    typeof data.summary === 'string' && data.summary.trim()
+      ? data.summary.trim().slice(0, 600)
+      : defaultSummary(findings, source)
+  return { summary, findings, callouts, source }
 }
 
 function packetPayload(request: AssistInput['request']) {
@@ -59,9 +101,12 @@ async function tryProxy(input: AssistInput): Promise<AssistResult | null> {
       body: JSON.stringify(packetPayload(input.request)),
     })
     if (!res.ok) return null
-    const data = (await res.json()) as { findings?: AssistFinding[] }
-    if (!Array.isArray(data.findings)) return null
-    return { findings: sanitize(data.findings), source: 'proxy' }
+    const data = (await res.json()) as {
+      summary?: unknown
+      findings?: unknown
+      callouts?: unknown
+    }
+    return sanitizeResult(data, 'proxy')
   } catch {
     return null
   }
@@ -82,7 +127,9 @@ async function tryLocalKey(input: AssistInput): Promise<AssistResult | null> {
     'other',
   ].join(', ')
 
-  const system = `You are a US consumer-finance marketing compliance assistant. Return ONLY JSON: {"findings":[{"code":"...","reason":"...","where":"..."}]}. Codes must be one of: ${codes}. Flag likely issues only. Never approve. Keep reason and where concise.`
+  const system = `You are a US consumer-finance marketing compliance triage assistant (not a decision engine). Return ONLY JSON:
+{"summary":"2-4 sentences for the reviewer","findings":[{"code":"...","reason":"...","where":"..."}],"callouts":[{"id":"short-id","label":"region name","detail":"quoted or paraphrased text on proof/copy","relatedCodes":["optional codes"]}]}.
+Codes must be one of: ${codes}. Flag likely issues only. Never approve. Keep reason, where, and callout detail concise. If a creative image is provided, OCR/read visible text and cite headline vs disclosure bands in callouts and where fields.`
 
   const userText = JSON.stringify(packetPayload({ ...input.request, creativeImage: undefined }), null, 2)
 
@@ -117,9 +164,12 @@ async function tryLocalKey(input: AssistInput): Promise<AssistResult | null> {
     }
     const raw = data.choices?.[0]?.message?.content
     if (!raw) return null
-    const parsed = JSON.parse(raw) as { findings?: AssistFinding[] }
-    if (!Array.isArray(parsed.findings)) return null
-    return { findings: sanitize(parsed.findings), source: 'local_key' }
+    const parsed = JSON.parse(raw) as {
+      summary?: unknown
+      findings?: unknown
+      callouts?: unknown
+    }
+    return sanitizeResult(parsed, 'local_key')
   } catch {
     return null
   }

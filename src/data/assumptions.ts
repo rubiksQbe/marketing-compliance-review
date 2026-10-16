@@ -155,9 +155,15 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'D15',
-    text: 'Compliance assist is hybrid: prefer POST /api/assist, optional local key for prototype trials, then heuristic fallback; never auto-Approve.',
+    text: 'Compliance assist is hybrid desk triage: prefer POST /api/assist, optional local key for LLM/vision trials, then heuristic fallback; never auto-Approve.',
     implication:
-      'Assist may pre-check findings with where + reason; a human still Approves or Declines. Production keeps API keys server-side.',
+      'Assist returns a summary, findings (where + reason), and creative callouts; may pre-check checklist items. A human still Approves or Declines. Production keeps API keys server-side; demos work offline via fallback.',
+  },
+  {
+    id: 'D17',
+    text: 'Demo seed High pending rows may use slaHours 24 so remaining time stays ≥12h at load; new High submits still use 8h.',
+    implication:
+      'Queue demos never start overdue or under the 12h floor. Production policy knobs remain High→8h / Med→24h / Low→48h on submit.',
   },
   {
     id: 'D16',
