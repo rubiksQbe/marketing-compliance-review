@@ -409,12 +409,19 @@ export function ReviewPage() {
                                 c.relatedCodes?.includes(f.code) ||
                                 (!c.relatedCodes?.length && c.label === f.where),
                             )
+                            // One line per finding; collapse callouts that quote the same copy.
+                            const quoteKey = (detail: string) => {
+                              const m = detail.match(/[“"]([^”"]+)[”"]/)
+                              return (m?.[1] ?? detail).toLowerCase().replace(/\s+/g, ' ').trim()
+                            }
                             const seen = new Set<string>()
                             const extras = related.filter((c) => {
-                              if (seen.has(c.detail)) return false
-                              seen.add(c.detail)
+                              const key = quoteKey(c.detail)
+                              if (seen.has(key)) return false
+                              seen.add(key)
                               return true
                             })
+                            const onCreative = extras[0]
                             return (
                               <div
                                 key={f.code}
@@ -430,15 +437,12 @@ export function ReviewPage() {
                                   <span className="font-medium text-navy-800">Reason:</span>{' '}
                                   {f.reason}
                                 </p>
-                                {extras.map((c) => (
-                                  <p
-                                    key={c.id}
-                                    className="mt-0.5 text-[10px] leading-snug text-steel-600"
-                                  >
+                                {onCreative && (
+                                  <p className="mt-0.5 text-[10px] leading-snug text-steel-600">
                                     <span className="font-medium text-navy-800">On creative:</span>{' '}
-                                    {c.detail}
+                                    {onCreative.detail}
                                   </p>
-                                ))}
+                                )}
                               </div>
                             )
                           })}
