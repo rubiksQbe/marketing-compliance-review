@@ -9,14 +9,16 @@ export interface Assumption {
  * Full list in this file; /assumptions (Key decisions) shows KEY_ASSUMPTIONS.
  * Keep current when product rules change.
  */
+/** Curated for /assumptions (Key decisions). Full log remains ASSUMPTIONS below. */
 export const KEY_ASSUMPTION_IDS = [
+  'D9',
+  'D2',
   'D3',
-  'D4',
+  'D15',
+  'D16',
+  'D14',
   'A1c',
   'A3',
-  'D9',
-  'A6',
-  'A7',
 ] as const
 
 export const ASSUMPTIONS: Assumption[] = [
@@ -149,15 +151,15 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'D14',
-    text: 'Multi-reviewer safety requires a shared backend with claim/lock (or optimistic concurrency); next-in-queue alone is not a concurrency control.',
+    text: 'After decide, advance to the next pending item; reviewers can also step Previous / Next through the pending queue from the review header.',
     implication:
-      'This client prototype advances to the next pending item after decide but cannot prevent two browsers from deciding the same packet.',
+      'Queue order is High → Low, then nearest due. Previous/Next and post-decide advance are navigation aids — not a multi-reviewer claim/lock (that needs a shared backend).',
   },
   {
     id: 'D15',
     text: 'Compliance assist is hybrid desk triage: prefer POST /api/assist, optional local key for LLM/vision trials, then heuristic fallback; never auto-Approve.',
     implication:
-      'Assist returns a short summary plus findings (Where / Reason / On creative); may pre-check checklist items. Optional local key via Review queue → AI assist; production uses POST /api/assist. Never auto-Approves.',
+      'Assist shows summary + findings (Where / Reason / On creative), may pre-check boxes, and can suggest raising risk tier when flags need a deeper checklist (raise re-runs Assist and checks new boxes). Optional local key via Review queue → AI assist.',
   },
   {
     id: 'D17',

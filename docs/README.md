@@ -1,6 +1,6 @@
 # Documentation map
 
-**Canonical decisions:** `src/data/assumptions.ts` (in-app: **demo notes · key decisions**).  
+**Canonical decisions:** `src/data/assumptions.ts` (in-app **Key decisions** curated list: D9, D2, D3, D15, D16, D14, A1c, A3).  
 **Living critique:** `docs/assumptions-evolution.md`  
 **Assist API contract:** `docs/api/assist.md`  
 **PRD / early design:** historical baseline — prefer assumptions.ts when they conflict.

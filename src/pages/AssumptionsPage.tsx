@@ -14,7 +14,8 @@ export function AssumptionsPage() {
 
       <h1 className="mt-4 font-serif text-2xl text-navy-800">Key decisions</h1>
       <p className="mt-1 text-sm text-steel-600">
-        The decisions that most shape this demo. Full log:{' '}
+        The choices that most shape the workbench today — disposition, risk depth, Assist,
+        regulation map, and who submits. Full log:{' '}
         <code className="text-[12px]">src/data/assumptions.ts</code>.
       </p>
 
