@@ -62,11 +62,19 @@ export function QueuePage() {
 
   return (
     <div className="animate-in">
-      <div className="mb-6">
-        <h1 className="font-serif text-2xl text-navy-800">Review queue</h1>
-        <p className="mt-1 text-sm text-steel-600">
-          High → Low, then nearest due. Higher risk opens a deeper compliance checklist.
-        </p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="font-serif text-2xl text-navy-800">Review queue</h1>
+          <p className="mt-1 text-sm text-steel-600">
+            High → Low, then nearest due. Higher risk opens a deeper compliance checklist.
+          </p>
+        </div>
+        <Link
+          to="/assist-settings"
+          className="shrink-0 text-sm font-medium text-navy-800 underline underline-offset-2 hover:text-steel-600"
+        >
+          AI assist
+        </Link>
       </div>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-3">

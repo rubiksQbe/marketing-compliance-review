@@ -28,14 +28,6 @@ export function AppShell() {
               <p className="font-medium text-navy-800">{session.name}</p>
               <p className="text-steel-600">{KIND_LABELS[session.kind]}</p>
             </div>
-            {session.role === 'reviewer' && (
-              <Link
-                to="/assist-settings"
-                className="hidden text-xs font-medium text-steel-600 hover:text-navy-800 sm:inline"
-              >
-                Assist
-              </Link>
-            )}
             <Button
               variant="ghost"
               icon={<SignOut size={18} weight="regular" />}

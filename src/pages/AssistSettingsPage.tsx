@@ -22,7 +22,7 @@ export function AssistSettingsPage() {
       >
         <ArrowLeft size={12} /> Back to queue
       </Link>
-      <h1 className="mt-4 font-serif text-2xl text-navy-800">Assist settings</h1>
+      <h1 className="mt-4 font-serif text-2xl text-navy-800">AI assist</h1>
       <p className="mt-2 text-sm text-steel-600">
         Assist always runs desk-style triage (summary, findings, creative callouts) via heuristic
         fallback. An optional OpenAI key upgrades wording and vision/OCR on proof images for local
