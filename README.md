@@ -23,7 +23,8 @@ Replaces Excel + email with a risk-tiered queue, structured intake, one-screen d
 - **Tier raise from Assist** — when flags need a deeper checklist, suggest Raise; re-run and pre-check new boxes.
 - **Content risk on submit** — intake claim types + copy/URL scan; higher signal wins so underflags don’t stay Low.
 - **Robust seeds (v7)** — ~20 promo packets, pending due ≥12h, subtle decline cases Assist catches offline.
-- **AI assist** on the Review queue (mobile-visible); optional **OpenAI** key via Vite `/api/openai` proxy; Submit form back link.
+- **AI assist** on the Review queue (mobile-visible); optional **OpenAI** key via Vite `/api/openai` proxy.
+  -# Note: Since I am in China and my eSim blocks OpenAI, I was unable to test using an OpenAI key myself.
 - **Key decisions** page refreshed (D9, D2, D3, D15, D16, D14, A1c, A3).
 
 ## Run locally
