@@ -403,48 +403,45 @@ export function ReviewPage() {
                           </p>
                         )}
                         {!assistLoading &&
-                          assist?.findings.map((f) => (
-                            <div
-                              key={f.code}
-                              className="mt-2 border-t border-mist-100 pt-2"
-                            >
-                              <p className="text-[11px] font-medium text-navy-800">
-                                {REASON_LABELS[f.code]}
-                              </p>
-                              <p className="mt-0.5 text-[10px] text-steel-600">
-                                <span className="font-medium text-navy-800">Where:</span> {f.where}
-                              </p>
-                              <p className="mt-0.5 text-[10px] leading-snug text-steel-600">
-                                <span className="font-medium text-navy-800">Reason:</span> {f.reason}
-                              </p>
-                            </div>
-                          ))}
-                        {!assistLoading && assist && assist.callouts.length > 0 && (
-                          <div className="mt-2 border-t border-mist-100 pt-2">
-                            <p className="text-[10px] font-medium uppercase tracking-wide text-steel-600">
-                              Creative callouts
-                            </p>
-                            <ul className="mt-1 space-y-1.5">
-                              {assist.callouts.map((c) => (
-                                <li key={c.id} className="text-[10px] leading-snug text-steel-600">
-                                  <span className="font-medium text-navy-800">{c.label}</span>
-                                  <span className="mt-0.5 block">{c.detail}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        {assist && !assistLoading && (
-                          <p className="mt-2 text-[9px] text-steel-600">
-                            Source:{' '}
-                            {assist.source === 'proxy'
-                              ? 'API proxy'
-                              : assist.source === 'local_key'
-                                ? 'local key (LLM/vision)'
-                                : 'fallback rules'}
-                            · triage only — you decide
-                          </p>
-                        )}
+                          assist?.findings.map((f) => {
+                            const related = (assist.callouts ?? []).filter(
+                              (c) =>
+                                c.relatedCodes?.includes(f.code) ||
+                                (!c.relatedCodes?.length && c.label === f.where),
+                            )
+                            const seen = new Set<string>()
+                            const extras = related.filter((c) => {
+                              if (seen.has(c.detail)) return false
+                              seen.add(c.detail)
+                              return true
+                            })
+                            return (
+                              <div
+                                key={f.code}
+                                className="mt-2 border-t border-mist-100 pt-2"
+                              >
+                                <p className="text-[11px] font-medium text-navy-800">
+                                  {REASON_LABELS[f.code]}
+                                </p>
+                                <p className="mt-0.5 text-[10px] text-steel-600">
+                                  <span className="font-medium text-navy-800">Where:</span> {f.where}
+                                </p>
+                                <p className="mt-0.5 text-[10px] leading-snug text-steel-600">
+                                  <span className="font-medium text-navy-800">Reason:</span>{' '}
+                                  {f.reason}
+                                </p>
+                                {extras.map((c) => (
+                                  <p
+                                    key={c.id}
+                                    className="mt-0.5 text-[10px] leading-snug text-steel-600"
+                                  >
+                                    <span className="font-medium text-navy-800">On creative:</span>{' '}
+                                    {c.detail}
+                                  </p>
+                                ))}
+                              </div>
+                            )
+                          })}
                       </div>
 
                       <p className="mb-1 text-[11px] font-medium text-navy-800">Compliance issues</p>

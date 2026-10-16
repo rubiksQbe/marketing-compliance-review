@@ -61,8 +61,8 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   const disclosures = request.disclosures.toLowerCase()
   const combined = `${body}\n${disclosures}`
   const hasProof = Boolean(request.creativeImage)
-  const copyLabel = hasProof ? 'Headline band (proof)' : 'Creative copy'
-  const discLabel = hasProof ? 'Disclosure footer (proof)' : 'Disclosures field'
+  const copyLabel = hasProof ? 'Headline band' : 'Creative copy'
+  const discLabel = hasProof ? 'Disclosure footer' : 'Disclosures field'
 
   const rateInBody =
     request.claimFlags.includes('apr_or_rate') ||
@@ -203,12 +203,12 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
       allowed,
       'misleading_net_impression',
       'Urgency framing can distort the net impression if scarcity is not genuine or disclosed.',
-      hasProof ? 'CTA band (proof)' : 'Urgency / CTA language',
+      hasProof ? 'CTA band' : 'Urgency / CTA language',
     )
     pushCallout(
       callouts,
       'urgency',
-      hasProof ? 'CTA band (proof)' : 'Urgency / CTA language',
+      hasProof ? 'CTA band' : 'Urgency / CTA language',
       `Scarcity wording: ${quote(request.body)}`,
       ['misleading_net_impression'],
     )
