@@ -229,29 +229,6 @@ export function ReviewPage() {
               <ArrowLeft size={12} /> {backLabel} · {request.id}
             </Link>
             <span className="inline-flex flex-wrap items-center gap-1.5">
-              {queueNav && queueNav.total > 0 && (
-                <span className="inline-flex items-center gap-1.5 text-[11px]">
-                  <button
-                    type="button"
-                    disabled={!queueNav.prev}
-                    className="font-medium text-navy-800 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:text-steel-600 disabled:no-underline"
-                    onClick={() => queueNav.prev && navigate(`/review/${queueNav.prev.id}`)}
-                  >
-                    &lt; Previous
-                  </button>
-                  <span className="text-steel-600 tabular-nums">
-                    {queueNav.index >= 0 ? queueNav.index + 1 : '—'} / {queueNav.total}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={!queueNav.next}
-                    className="font-medium text-navy-800 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:text-steel-600 disabled:no-underline"
-                    onClick={() => queueNav.next && navigate(`/review/${queueNav.next.id}`)}
-                  >
-                    Next &gt;
-                  </button>
-                </span>
-              )}
               {isReviewer ? (
                 request.status === 'pending' ? (
                   <>
@@ -291,17 +268,42 @@ export function ReviewPage() {
           <h1 className="font-serif text-lg text-navy-800 leading-snug sm:text-[18px]">
             {request.title}
           </h1>
-          <p className="mt-2.5 text-[11px] text-steel-600 leading-snug">
-            Submitted by <strong className="font-medium text-navy-800">{request.submitter}</strong>
-            {' · '}
-            {request.source === 'affiliate' ? 'Affiliate manager' : 'Internal marketer'}
-            {request.partnerName ? (
-              <>
-                {' · Partner: '}
-                <strong className="font-medium text-navy-800">{request.partnerName}</strong>
-              </>
-            ) : null}
-          </p>
+          <div className="mt-2.5 flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+            <p className="min-w-0 flex-1 text-[11px] leading-snug text-steel-600">
+              Submitted by <strong className="font-medium text-navy-800">{request.submitter}</strong>
+              {' · '}
+              {request.source === 'affiliate' ? 'Affiliate manager' : 'Internal marketer'}
+              {request.partnerName ? (
+                <>
+                  {' · Partner: '}
+                  <strong className="font-medium text-navy-800">{request.partnerName}</strong>
+                </>
+              ) : null}
+            </p>
+            {queueNav && queueNav.total > 0 && (
+              <span className="inline-flex shrink-0 items-center gap-1.5 text-[11px]">
+                <button
+                  type="button"
+                  disabled={!queueNav.prev}
+                  className="font-medium text-navy-800 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:text-steel-600 disabled:no-underline"
+                  onClick={() => queueNav.prev && navigate(`/review/${queueNav.prev.id}`)}
+                >
+                  &lt; Previous
+                </button>
+                <span className="text-steel-600 tabular-nums">
+                  {queueNav.index >= 0 ? queueNav.index + 1 : '—'} / {queueNav.total}
+                </span>
+                <button
+                  type="button"
+                  disabled={!queueNav.next}
+                  className="font-medium text-navy-800 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:text-steel-600 disabled:no-underline"
+                  onClick={() => queueNav.next && navigate(`/review/${queueNav.next.id}`)}
+                >
+                  Next &gt;
+                </button>
+              </span>
+            )}
+          </div>
         </header>
 
         <div className="grid flex-1 grid-cols-1 lg:min-h-0 lg:grid-cols-[2fr_1fr] lg:overflow-hidden">
