@@ -1,7 +1,7 @@
 # Review assist, regulation map, and next-in-queue — Design Spec
 
 **Date:** 2026-10-16  
-**Product:** ClearPath Review (production-oriented prototype)  
+**Product:** ClearPath Financial Market Compliance Review  
 **Status:** Approved for planning (brainstorm 2026-10-16)  
 **Parent:** `docs/superpowers/specs/2026-10-12-clearpath-compliance-review-design.md`
 
