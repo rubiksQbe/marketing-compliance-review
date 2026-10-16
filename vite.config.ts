@@ -20,12 +20,12 @@ export default defineConfig({
     // Listen on all interfaces so Cursor/cloud port forwarding can reach the app.
     host: '0.0.0.0',
     strictPort: true,
-    // Same-origin proxy so browser-held Groq keys avoid CORS (dev / preview only).
+    // Same-origin proxy so browser-held OpenAI keys avoid CORS (dev / preview only).
     proxy: {
-      '/api/groq': {
-        target: 'https://api.groq.com',
+      '/api/openai': {
+        target: 'https://api.openai.com',
         changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/api\/groq/, '/openai/v1'),
+        rewrite: (p) => p.replace(/^\/api\/openai/, '/v1'),
       },
     },
   },
@@ -34,10 +34,10 @@ export default defineConfig({
     host: '0.0.0.0',
     strictPort: true,
     proxy: {
-      '/api/groq': {
-        target: 'https://api.groq.com',
+      '/api/openai': {
+        target: 'https://api.openai.com',
         changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/api\/groq/, '/openai/v1'),
+        rewrite: (p) => p.replace(/^\/api\/openai/, '/v1'),
       },
     },
   },

@@ -2,7 +2,7 @@
 
 Production BFF shape. Static GitHub Pages cannot host this route.
 
-Client resolution: **proxy → optional free Groq key (AI assist page, via Vite `/api/groq` proxy in dev) → heuristic fallback**. Never auto-Approve.
+Client resolution: **proxy → optional OpenAI key (AI assist page, via Vite `/api/openai` proxy in dev) → heuristic fallback**. Never auto-Approve.
 
 ## Request
 
@@ -58,4 +58,4 @@ Omit `creativeImage` when oversized (~120k char client skip).
 - `summary`, and each finding’s `code` / `reason` / `where`, required  
 - `callouts` optional; UI merges related callout detail into findings (one **On creative** line)  
 - Optional `suggestedTier` (`low` | `medium` | `high`) when findings need a deeper checklist than the packet’s current tier; the client also infers this from content + finding codes  
-- Auth: server-side keys only in production; browser Groq key is prototype-only via **Review queue → AI assist** (dev/preview)
+- Auth: server-side keys only in production; browser OpenAI key is prototype-only via **Review queue → AI assist** (dev/preview)

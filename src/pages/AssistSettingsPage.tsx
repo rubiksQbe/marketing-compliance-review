@@ -24,20 +24,18 @@ export function AssistSettingsPage() {
       </Link>
       <h1 className="mt-4 font-serif text-2xl text-navy-800">AI assist</h1>
       <p className="mt-2 text-sm text-steel-600">
-        Assist always runs desk-style triage via heuristic fallback. For local LLM upgrades, paste a
-        free{' '}
+        Assist always runs desk-style triage via heuristic fallback. For local LLM upgrades, paste an{' '}
         <a
-          href="https://console.groq.com/keys"
+          href="https://platform.openai.com/api-keys"
           target="_blank"
           rel="noreferrer"
           className="font-medium text-navy-800 underline underline-offset-2"
         >
-          Groq API key
-        </a>{' '}
-        (OpenAI-compatible). Dev/preview proxies requests through{' '}
-        <code className="text-[12px]">/api/groq</code> to avoid CORS. Production should use{' '}
-        <code className="text-[12px]">POST /api/assist</code> with server-side credentials — browser
-        keys stay in this browser’s localStorage only.
+          OpenAI API key
+        </a>
+        . Dev/preview proxies requests through <code className="text-[12px]">/api/openai</code> to
+        avoid CORS. Production should use <code className="text-[12px]">POST /api/assist</code> with
+        server-side credentials — browser keys stay in this browser’s localStorage only.
       </p>
 
       <form
@@ -49,7 +47,7 @@ export function AssistSettingsPage() {
         }}
       >
         <div>
-          <Label htmlFor="assist-key">Groq API key (optional, free tier)</Label>
+          <Label htmlFor="assist-key">OpenAI API key (optional)</Label>
           <Input
             id="assist-key"
             className="mt-1"
@@ -60,7 +58,7 @@ export function AssistSettingsPage() {
               setKey(e.target.value)
               setSaved(false)
             }}
-            placeholder="gsk_…"
+            placeholder="sk-…"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -83,8 +81,8 @@ export function AssistSettingsPage() {
       </form>
 
       <p className="mt-6 text-xs text-steel-600">
-        Resolution order: API proxy → Groq local key → heuristic fallback. Model:{' '}
-        <code className="text-[11px]">llama-3.3-70b-versatile</code>. See{' '}
+        Resolution order: API proxy → OpenAI local key → heuristic fallback. Model:{' '}
+        <code className="text-[11px]">gpt-4o-mini</code>. See{' '}
         <code className="text-[11px]">docs/api/assist.md</code>.
       </p>
     </div>
