@@ -6,6 +6,7 @@ import {
   isActiveQueueStatus,
   isDeclinedStatus,
 } from '@/lib/labels'
+import { orderedPendingQueue } from '@/lib/queueOrder'
 import { useStore } from '@/lib/store'
 import { formatSla, formatWhen, remainingFor } from '@/lib/time'
 import type { RiskTier } from '@/lib/types'
@@ -26,10 +27,15 @@ export function QueuePage() {
     [visibleRequests],
   )
 
+  const pending = useMemo(
+    () => orderedPendingQueue(activeRequests),
+    [activeRequests],
+  )
+
   const filtered = useMemo(() => {
+    if (statusFilter === 'pending') return pending
     const list = activeRequests.filter((r) => {
       if (statusFilter === 'all') return true
-      if (statusFilter === 'pending') return r.status === 'pending'
       if (statusFilter === 'approved') return r.status === 'approved'
       return isDeclinedStatus(r.status)
     })
@@ -38,9 +44,8 @@ export function QueuePage() {
       if (risk !== 0) return risk
       return remainingFor(a) - remainingFor(b)
     })
-  }, [activeRequests, statusFilter])
+  }, [activeRequests, pending, statusFilter])
 
-  const pending = activeRequests.filter((r) => r.status === 'pending')
   const declined = activeRequests.filter((r) => isDeclinedStatus(r.status))
   const approved = activeRequests.filter((r) => r.status === 'approved')
   const atRisk = pending.filter((r) => remainingFor(r) < r.slaHours * 0.25)
