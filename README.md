@@ -44,15 +44,6 @@ npm run build
 npm run preview
 ```
 
-## Demo flow
-
-1. **Landing** — choose Review or Submit, then a demo identity  
-2. **Identity** — Jordan Lee (reviewer), Ava Chen (internal marketer), or Sam Ortiz (affiliate manager)  
-3. **Reviewer** sees the org-wide queue; **submitters** see only **Your submitted requests**  
-4. Open a pending item (e.g. **CP-1050**) for the one-screen review workspace (Approve, or check findings → Decline)  
-
-Data persists in `localStorage`. Header **Reset** restores the seed dataset. **Switch** returns to the landing role cards.
-
 ## AI assist (optional local LLM key)
 
 Assist runs automatically when a reviewer opens a **pending** request (seeds and new submits). Resolution order:
