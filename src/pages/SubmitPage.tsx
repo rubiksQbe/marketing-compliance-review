@@ -9,7 +9,7 @@ import {
   PRODUCT_LABELS,
   isDeclinedStatus,
 } from '@/lib/labels'
-import { scoreRisk } from '@/lib/risk'
+import { resolveSubmitRisk } from '@/lib/risk'
 import { useStore } from '@/lib/store'
 import type {
   AssetType,
@@ -96,9 +96,17 @@ export function SubmitPage() {
   const packet = creativePacketCopy(assetType)
 
   const risk = useMemo(() => {
-    if (!product && !channel && claimFlags.length === 0) return null
-    return scoreRisk({ product, channel, claimFlags })
-  }, [product, channel, claimFlags])
+    if (!product && !channel && claimFlags.length === 0 && !body.trim()) return null
+    return resolveSubmitRisk({
+      product,
+      channel,
+      claimFlags,
+      body,
+      disclosures,
+      destinationUrl,
+      source,
+    })
+  }, [product, channel, claimFlags, body, disclosures, destinationUrl, source])
 
   const isDirty = useMemo(() => {
     if (!editing || !existing) return true
@@ -208,7 +216,15 @@ export function SubmitPage() {
       return
     }
 
-    const riskTier = scoreRisk({ product, channel, claimFlags }).tier
+    const riskTier = resolveSubmitRisk({
+      product,
+      channel,
+      claimFlags,
+      body: body.trim(),
+      disclosures: disclosures.trim(),
+      destinationUrl: destinationUrl.trim(),
+      source,
+    }).tier
 
     const payload = {
       title: title.trim(),
@@ -474,17 +490,20 @@ export function SubmitPage() {
                 <RiskBadge tier={risk.tier} short />
                 <span className="text-xs text-steel-600">
                   Score {risk.score} · Low 0–1 · Medium 2–3 · High 4+
+                  {risk.contentRaised
+                    ? ` · intake ${risk.intake.tier}, content raised to ${risk.tier}`
+                    : ''}
                 </span>
               </div>
               <p className="text-xs text-steel-600">
                 {risk.factors.length
                   ? risk.factors.join(' · ')
-                  : 'No elevated signals — stays Low until channel, product, or claim types add weight.'}
+                  : 'No elevated signals — stays Low until channel, product, claim types, or copy add weight.'}
               </p>
             </div>
           ) : (
             <p className="mt-1.5 text-sm text-steel-600">
-              Select product, channel, or claim types to see a suggestion.
+              Select product, channel, or claim types (or paste copy) to see a suggestion.
             </p>
           )}
         </div>

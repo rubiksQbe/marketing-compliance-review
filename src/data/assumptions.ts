@@ -79,7 +79,7 @@ export const ASSUMPTIONS: Assumption[] = [
     id: 'D3',
     text: 'Risk tier is auto-suggested from product, channel, and claim types; compliance may override.',
     implication:
-      'Submitters see a read-only suggestion. Reviewers can change tier on pending items (Activity: Risk updated; due window recalculated from original submit).',
+      'Suggestion uses intake claim types plus content scan (copy/URL) — max wins on submit. Assist may suggest raising tier when flags need deeper checklist; raising re-runs Assist and pre-checks newly available boxes. Reviewers can still override tier on pending items.',
   },
   {
     id: 'D4',

@@ -45,6 +45,24 @@ assert(
   'callouts need id/label/detail',
 )
 
+// Low-tier packet with High-only signals should still surface those findings + suggest raise
+const lowUnderflagged = fallbackAssist({
+  request: {
+    ...request,
+    riskTier: 'low',
+    body: 'From 6.99% APR via our partners — apply now!',
+    disclosures: 'Offer subject to credit approval.',
+    claimFlags: [],
+    source: 'affiliate',
+    destinationUrl: 'https://partners.clearpath.example/loans',
+  },
+})
+assert(
+  lowUnderflagged.findings.some((f) => f.code === 'trigger_terms_incomplete'),
+  'low packet still detects trigger terms',
+)
+assert(lowUnderflagged.suggestedTier === 'high', 'should suggest high checklist')
+
 console.log(
   'fallbackAssist checks passed',
   `findings=${result.findings.map((f) => f.code).join(',')}`,

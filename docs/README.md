@@ -25,7 +25,8 @@ Risk-tiered compliance review workbench: structured intake → queue → one-scr
 | **Proof image + copy** on every asset type | Visual packets still need caption/CTA/alt; email/landing need screenshot/capture |
 | Soft **Withdraw** (not hard delete) | Keep audit evidence |
 | **Next pending** after decide | Desk walk; not a concurrency lock (needs backend) |
-| **Hybrid Assist** (proxy → local key → rules); never auto-Approve | Triage only; LLM optional |
+| **Hybrid Assist** (proxy → local key → rules); never auto-Approve | Triage only; LLM optional; may suggest raising tier so deeper checkboxes appear and get pre-checked |
+| **Content risk on submit** | Intake claim types + copy/URL scan; **max** wins so underflagging doesn’t silently stay Low |
 | **Regulation map** slide-over, no legal disclaimer | Official links on demand; keep checklist vocabulary plain |
 
 ---

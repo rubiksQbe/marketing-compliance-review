@@ -3,7 +3,13 @@ import { RegulationMapDrawer } from '@/components/RegulationMapDrawer'
 import { RiskBadge, StatusBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { Select, Textarea } from '@/components/ui/field'
-import { FINDINGS, REVIEW_DEPTH_COPY, findingsForTier, fixesForCodes } from '@/data/findings'
+import {
+  FINDINGS,
+  REVIEW_DEPTH_COPY,
+  findingsForTier,
+  fixesForCodes,
+  fromTierForCode,
+} from '@/data/findings'
 import { useAutoHideScroll } from '@/hooks/useAutoHideScroll'
 import { assistReview } from '@/lib/assist/client'
 import type { AssistResult } from '@/lib/assist/types'
@@ -18,6 +24,7 @@ import {
   isVisualAsset,
 } from '@/lib/labels'
 import { nextPendingAfter } from '@/lib/queueOrder'
+import { tierRank } from '@/lib/risk'
 import { useStore } from '@/lib/store'
 import { formatSla } from '@/lib/time'
 import type { ReasonCode, RiskTier } from '@/lib/types'
@@ -397,6 +404,30 @@ export function ReviewPage() {
                             </p>
                           </div>
                         )}
+                        {!assistLoading &&
+                          assist?.suggestedTier &&
+                          tierRank(assist.suggestedTier) > tierRank(request.riskTier) && (
+                            <div className="mt-2 rounded-[5px] border border-warn/40 bg-warn-soft/60 px-2 py-1.5">
+                              <p className="text-[10px] leading-snug text-navy-800">
+                                Checklist is {RISK_LABELS[request.riskTier]}; Assist needs{' '}
+                                {RISK_LABELS[assist.suggestedTier]} depth for all flagged issues.
+                              </p>
+                              <button
+                                type="button"
+                                className="mt-1 text-[10px] font-medium text-navy-800 underline underline-offset-2 hover:text-steel-600"
+                                onClick={() => {
+                                  if (!session || !assist.suggestedTier) return
+                                  updateRiskTier(
+                                    request.id,
+                                    assist.suggestedTier,
+                                    session.name,
+                                  )
+                                }}
+                              >
+                                Raise to {RISK_LABELS[assist.suggestedTier]}
+                              </button>
+                            </div>
+                          )}
                         {!assistLoading && assist && assist.findings.length === 0 && (
                           <p className="mt-2 text-[10px] text-steel-600">
                             No issues flagged. Confirm manually before Approve.
@@ -404,12 +435,13 @@ export function ReviewPage() {
                         )}
                         {!assistLoading &&
                           assist?.findings.map((f) => {
+                            const onChecklist = checklist.some((c) => c.code === f.code)
+                            const needTier = fromTierForCode(f.code)
                             const related = (assist.callouts ?? []).filter(
                               (c) =>
                                 c.relatedCodes?.includes(f.code) ||
                                 (!c.relatedCodes?.length && c.label === f.where),
                             )
-                            // One line per finding; collapse callouts that quote the same copy.
                             const quoteKey = (detail: string) => {
                               const m = detail.match(/[“"]([^”"]+)[”"]/)
                               return (m?.[1] ?? detail).toLowerCase().replace(/\s+/g, ' ').trim()
@@ -429,6 +461,11 @@ export function ReviewPage() {
                               >
                                 <p className="text-[11px] font-medium text-navy-800">
                                   {REASON_LABELS[f.code]}
+                                  {!onChecklist && (
+                                    <span className="ml-1 font-normal text-warn">
+                                      (needs {RISK_LABELS[needTier]} checklist)
+                                    </span>
+                                  )}
                                 </p>
                                 <p className="mt-0.5 text-[10px] text-steel-600">
                                   <span className="font-medium text-navy-800">Where:</span> {f.where}

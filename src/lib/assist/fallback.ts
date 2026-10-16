@@ -1,5 +1,6 @@
-import { findingsForTier } from '@/data/findings'
+import { minTierForCodes } from '@/data/findings'
 import { ASSET_LABELS } from '@/lib/labels'
+import { inferContentRisk, maxRiskTier, tierRank } from '@/lib/risk'
 import type { ReasonCode } from '@/lib/types'
 import type { AssistCallout, AssistFinding, AssistInput, AssistResult } from './types'
 
@@ -14,18 +15,14 @@ const VALID = new Set<ReasonCode>([
   'other',
 ])
 
-function allowedFor(request: AssistInput['request']): Set<ReasonCode> {
-  return new Set(findingsForTier(request.riskTier).map((f) => f.code))
-}
-
+/** Detect all policy hits regardless of current checklist depth. */
 function pushFinding(
   out: AssistFinding[],
-  allowed: Set<ReasonCode>,
   code: ReasonCode,
   reason: string,
   where: string,
 ) {
-  if (!VALID.has(code) || !allowed.has(code)) return
+  if (!VALID.has(code)) return
   if (out.some((f) => f.code === code)) return
   out.push({ code, reason, where })
 }
@@ -56,7 +53,6 @@ function quote(text: string, max = 100): string {
 export function fallbackAssist({ request }: AssistInput): AssistResult {
   const findings: AssistFinding[] = []
   const callouts: AssistCallout[] = []
-  const allowed = allowedFor(request)
   const body = request.body.toLowerCase()
   const disclosures = request.disclosures.toLowerCase()
   const combined = `${body}\n${disclosures}`
@@ -76,7 +72,6 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   if (request.disclosures.trim().length < 40) {
     pushFinding(
       findings,
-      allowed,
       'missing_disclosure',
       'Disclosure text is thin relative to a consumer-facing offer; expand material terms near the claim.',
       discLabel,
@@ -93,14 +88,12 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   if (rateInBody && !rateInDisc) {
     pushFinding(
       findings,
-      allowed,
       'trigger_terms_incomplete',
       'Rate/APR or “from / as low as” language appears without matching Reg Z-style accompanying terms in disclosures.',
       copyLabel,
     )
     pushFinding(
       findings,
-      allowed,
       'missing_disclosure',
       'APR or rate claim needs clear accompanying disclosure near the claim.',
       `${copyLabel} vs ${discLabel}`,
@@ -121,14 +114,12 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   ) {
     pushFinding(
       findings,
-      allowed,
       'unsubstantiated_claim',
       'Absolute or soft-guarantee approval language is typically unsubstantiated for consumer credit ads.',
       copyLabel,
     )
     pushFinding(
       findings,
-      allowed,
       'misleading_net_impression',
       'Net impression may overstate likelihood of approval or understate underwriting.',
       copyLabel,
@@ -145,14 +136,12 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   if (/instant funding|funded instantly|money in minutes guaranteed/i.test(body)) {
     pushFinding(
       findings,
-      allowed,
       'unsubstantiated_claim',
       'Absolute funding-speed claims need substantiation and clear exceptions.',
       copyLabel,
     )
     pushFinding(
       findings,
-      allowed,
       'misleading_net_impression',
       '“Instant” funding can distort net impression if funding is not immediate for all applicants.',
       copyLabel,
@@ -173,14 +162,12 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   ) {
     pushFinding(
       findings,
-      allowed,
       'unsubstantiated_claim',
       'Broad fee-free claim needs exceptions or product-limited substantiation in or next to the creative.',
       copyLabel,
     )
     pushFinding(
       findings,
-      allowed,
       'missing_disclosure',
       'Fee claim lacks proximate exceptions or material fee disclosure.',
       discLabel,
@@ -200,7 +187,6 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   ) {
     pushFinding(
       findings,
-      allowed,
       'misleading_net_impression',
       'Urgency framing can distort the net impression if scarcity is not genuine or disclosed.',
       hasProof ? 'CTA band' : 'Urgency / CTA language',
@@ -222,7 +208,6 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   ) {
     pushFinding(
       findings,
-      allowed,
       'affiliate_relationship_unclear',
       'Affiliate-sourced or partner-destination packet lacks clear paid/partner relationship language near the offer.',
       discLabel,
@@ -243,7 +228,6 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   ) {
     pushFinding(
       findings,
-      allowed,
       'unsubstantiated_claim',
       'Comparison claim needs a clear basis and as-of context in or next to the creative.',
       copyLabel,
@@ -267,7 +251,6 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   ) {
     pushFinding(
       findings,
-      allowed,
       'offer_landing_mismatch',
       'Partner destination with material offer language should disclose that terms may differ after underwriting.',
       'Destination URL vs disclosures',
@@ -289,14 +272,12 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   ) {
     pushFinding(
       findings,
-      allowed,
       'affiliate_relationship_unclear',
       'Endorsement-style / first-person approval story needs clear paid relationship disclosure.',
       copyLabel,
     )
     pushFinding(
       findings,
-      allowed,
       'misleading_net_impression',
       'Personal approval anecdote can imply typical results without qualification.',
       copyLabel,
@@ -313,14 +294,12 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   if (/lock your rate|rate lock/i.test(body) && request.disclosures.trim().length < 90) {
     pushFinding(
       findings,
-      allowed,
       'missing_disclosure',
       'Rate-lock marketing needs material caveats (availability, qualification, not a commitment).',
       discLabel,
     )
     pushFinding(
       findings,
-      allowed,
       'misleading_net_impression',
       '“Lock your rate” can overstate certainty without proximate limitations.',
       copyLabel,
@@ -353,15 +332,33 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
   }
 
   const asset = ASSET_LABELS[request.assetType] ?? request.assetType
+  const contentTier = inferContentRisk({
+    body: request.body,
+    disclosures: request.disclosures,
+    destinationUrl: request.destinationUrl,
+    source: request.source,
+  }).tier
+  const findingsTier = minTierForCodes(findings.map((f) => f.code))
+  const needed = maxRiskTier(contentTier, findingsTier)
+  const suggestedTier =
+    tierRank(needed) > tierRank(request.riskTier) ? needed : undefined
 
   let summary: string
   if (findings.length === 0) {
     summary = `No policy hits on this ${asset}. ${
       hasProof ? 'Proof image present — ' : ''
     }Confirm net impression, disclosure proximity, and landing match manually before Approve.`
+  } else if (suggestedTier) {
+    summary = `Triage flagged ${findings.length} issue(s) on this ${asset}. Raise to ${suggestedTier} for the matching checklist depth.`
   } else {
     summary = `Triage flagged ${findings.length} issue(s) on this ${asset}.`
   }
 
-  return { summary, findings, callouts, source: 'fallback' }
+  return {
+    summary,
+    findings,
+    callouts,
+    source: 'fallback',
+    ...(suggestedTier ? { suggestedTier } : {}),
+  }
 }

@@ -1,4 +1,4 @@
-import type { ReasonCode, ReviewRequest } from '@/lib/types'
+import type { ReasonCode, ReviewRequest, RiskTier } from '@/lib/types'
 
 export type AssistFinding = {
   code: ReasonCode
@@ -18,6 +18,8 @@ export type AssistResult = {
   findings: AssistFinding[]
   callouts: AssistCallout[]
   source: 'proxy' | 'local_key' | 'fallback'
+  /** When set and higher than the packet's current tier, reviewer should raise before declining on full depth. */
+  suggestedTier?: RiskTier
 }
 
 export type AssistInput = {

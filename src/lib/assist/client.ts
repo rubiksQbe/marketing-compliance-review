@@ -1,3 +1,5 @@
+import { minTierForCodes } from '@/data/findings'
+import { inferContentRisk, maxRiskTier, tierRank } from '@/lib/risk'
 import type { ReasonCode } from '@/lib/types'
 import { fallbackAssist } from './fallback'
 import { getAssistApiKey } from './settings'
@@ -175,11 +177,29 @@ Codes must be one of: ${codes}. Flag likely issues only. Never approve. Keep rea
   }
 }
 
+function attachSuggestedTier(result: AssistResult, input: AssistInput): AssistResult {
+  const contentTier = inferContentRisk({
+    body: input.request.body,
+    disclosures: input.request.disclosures,
+    destinationUrl: input.request.destinationUrl,
+    source: input.request.source,
+  }).tier
+  const findingsTier = minTierForCodes(result.findings.map((f) => f.code))
+  let needed = maxRiskTier(contentTier, findingsTier)
+  if (result.suggestedTier) needed = maxRiskTier(needed, result.suggestedTier)
+  if (tierRank(needed) > tierRank(input.request.riskTier)) {
+    return { ...result, suggestedTier: needed }
+  }
+  if (!result.suggestedTier) return result
+  const { suggestedTier: _drop, ...rest } = result
+  return rest
+}
+
 /** Proxy → local key → heuristic fallback. */
 export async function assistReview(input: AssistInput): Promise<AssistResult> {
   const fromProxy = await tryProxy(input)
-  if (fromProxy) return fromProxy
+  if (fromProxy) return attachSuggestedTier(fromProxy, input)
   const fromKey = await tryLocalKey(input)
-  if (fromKey) return fromKey
-  return fallbackAssist(input)
+  if (fromKey) return attachSuggestedTier(fromKey, input)
+  return attachSuggestedTier(fallbackAssist(input), input)
 }

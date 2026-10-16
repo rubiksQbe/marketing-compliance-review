@@ -57,4 +57,5 @@ Omit `creativeImage` when oversized (~120k char client skip).
 
 - `summary`, and each finding’s `code` / `reason` / `where`, required  
 - `callouts` optional; UI merges related callout detail into findings (one **On creative** line)  
+- Optional `suggestedTier` (`low` | `medium` | `high`) when findings need a deeper checklist than the packet’s current tier; the client also infers this from content + finding codes  
 - Auth: server-side keys only in production; browser key is prototype-only via **Review queue → AI assist**
