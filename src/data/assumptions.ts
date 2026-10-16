@@ -157,9 +157,9 @@ export const ASSUMPTIONS: Assumption[] = [
   },
   {
     id: 'D15',
-    text: 'Compliance assist is hybrid desk triage: prefer POST /api/assist, optional local key for LLM/vision trials, then heuristic fallback; never auto-Approve.',
+    text: 'Compliance assist is hybrid desk triage: prefer POST /api/assist, optional free Groq key for local LLM trials, then heuristic fallback; never auto-Approve.',
     implication:
-      'Assist shows summary + findings (Where / Reason / On creative), may pre-check boxes, and can suggest raising risk tier when flags need a deeper checklist (raise re-runs Assist and checks new boxes). Optional local key via Review queue → AI assist.',
+      'Assist shows summary + findings (Where / Reason / On creative), may pre-check boxes, and can suggest raising risk tier when flags need a deeper checklist. Optional Groq key via Review queue → AI assist (Vite `/api/groq` proxy in dev).',
   },
   {
     id: 'D17',

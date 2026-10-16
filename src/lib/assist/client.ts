@@ -114,6 +114,11 @@ async function tryProxy(input: AssistInput): Promise<AssistResult | null> {
   }
 }
 
+/**
+ * Optional free-tier Groq key (OpenAI-compatible).
+ * Calls same-origin `/api/groq/*` (Vite proxies to api.groq.com) to avoid browser CORS.
+ * Static GitHub Pages has no proxy — key path no-ops and fallback runs.
+ */
 async function tryLocalKey(input: AssistInput): Promise<AssistResult | null> {
   const apiKey = getAssistApiKey()
   if (!apiKey) return null
@@ -131,31 +136,24 @@ async function tryLocalKey(input: AssistInput): Promise<AssistResult | null> {
 
   const system = `You are a US consumer-finance marketing compliance triage assistant (not a decision engine). Return ONLY JSON:
 {"summary":"1-2 short sentences on what looks risky in plain language — do NOT list reason codes, product/channel labels, or say that Assist does not decide","findings":[{"code":"...","reason":"...","where":"..."}],"callouts":[{"id":"short-id","label":"region name","detail":"quoted or paraphrased text on proof/copy","relatedCodes":["optional codes"]}]}.
-Codes must be one of: ${codes}. Flag likely issues only. Never approve. Keep reason, where, and callout detail concise. If a creative image is provided, OCR/read visible text and cite headline vs disclosure bands in where/callouts — do not append “(proof)” to labels.`
+Codes must be one of: ${codes}. Flag likely issues only. Never approve. Keep reason, where, and callout detail concise. Use body and disclosures as the creative text (no separate OCR required).`
 
+  // Text packet only — free Groq path; production /api/assist may add vision.
   const userText = JSON.stringify(packetPayload({ ...input.request, creativeImage: undefined }), null, 2)
 
-  const content: Array<Record<string, unknown>> = [{ type: 'text', text: userText }]
-  if (input.request.creativeImage && input.request.creativeImage.startsWith('data:image')) {
-    content.push({
-      type: 'image_url',
-      image_url: { url: input.request.creativeImage },
-    })
-  }
-
   try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    const res = await fetch('/api/groq/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'llama-3.3-70b-versatile',
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: system },
-          { role: 'user', content },
+          { role: 'user', content: userText },
         ],
         temperature: 0.2,
       }),

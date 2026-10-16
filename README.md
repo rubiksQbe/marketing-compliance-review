@@ -12,7 +12,7 @@ Replaces Excel + email with a risk-tiered queue, structured intake, one-screen d
 - **Risk sets priority, SLA, and checklist depth** — it never skips a human decision.
 - **Submitters** are internal marketers and affiliate managers; external affiliates stay upstream.
 - **Every packet needs a proof image and copy** (labels vary by asset type).
-- **Assist triages; humans decide** — optional local LLM key; production uses `POST /api/assist`.
+- **Assist triages; humans decide** — optional free Groq key locally; production uses `POST /api/assist`.
 - **Regulation map on demand** (**Why these issues?**) — plain checklist labels; no legal disclaimer.
 
 ## Changes in this pass (2026-10-16)
@@ -23,7 +23,7 @@ Replaces Excel + email with a risk-tiered queue, structured intake, one-screen d
 - **Tier raise from Assist** — when flags need a deeper checklist, suggest Raise; re-run and pre-check new boxes.
 - **Content risk on submit** — intake claim types + copy/URL scan; higher signal wins so underflags don’t stay Low.
 - **Robust seeds (v7)** — ~20 promo packets, pending due ≥12h, subtle decline cases Assist catches offline.
-- **AI assist** on the Review queue (mobile-visible); README local-key steps; Submit form back link.
+- **AI assist** on the Review queue (mobile-visible); free **Groq** key via Vite proxy (not OpenAI); Submit form back link.
 - **Key decisions** page refreshed (D9, D2, D3, D15, D16, D14, A1c, A3).
 
 ## Run locally
@@ -42,17 +42,18 @@ npm run preview
 
 Data lives in `localStorage` (`clearpath-review.requests.v7`). Header **Reset** reloads seeds.
 
-## AI assist (optional local LLM key)
+## AI assist (optional free Groq key)
 
-Assist runs on any **pending** open (seeds and new submits). Order: `POST /api/assist` → local OpenAI key → heuristic fallback.
+Assist runs on any **pending** open (seeds and new submits). Order: `POST /api/assist` → Groq local key → heuristic fallback.
 
-1. Create a key at [platform.openai.com/api-keys](https://platform.openai.com/api-keys) (none is bundled).
-2. Sign in as **Jordan Lee** → **Review queue** → **AI assist**.
-3. Paste → **Save key** (this browser’s `localStorage` only).
-4. Open or **Re-run** Assist on a pending review (`gpt-4o-mini`; may send the proof image).
-5. **Clear key** when finished. Do not commit keys; production keeps keys server-side.
+1. Create a **free** key at [console.groq.com/keys](https://console.groq.com/keys) (none is bundled).
+2. Run the app with `npm run dev` or `npm run preview` (Vite proxies `/api/groq` → Groq so the browser avoids CORS).
+3. Sign in as **Jordan Lee** → **Review queue** → **AI assist**.
+4. Paste → **Save key** (this browser’s `localStorage` only).
+5. Open or **Re-run** Assist on a pending review (`llama-3.3-70b-versatile` over packet text).
+6. **Clear key** when finished. Do not commit keys; production keeps credentials server-side on `/api/assist`.
 
-Without a key or proxy, fallback rules still triage.
+Static GitHub Pages has no Groq proxy — without a hosted `/api/assist`, Assist uses fallback rules only. Without a key in local dev, fallback still triages.
 
 ## Stack
 
