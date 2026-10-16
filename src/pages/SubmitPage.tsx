@@ -18,9 +18,9 @@ import type {
   Product,
   SubmissionSource,
 } from '@/lib/types'
-import { FileArrowUp, Image as ImageIcon, Trash } from '@phosphor-icons/react'
+import { ArrowLeft, FileArrowUp, Image as ImageIcon, Trash } from '@phosphor-icons/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 const CLAIMS = Object.keys(CLAIM_LABELS) as ClaimFlag[]
 /** Keep demo localStorage under control. */
@@ -253,9 +253,18 @@ export function SubmitPage() {
     navigate(`/review/${created.id}`)
   }
 
+  const backTo = editing && id ? `/review/${id}` : '/mine'
+  const backLabel = editing ? 'Back to request' : 'Back to requests'
+
   return (
     <div className="mx-auto max-w-2xl animate-in">
-      <h1 className="font-serif text-2xl text-navy-800">
+      <Link
+        to={backTo}
+        className="inline-flex items-center gap-1 text-xs text-steel-600 hover:text-navy-800"
+      >
+        <ArrowLeft size={12} /> {backLabel}
+      </Link>
+      <h1 className="mt-4 font-serif text-2xl text-navy-800">
         {editing ? 'Edit & resubmit' : 'Submit for review'}
       </h1>
 
