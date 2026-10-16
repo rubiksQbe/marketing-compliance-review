@@ -81,6 +81,28 @@ This doc flags what is solid for a demo, what is stretched, and how a real produ
 
 **Further evolution:** Multi-file proofs, HTML email source, landing URL crawl, virus scan, object storage (not data URLs).
 
+### D14 — Multi-reviewer concurrency
+
+**Stretch:** Client localStorage cannot claim/lock packets across browsers.
+
+**Now in product (documented):** Next-in-queue after decide uses shared High→Low / nearest-due order. True claim/lease remains a backend requirement.
+
+**Evolution:** Atomic claim, timed leases, optimistic versions, manager reassignment.
+
+### D15 — Compliance assist
+
+**Stretch:** Live vision models need keys, egress, and size limits for creatives.
+
+**Now in product:** Hybrid assist (proxy → optional local key → fallback heuristics); auto-run on pending open; pre-check findings with where + reason; human final decision.
+
+**Evolution:** Hosted `/api/assist`, richer vision grounding overlays, assist Activity events, eval harness.
+
+### D16 — Regulation map
+
+**Now in product:** Slide-over with official CFPB / FRB / FTC / eCFR links for checklist findings; submitters on declined only.
+
+**Evolution:** Deep-link to firm playbooks; highlight which finding triggered which regime in the audit export.
+
 ### D9 — Approve / Decline only
 
 **Stretch:** Many desks use “revise & resubmit” / conditional approval as a named state.

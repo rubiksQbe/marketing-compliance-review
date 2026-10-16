@@ -147,6 +147,24 @@ export const ASSUMPTIONS: Assumption[] = [
     text: 'Branding is locked: navy/steel/mist/canvas/forest, Sen + Spectral, Phosphor icons, mesh BR3 @ 0.53 / 72%.',
     implication: 'See docs/prd/clearpath-review-prd.md §10 for full token and mesh specs.',
   },
+  {
+    id: 'D14',
+    text: 'Multi-reviewer safety requires a shared backend with claim/lock (or optimistic concurrency); next-in-queue alone is not a concurrency control.',
+    implication:
+      'This client prototype advances to the next pending item after decide but cannot prevent two browsers from deciding the same packet.',
+  },
+  {
+    id: 'D15',
+    text: 'Compliance assist is hybrid: prefer POST /api/assist, optional local key for prototype trials, then heuristic fallback; never auto-Approve.',
+    implication:
+      'Assist may pre-check findings with where + reason; a human still Approves or Declines. Production keeps API keys server-side.',
+  },
+  {
+    id: 'D16',
+    text: 'Regulation map is an optional slide-over with official primary-source links — not checklist clutter.',
+    implication:
+      'Reviewers can open Why these issues? anytime; submitters only on declined packets. Statute names stay out of the default checklist labels.',
+  },
 
   // —— Vocabulary (applied) ——
   {
