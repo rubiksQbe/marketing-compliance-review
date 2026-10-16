@@ -1,8 +1,8 @@
 # `POST /api/assist`
 
-Production shape for ClearPath Financial Market Compliance Review. The static GitHub Pages build cannot host this route; production hosting (or a BFF) must.
+Production BFF shape. Static GitHub Pages cannot host this route.
 
-Desk-style triage: draft issue spotting, optional vision on proof images, where/reason findings, creative callouts, and a short reviewer summary. Never return an approval decision.
+Client resolution: **proxy → optional local OpenAI key (AI assist page) → heuristic fallback**. Never auto-Approve.
 
 ## Request
 
@@ -10,8 +10,6 @@ Desk-style triage: draft issue spotting, optional vision on proof images, where/
 POST /api/assist
 Content-Type: application/json
 ```
-
-Body (subset of the review packet):
 
 ```json
 {
@@ -28,28 +26,28 @@ Body (subset of the review packet):
   "destinationUrl": "https://…",
   "source": "affiliate",
   "partnerName": "…",
-  "creativeImage": "data:image/svg+xml;base64,…"
+  "creativeImage": "data:image/svg+xml;charset=utf-8,…"
 }
 ```
 
-`creativeImage` may be omitted when oversized; the client currently skips embedding above ~120k characters.
+Omit `creativeImage` when oversized (~120k char client skip).
 
 ## Response
 
 ```json
 {
-  "summary": "2–4 sentences for the reviewer: claims, risk posture, what to verify before Approve.",
+  "summary": "Short plain-language triage note (no reason-code lists).",
   "findings": [
     {
       "code": "missing_disclosure",
       "reason": "Rate claim lacks accompanying APR disclosure near the headline.",
-      "where": "Banner headline / disclosure band"
+      "where": "Headline band"
     }
   ],
   "callouts": [
     {
       "id": "headline",
-      "label": "Headline band (proof)",
+      "label": "Headline band",
       "detail": "From 6.99% APR — apply in minutes",
       "relatedCodes": ["trigger_terms_incomplete", "missing_disclosure"]
     }
@@ -57,12 +55,6 @@ Body (subset of the review packet):
 }
 ```
 
-- `summary` is required (non-empty string).
-- `code` must be a known `ReasonCode`.
-- `reason` and `where` are required non-empty strings on each finding.
-- `callouts` may be empty; when present each needs `id`, `label`, `detail`.
-- Never return an approval decision — assist only suggests findings for human review.
-
-## Auth
-
-API keys stay **server-side**. Browser-held keys are prototype-only via reviewer Assist settings.
+- `summary`, and each finding’s `code` / `reason` / `where`, required  
+- `callouts` optional; UI merges related callout detail into findings (one **On creative** line)  
+- Auth: server-side keys only in production; browser key is prototype-only via **Review queue → AI assist**

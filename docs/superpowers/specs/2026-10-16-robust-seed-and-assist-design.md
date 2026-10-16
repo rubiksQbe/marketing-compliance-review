@@ -1,3 +1,5 @@
+> **Implemented / historical.** Current notes: `docs/README.md`. Canonical decisions: `src/data/assumptions.ts`.
+
 # Robust seed library + desk-style Assist triage
 
 **Product:** ClearPath Financial Market Compliance Review  

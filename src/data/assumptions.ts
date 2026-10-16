@@ -6,7 +6,7 @@ export interface Assumption {
 
 /**
  * Canonical log of operating assumptions and locked design decisions.
- * Full list in this file; /assumptions shows KEY_ASSUMPTIONS for demos.
+ * Full list in this file; /assumptions (Key decisions) shows KEY_ASSUMPTIONS.
  * Keep current when product rules change.
  */
 export const KEY_ASSUMPTION_IDS = [
@@ -157,7 +157,7 @@ export const ASSUMPTIONS: Assumption[] = [
     id: 'D15',
     text: 'Compliance assist is hybrid desk triage: prefer POST /api/assist, optional local key for LLM/vision trials, then heuristic fallback; never auto-Approve.',
     implication:
-      'Assist returns a summary, findings (where + reason), and creative callouts; may pre-check checklist items. A human still Approves or Declines. Production keeps API keys server-side; demos work offline via fallback.',
+      'Assist returns a short summary plus findings (Where / Reason / On creative); may pre-check checklist items. Optional local key via Review queue → AI assist; production uses POST /api/assist. Never auto-Approves.',
   },
   {
     id: 'D17',

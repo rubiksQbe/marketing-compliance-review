@@ -1,6 +1,6 @@
 # Product Requirements Document — ClearPath Review
 
-**Status:** Locked for implementation  
+**Status:** Historical baseline (2026-10-12). For current behavior and later decisions, prefer `src/data/assumptions.ts` and `docs/README.md`.
 
 **Date:** 2026-10-12  
 **Company:** ClearPath Financial (fictional)  

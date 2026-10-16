@@ -1,5 +1,7 @@
 # ClearPath Review — Design Spec
 
+> **Historical** (2026-10-12). Current product notes: `docs/README.md`. Canonical decisions: `src/data/assumptions.ts`.
+
 **Date:** 2026-10-12  
 **Product:** ClearPath Review (internal compliance marketing workbench)  
 **Company:** ClearPath Financial (fictional) — national consumer finance; personal loans, credit cards, mortgage prequalification; markets via typical channels including affiliates.

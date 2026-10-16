@@ -1,3 +1,5 @@
+> **Implemented / historical.** Current notes: `docs/README.md`. Canonical decisions: `src/data/assumptions.ts`.
+
 # Submit creative packet — Design Spec
 
 **Date:** 2026-10-13  
