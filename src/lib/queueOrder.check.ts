@@ -1,4 +1,4 @@
-import { nextPendingAfter, orderedPendingQueue } from './queueOrder'
+import { nextPendingAfter, orderedPendingQueue, pendingNeighbors } from './queueOrder'
 import type { ReviewRequest } from './types'
 
 function assert(cond: unknown, msg: string): asserts cond {
@@ -73,5 +73,9 @@ const afterLastHigh = nextPendingAfter(
   now,
 )
 assert(afterLastHigh?.id === 'low-soon', `fallback next was ${afterLastHigh?.id}`)
+
+const mid = pendingNeighbors(fixture, 'high-later', now)
+assert(mid.prev?.id === 'high-soon' && mid.next?.id === 'low-soon', 'neighbors')
+assert(mid.index === 1 && mid.total === 3, 'neighbor index')
 
 console.log('queueOrder checks passed')

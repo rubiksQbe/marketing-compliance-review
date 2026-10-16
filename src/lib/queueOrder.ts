@@ -26,3 +26,27 @@ export function nextPendingAfter(
   const ordered = orderedPendingQueue(requests, now).filter((r) => r.id !== currentId)
   return ordered[0]
 }
+
+/** Previous / next neighbors in the pending queue (High → Low, nearest due). */
+export function pendingNeighbors(
+  requests: ReviewRequest[],
+  currentId: string,
+  now = Date.now(),
+): {
+  prev: ReviewRequest | undefined
+  next: ReviewRequest | undefined
+  index: number
+  total: number
+} {
+  const ordered = orderedPendingQueue(requests, now)
+  const index = ordered.findIndex((r) => r.id === currentId)
+  if (index < 0) {
+    return { prev: undefined, next: ordered[0], index: -1, total: ordered.length }
+  }
+  return {
+    prev: index > 0 ? ordered[index - 1] : undefined,
+    next: index < ordered.length - 1 ? ordered[index + 1] : undefined,
+    index,
+    total: ordered.length,
+  }
+}

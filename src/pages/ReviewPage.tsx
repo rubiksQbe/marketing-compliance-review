@@ -23,7 +23,7 @@ import {
   isDeclinedStatus,
   isVisualAsset,
 } from '@/lib/labels'
-import { nextPendingAfter } from '@/lib/queueOrder'
+import { nextPendingAfter, pendingNeighbors } from '@/lib/queueOrder'
 import { tierRank } from '@/lib/risk'
 import { useStore } from '@/lib/store'
 import { formatSla } from '@/lib/time'
@@ -94,6 +94,11 @@ export function ReviewPage() {
   )
   const depthCopy = request ? REVIEW_DEPTH_COPY[request.riskTier] : null
   const requestedFixes = useMemo(() => fixesForCodes(selected), [selected])
+
+  const queueNav = useMemo(() => {
+    if (!isReviewer || !request) return null
+    return pendingNeighbors(visibleRequests, request.id)
+  }, [isReviewer, request, visibleRequests])
 
   useEffect(() => {
     if (request && isReviewer && session) {
@@ -216,14 +221,37 @@ export function ReviewPage() {
     <div className="animate-in -mx-4 sm:-mx-6">
       <div className="mx-auto flex max-w-6xl flex-col overflow-hidden rounded-md border border-mist-200 bg-canvas sm:mx-6 lg:h-[calc(100vh-7.5rem)]">
         <header className="shrink-0 rounded-t-md border-b border-mist-200 bg-white px-[18px] py-4">
-          <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <Link
               to={backTo}
               className="inline-flex items-center gap-1 text-[11px] text-steel-600 hover:text-navy-800"
             >
               <ArrowLeft size={12} /> {backLabel} · {request.id}
             </Link>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex flex-wrap items-center gap-1.5">
+              {queueNav && queueNav.total > 0 && (
+                <span className="inline-flex items-center gap-1.5 text-[11px]">
+                  <button
+                    type="button"
+                    disabled={!queueNav.prev}
+                    className="font-medium text-navy-800 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:text-steel-600 disabled:no-underline"
+                    onClick={() => queueNav.prev && navigate(`/review/${queueNav.prev.id}`)}
+                  >
+                    &lt; Previous
+                  </button>
+                  <span className="text-steel-600 tabular-nums">
+                    {queueNav.index >= 0 ? queueNav.index + 1 : '—'} / {queueNav.total}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={!queueNav.next}
+                    className="font-medium text-navy-800 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:text-steel-600 disabled:no-underline"
+                    onClick={() => queueNav.next && navigate(`/review/${queueNav.next.id}`)}
+                  >
+                    Next &gt;
+                  </button>
+                </span>
+              )}
               {isReviewer ? (
                 request.status === 'pending' ? (
                   <>
