@@ -1,34 +1,30 @@
 # ClearPath Financial Marketing Compliance Review
 
-Internal compliance marketing review workbench for **ClearPath Financial** (fictional) — personal loans, credit cards, and mortgage prequalification marketed online, including affiliate channels.
+Internal compliance marketing review for **ClearPath Financial** (fictional) — personal loans, credit cards, and mortgage prequalification, including affiliate channels.
 
-## Problem
+Replaces Excel + email with a risk-tiered queue, structured intake, one-screen decisions, and an audit trail.
 
-Compliance marketing review via **Excel + email** bottlenecks growth: lost ownership, incomplete submissions, uniform review depth, unstructured feedback, and weak audit evidence.
+**Docs:** [`docs/README.md`](docs/README.md) · decisions log `src/data/assumptions.ts` · Assist API `docs/api/assist.md`
 
-## Solution
+## Key decisions
 
-**ClearPath Review** increases compliance throughput with:
+- **Approve or Decline only** — no third “changes requested” status; Decline means remediate and resubmit.
+- **Risk sets priority, SLA, and checklist depth** — it never skips a human decision.
+- **Submitters** are internal marketers and affiliate managers; external affiliates stay upstream.
+- **Every packet needs a proof image and copy** (labels vary by asset type).
+- **Assist triages; humans decide** — optional OpenAI key locally; production uses `POST /api/assist`.
+- **Regulation map on demand** (**Why these issues?**) — plain checklist labels; no legal disclaimer.
 
-1. **Risk-tiered queue** — highest risk and nearest SLA first  
-2. **Structured intake** — incomplete submissions cannot enter the queue  
-3. **One-screen review** — 2/3 package + 1/3 disposition rail  
-4. **Automatic audit trail** — every decision is timestamped with reason codes  
+## Changes in this pass (2026-10-16)
 
-PRD: `docs/prd/clearpath-review-prd.md`  
-Design spec: `docs/superpowers/specs/2026-10-12-clearpath-compliance-review-design.md`  
-Assumptions & locked decisions: `src/data/assumptions.ts` (landing: **Demo notes · key assumptions**)  
-Critique & evolution notes: `docs/assumptions-evolution.md`
-
-## Key Decisions
-
-- The main architecture choice is shifting from an inefficient, messy workflow of emails (between internal marketers/affiliate managers and the compliance marketing team) and Excel (requires lots of manual input and upkeep) to a system that simplifies handoff of materials and organizes those for the user.
-- Role-based landing page because there are two main users (who both matter in the goal of increasing the compliance team's throughput): submitters and reviewers.
-- The risk-tiered queue not only structures how the reviewer carries out the review process, but it also has higher-risk requests go through more thorough review. Thus, amount of time and attention scales depending on the risk.
-- Key assumption is that the company already has a pre-existing pre-approved asset library that would prevent materials that don't need compliance review from cluttering the team's workflow. That means the system is built to specifically handle custom promotional materials that warrant review.
-- It is assumed that affiliate partner marketers aren't interfacing directly with the compliance team at ClearPath. They'd send their materials for publishing to a ClearPath Affiliate Manager, whose job is to make sure the packets are complete such that they can submit it for review. Therefore only complete materials ready for review are seen my the compliance marketing team. The AM's workflow might become the new bottleneck (which is outside the scope of this system).
-- I chose specifically to have binary Approve/Decline decisions instead of having a third "Return and Request Changes" review option (initially suggested by AI) because the review process is easier when one can map 1+ compliance issues to one outcome and 0 to the other. The default assumption is that if it is declined, it is because it needs revisions.
-- Standardized compliance issue codes and auto-suggested remediation (fixes) make the whole process more streamlined.
+- **Regulation map** — slide-over with official CFPB / FTC / eCFR links; reviewers anytime, submitters on Declined.
+- **Next-in-queue** after Approve/Decline, plus **Previous / Next** on the review header.
+- **Desk-style Assist** — summary, findings (Where / Reason / On creative), checklist pre-checks; never auto-Approves.
+- **Tier raise from Assist** — when flags need a deeper checklist, suggest Raise; re-run and pre-check new boxes.
+- **Content risk on submit** — intake claim types + copy/URL scan; higher signal wins so underflags don’t stay Low.
+- **Robust seeds (v7)** — ~20 promo packets, pending due ≥12h, subtle decline cases Assist catches offline.
+- **AI assist** on the Review queue (mobile-visible); optional **OpenAI** key via Vite `/api/openai` proxy; Submit form back link.
+- **Key decisions** page refreshed (D9, D2, D3, D15, D16, D14, A1c, A3).
 
 ## Run locally
 
@@ -44,25 +40,20 @@ npm run build
 npm run preview
 ```
 
-## Demo flow
+Data lives in `localStorage` (`clearpath-review.requests.v7`). Header **Reset** reloads seeds.
 
-1. **Landing** — choose Review or Submit, then a demo identity  
+## AI assist (optional OpenAI key)
 
-2. **Identity** — Jordan Lee (reviewer), Ava Chen (internal marketer), or Sam Ortiz (affiliate manager)  
-3. **Reviewer** sees the org-wide queue; **submitters** see only **Your submitted requests**  
-4. Open **CP-1042** to use the locked review workspace (Approve, or check findings → Decline)  
+Assist runs on any **pending** open (seeds and new submits). Order: `POST /api/assist` → OpenAI local key → heuristic fallback.
 
-Data persists in `localStorage`. Header **Reset** restores the seed dataset. **Switch** returns to the landing role cards.
+1. Create a key at [platform.openai.com/api-keys](https://platform.openai.com/api-keys) (none is bundled; open in your system browser if an embedded tab is blocked).
+2. Run the app with `npm run dev` or `npm run preview` (Vite proxies `/api/openai` → OpenAI so the browser avoids CORS).
+3. Sign in as **Jordan Lee** → **Review queue** → **AI assist**.
+4. Paste → **Save key** (this browser’s `localStorage` only).
+5. Open or **Re-run** Assist on a pending review (`gpt-4o-mini`; may send the proof image).
+6. **Clear key** when finished. Do not commit keys; production keeps credentials server-side on `/api/assist`.
 
-## GitHub Pages
-
-Static SPA (`HashRouter`, `base: './'`).
-
-1. Push to a GitHub repository  
-2. Settings → Pages → Source: **GitHub Actions**  
-3. Workflow: `.github/workflows/deploy-pages.yml`  
-
-Or: `npm run build && npm run deploy` (`gh-pages` branch).
+Static GitHub Pages has no OpenAI proxy — without a hosted `/api/assist`, Assist uses fallback rules only. Without a key in local dev, fallback still triages.
 
 ## Stack
 

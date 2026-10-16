@@ -1,129 +1,48 @@
-# Assumptions critique & evolution notes
+# Assumptions critique & evolution
 
-Companion to `src/data/assumptions.ts` (in-app: **Demo notes · key assumptions**).  
-This doc flags what is solid for a demo, what is stretched, and how a real product would evolve.
+Companion to `src/data/assumptions.ts` (in-app: **demo notes · key decisions**).  
+What holds for this prototype, what is stretched, and what shipped from earlier critiques.
 
 ---
 
-## Solid for this demo
+## Solid for the prototype
 
 | ID | Note |
 |----|------|
-| **P1** | Volume vs headcount is a fair reason to optimize reviewer throughput. |
-| **A1c** | Internal marketer + AM as portal users is a common boundary. |
-| **A3 / A6** | Human sign-off + structured issues + remediation is the core control story. |
-| **D1** | Risk prioritizes; it does not skip approval. Keep this explicit in demos. |
-| **A5 / A7** | Incomplete intake hurts; static demo without real auth is fine for v1. |
-| **V1–V5** | Applied UI vocabulary (compliance issues, remediation, claim types, activity; SLA reviewer-only). |
+| **A1c / A3 / A6** | AM + marketer submitters; human sign-off; structured issues + remediation |
+| **D2 / D3 / D4** | Tiered depth + priority; suggested risk with reviewer override; SLA from tier |
+| **D7 / D9 / D10** | Proof + copy; Approve/Decline only; soft withdraw |
+| **D14–D17** | Next-in-queue ≠ lock; hybrid Assist; regulation map; seed High clock exception |
+| **V1–V5** | Compliance issues / Remediation / Claim types / Activity; SLA reviewer-only |
 
 ---
 
-## Questionable assumptions — how we’d evolve
+## Stretched — evolution path
 
-### A1b — Submitters don’t see peers’ in-flight reviews
-
-**Stretch:** Campaign teams often need shared status (“where is Q4 cards?”).
-
-**Evolution:** Keep persona-scoped “Your requests” for demo simplicity. A later version would add **campaign / workspace** visibility (team queue, shared filters) with RBAC so marketers see the campaign without seeing every org packet.
-
-### A1d — Pre-approved creative library exists
-
-**Stretch:** Many shops don’t have a clean, trusted library yet.
-
-**Evolution:** Demo assumes library work happens elsewhere. Product evolution: **template / pre-cleared library** as a first-class path (skip custom review when unchanged), with this portal remaining the **exception / custom** path.
-
-### A1e — AMs always completeness-gate partner packets
-
-**Stretch:** AM QA is uneven; incomplete affiliate packs still reach compliance.
-
-**Evolution:** Keep AM gate out of scope for the demo. Evolution: lightweight **AM intake checklist**, partner upload portal, or compliance “return to AM” without a full Decline when the packet isn’t review-ready.
-
-### D2 — Risk-tiered routing raises throughput more than headcount
-
-**Stretch:** Plausible, not proven. Only helps if High work is *different*, not just a shorter clock on the same checklist.
-
-**Other ways to implement D2 (alternatives / complements):**
-
-1. **Tiered checklists** — High shows more findings / mandatory substantiation fields; Low is a short stamp checklist. Same queue, different depth.
-2. **Staffing / skill routing** — High → senior reviewers; Low → junior or rotating desk.
-3. **Batch Low** — group low-risk brand pieces into a daily batch review.
-4. **Channel SLAs without risk labels** — e.g. affiliate always 8h, display 48h (risk score becomes secondary).
-5. **Workload caps** — auto-pause Low intake when High backlog exceeds N.
-6. **Measure it** — track decisions/hour and rework rate by tier; drop or retune scoring if High isn’t harder, only louder.
-
-**Now in product:** priority sort + due window **and** tiered checklists (`findingsForTier`): Low = disclosures / net impression / other; Medium adds substantiation, clear & conspicuous, offer–landing; High adds affiliate relationship + triggering terms. Review rail shows stamp / standard / full depth copy. Changing risk mid-review swaps the checklist.
-
-### D3 — Auto risk from claim types (now: suggestion + reviewer override)
-
-**Was stretch:** Self-reported claim types under-flag; no compliance correction.
-
-**Now in product:** Submitters still see a **read-only suggestion**; **reviewers can change tier** on pending items (Activity event `Risk updated`; due window recalculated as `submittedAt + new slaHours`).
-
-**Further evolution:** Content/rules or model-assisted scoring; require reviewer confirm on High; dual control for tier downgrades.
-
-### D4 / D5 — 8h / 24h / 48h SLA from risk
-
-**Stretch:** Calendar hours ignore business days, time zones, and holidays.
-
-**Evolution:** Business-hour clocks, per-channel overrides, pause when waiting on submitter remediation, escalate when overdue.
-
-### D6 — “Due soon” at &lt;25% remaining
-
-**Stretch:** Arbitrary threshold.
-
-**Evolution:** Configurable thresholds; separate “overdue” vs “due soon”; notify assignee.
-
-### D7 — Creative substance (proof image + copy for every packet)
-
-**Was stretch:** File *or* copy for banners/social; email / landing copy-only with no proof image.
-
-**Now in product:** **Every packet requires a proof image and consumer-facing copy** (labels vary by asset type). Banner / social / affiliate → creative file + accompanying copy (caption / CTA / alt). Email → screenshot or HTML render + exact copy. Landing → page capture + exact copy + destination URL. Multi-file proofs stay out of scope for this demo.
-
-**Further evolution:** Multi-file proofs, HTML email source, landing URL crawl, virus scan, object storage (not data URLs).
-
-### D9 — Approve / Decline only
-
-**Stretch:** Many desks use “revise & resubmit” / conditional approval as a named state.
-
-**Evolution for demo honesty:** Decline + remediation stands in for “needs changes.” A later status model could add **`changes_requested`** (or “Remediate”) distinct from hard Decline/reject, with different submitter CTAs.
-
-### D10 — Delete while pending / declined
-
-**Stretch:** Hard delete destroys exam/audit evidence; compliance often wants a retained trail for withdrawn work.
-
-**Ways to implement a retained trail:**
-
-1. **Soft withdraw (recommended)**  
-   - Replace hard delete with status `withdrawn` (or `voided`).  
-   - Write Activity event `Withdrawn` with actor + timestamp.  
-   - Hide from default Needs review queue; show in Mine / All with badge **Withdrawn**.  
-   - Payload remains in storage (and eventually in a real DB); no physical purge in v1.
-
-2. **Tombstone record**  
-   - On delete, strip creative bytes but keep id, title, submitter, status history, and hashes of attachments.
-
-3. **Immutable event log + optional blob GC**  
-   - Events never deleted; creative blobs GC’d after N days with “attachment purged” marker on the event.
-
-4. **Permissioned purge**  
-   - Only compliance admin can hard-delete after export; submitters only withdraw.
-
-**Now in product:** soft **Withdrawn** (1) — submitter withdraw from Mine / review; Active queue excludes withdrawn; Mine keeps the row with badge; Activity logs `Withdrawn`.
-
-### A1b / campaign note (summary)
-
-Single-person Mine lists are for **demo simplicity**. An evolution would introduce **campaign teams** (shared visibility, roles, and maybe campaign-level SLAs) without forcing every marketer to see the org-wide compliance queue.
+| Topic | Stretch | Evolution |
+|-------|---------|-----------|
+| **A1b** peer visibility | Mine is persona-scoped | Campaign / workspace RBAC |
+| **A1d** pre-approved library | Assumed elsewhere | First-class template / skip-review path |
+| **A1e** AM completeness gate | Uneven in reality | AM checklist or return-to-AM without full Decline |
+| **D4/D5** 8/24/48h calendar | Ignores business hours | Business-hour clocks, pause on remediation |
+| **D6** Due soon &lt;25% | Arbitrary | Configurable; separate overdue metric |
+| **D14** concurrency | localStorage can’t claim | Backend claim/lease + optimistic versions |
+| **D15** Assist | Needs keys/egress for LLM/vision | Hosted `/api/assist`, eval harness |
 
 ---
 
-## Product changes made from this critique
+## Shipped from critique / owner direction
 
-| Change | Assumption touched |
-|--------|-------------------|
-| Reviewer risk override on pending review header | D3 |
-| Visual assets require creative file | D7 |
-| Tiered checklist depth (Low stamp / Med standard / High full) + queue priority | D2 |
-| Soft withdraw (retain payload + Activity; hide from active queue) | D10 |
-| This evolution doc | All stretch items above |
+| Change | Touches |
+|--------|---------|
+| Reviewer risk override | D3 |
+| Proof image + copy all asset types | D7 |
+| Tiered checklist + queue priority | D2 |
+| Soft withdraw | D10 |
+| Next-in-queue after decide | D14 |
+| Hybrid Assist triage (summary / where / reason / on creative) | D15 |
+| Regulation map, no disclaimer | D16 |
+| Seed pending ≥12h remaining (High seed `slaHours: 24`) | D17 |
+| Queue UX: Due soon / All, filter counts; AI assist on queue | V* / owner |
 
-Keep `src/data/assumptions.ts` in sync when rules change; link demos to **Key assumptions** on the landing page.
+When rules change, update `src/data/assumptions.ts` first.

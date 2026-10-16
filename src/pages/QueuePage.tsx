@@ -6,6 +6,7 @@ import {
   isActiveQueueStatus,
   isDeclinedStatus,
 } from '@/lib/labels'
+import { orderedPendingQueue } from '@/lib/queueOrder'
 import { useStore } from '@/lib/store'
 import { formatSla, formatWhen, remainingFor } from '@/lib/time'
 import type { RiskTier } from '@/lib/types'
@@ -26,10 +27,15 @@ export function QueuePage() {
     [visibleRequests],
   )
 
+  const pending = useMemo(
+    () => orderedPendingQueue(activeRequests),
+    [activeRequests],
+  )
+
   const filtered = useMemo(() => {
+    if (statusFilter === 'pending') return pending
     const list = activeRequests.filter((r) => {
       if (statusFilter === 'all') return true
-      if (statusFilter === 'pending') return r.status === 'pending'
       if (statusFilter === 'approved') return r.status === 'approved'
       return isDeclinedStatus(r.status)
     })
@@ -38,9 +44,8 @@ export function QueuePage() {
       if (risk !== 0) return risk
       return remainingFor(a) - remainingFor(b)
     })
-  }, [activeRequests, statusFilter])
+  }, [activeRequests, pending, statusFilter])
 
-  const pending = activeRequests.filter((r) => r.status === 'pending')
   const declined = activeRequests.filter((r) => isDeclinedStatus(r.status))
   const approved = activeRequests.filter((r) => r.status === 'approved')
   const atRisk = pending.filter((r) => remainingFor(r) < r.slaHours * 0.25)
@@ -57,11 +62,19 @@ export function QueuePage() {
 
   return (
     <div className="animate-in">
-      <div className="mb-6">
-        <h1 className="font-serif text-2xl text-navy-800">Review queue</h1>
-        <p className="mt-1 text-sm text-steel-600">
-          High → Low, then nearest due. Higher risk opens a deeper compliance checklist.
-        </p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="font-serif text-2xl text-navy-800">Review queue</h1>
+          <p className="mt-1 text-sm text-steel-600">
+            High → Low, then nearest due. Higher risk opens a deeper compliance checklist.
+          </p>
+        </div>
+        <Link
+          to="/assist-settings"
+          className="shrink-0 text-sm font-medium text-navy-800 underline underline-offset-2 hover:text-steel-600"
+        >
+          AI assist
+        </Link>
       </div>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-3">

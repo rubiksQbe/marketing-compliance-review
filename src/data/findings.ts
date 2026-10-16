@@ -70,6 +70,21 @@ export function findingsForTier(tier: RiskTier): Finding[] {
   return FINDINGS.filter((f) => TIER_RANK[f.fromTier] <= rank)
 }
 
+export function fromTierForCode(code: ReasonCode): RiskTier {
+  return FINDINGS.find((f) => f.code === code)?.fromTier ?? 'low'
+}
+
+/** Lowest checklist tier that includes every given reason code. */
+export function minTierForCodes(codes: ReasonCode[]): RiskTier {
+  let rank = 0
+  for (const code of codes) {
+    rank = Math.max(rank, TIER_RANK[fromTierForCode(code)])
+  }
+  if (rank >= 2) return 'high'
+  if (rank >= 1) return 'medium'
+  return 'low'
+}
+
 export const REVIEW_DEPTH_COPY: Record<
   RiskTier,
   { title: string; hint: string }

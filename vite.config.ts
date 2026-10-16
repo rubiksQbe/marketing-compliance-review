@@ -20,11 +20,26 @@ export default defineConfig({
     // Listen on all interfaces so Cursor/cloud port forwarding can reach the app.
     host: '0.0.0.0',
     strictPort: true,
+    // Same-origin proxy so browser-held OpenAI keys avoid CORS (dev / preview only).
+    proxy: {
+      '/api/openai': {
+        target: 'https://api.openai.com',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/openai/, '/v1'),
+      },
+    },
   },
   preview: {
     port: 43123,
     host: '0.0.0.0',
     strictPort: true,
+    proxy: {
+      '/api/openai': {
+        target: 'https://api.openai.com',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/openai/, '/v1'),
+      },
+    },
   },
 })
 

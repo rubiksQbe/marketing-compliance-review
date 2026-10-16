@@ -1,6 +1,7 @@
 import { AppShell } from '@/components/AppShell'
 import { StoreProvider } from '@/lib/store'
 import { AssumptionsPage } from '@/pages/AssumptionsPage'
+import { AssistSettingsPage } from '@/pages/AssistSettingsPage'
 import { AuditPage } from '@/pages/AuditPage'
 import { IdentityPage } from '@/pages/IdentityPage'
 import { LandingPage } from '@/pages/LandingPage'
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="submit/:id" element={<SubmitPage />} />
             <Route path="review/:id" element={<ReviewPage />} />
             <Route path="audit/:id" element={<AuditPage />} />
+            <Route path="assist-settings" element={<AssistSettingsPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

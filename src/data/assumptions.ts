@@ -6,17 +6,19 @@ export interface Assumption {
 
 /**
  * Canonical log of operating assumptions and locked design decisions.
- * Full list in this file; /assumptions shows KEY_ASSUMPTIONS for demos.
+ * Full list in this file; /assumptions (Key decisions) shows KEY_ASSUMPTIONS.
  * Keep current when product rules change.
  */
+/** Curated for /assumptions (Key decisions). Full log remains ASSUMPTIONS below. */
 export const KEY_ASSUMPTION_IDS = [
+  'D9',
+  'D2',
   'D3',
-  'D4',
+  'D15',
+  'D16',
+  'D14',
   'A1c',
   'A3',
-  'D9',
-  'A6',
-  'A7',
 ] as const
 
 export const ASSUMPTIONS: Assumption[] = [
@@ -79,7 +81,7 @@ export const ASSUMPTIONS: Assumption[] = [
     id: 'D3',
     text: 'Risk tier is auto-suggested from product, channel, and claim types; compliance may override.',
     implication:
-      'Submitters see a read-only suggestion. Reviewers can change tier on pending items (Activity: Risk updated; due window recalculated from original submit).',
+      'Suggestion uses intake claim types plus content scan (copy/URL) — max wins on submit. Assist may suggest raising tier when flags need deeper checklist; raising re-runs Assist and pre-checks newly available boxes. Reviewers can still override tier on pending items.',
   },
   {
     id: 'D4',
@@ -146,6 +148,30 @@ export const ASSUMPTIONS: Assumption[] = [
     id: 'D13',
     text: 'Branding is locked: navy/steel/mist/canvas/forest, Sen + Spectral, Phosphor icons, mesh BR3 @ 0.53 / 72%.',
     implication: 'See docs/prd/clearpath-review-prd.md §10 for full token and mesh specs.',
+  },
+  {
+    id: 'D14',
+    text: 'After decide, advance to the next pending item; reviewers can also step Previous / Next through the pending queue from the review header.',
+    implication:
+      'Queue order is High → Low, then nearest due. Previous/Next and post-decide advance are navigation aids — not a multi-reviewer claim/lock (that needs a shared backend).',
+  },
+  {
+    id: 'D15',
+    text: 'Compliance assist is hybrid desk triage: prefer POST /api/assist, optional OpenAI key for local LLM trials, then heuristic fallback; never auto-Approve.',
+    implication:
+      'Assist shows summary + findings (Where / Reason / On creative), may pre-check boxes, and can suggest raising risk tier when flags need a deeper checklist. Optional OpenAI key via Review queue → AI assist (Vite `/api/openai` proxy in dev).',
+  },
+  {
+    id: 'D17',
+    text: 'Demo seed High pending rows may use slaHours 24 so remaining time stays ≥12h at load; new High submits still use 8h.',
+    implication:
+      'Queue demos never start overdue or under the 12h floor. Production policy knobs remain High→8h / Med→24h / Low→48h on submit.',
+  },
+  {
+    id: 'D16',
+    text: 'Regulation map is an optional slide-over with official primary-source links — not checklist clutter.',
+    implication:
+      'Reviewers can open Why these issues? anytime; submitters only on declined packets. Statute names stay out of the default checklist labels.',
   },
 
   // —— Vocabulary (applied) ——

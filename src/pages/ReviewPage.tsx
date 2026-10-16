@@ -1,9 +1,18 @@
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { RegulationMapDrawer } from '@/components/RegulationMapDrawer'
 import { RiskBadge, StatusBadge } from '@/components/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { Select, Textarea } from '@/components/ui/field'
-import { FINDINGS, REVIEW_DEPTH_COPY, findingsForTier, fixesForCodes } from '@/data/findings'
+import {
+  FINDINGS,
+  REVIEW_DEPTH_COPY,
+  findingsForTier,
+  fixesForCodes,
+  fromTierForCode,
+} from '@/data/findings'
 import { useAutoHideScroll } from '@/hooks/useAutoHideScroll'
+import { assistReview } from '@/lib/assist/client'
+import type { AssistResult } from '@/lib/assist/types'
 import {
   ASSET_LABELS,
   CHANNEL_LABELS,
@@ -14,10 +23,12 @@ import {
   isDeclinedStatus,
   isVisualAsset,
 } from '@/lib/labels'
+import { nextPendingAfter, pendingNeighbors } from '@/lib/queueOrder'
+import { tierRank } from '@/lib/risk'
 import { useStore } from '@/lib/store'
 import { formatSla } from '@/lib/time'
 import type { ReasonCode, RiskTier } from '@/lib/types'
-import { Archive, ArrowLeft, Path, PencilSimple } from '@phosphor-icons/react'
+import { Archive, ArrowLeft, ArrowClockwise, Path, PencilSimple } from '@phosphor-icons/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
@@ -39,6 +50,11 @@ export function ReviewPage() {
   const [notes, setNotes] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [confirmWithdraw, setConfirmWithdraw] = useState(false)
+  const [mapOpen, setMapOpen] = useState(false)
+  const [assist, setAssist] = useState<AssistResult | null>(null)
+  const [assistLoading, setAssistLoading] = useState(false)
+  const [assistError, setAssistError] = useState<string | null>(null)
+  const assistRunId = useRef(0)
 
   const leftRef = useRef<HTMLDivElement>(null)
   const rightRef = useRef<HTMLDivElement>(null)
@@ -79,6 +95,11 @@ export function ReviewPage() {
   const depthCopy = request ? REVIEW_DEPTH_COPY[request.riskTier] : null
   const requestedFixes = useMemo(() => fixesForCodes(selected), [selected])
 
+  const queueNav = useMemo(() => {
+    if (!isReviewer || !request) return null
+    return pendingNeighbors(visibleRequests, request.id)
+  }, [isReviewer, request, visibleRequests])
+
   useEffect(() => {
     if (request && isReviewer && session) {
       markOpened(request.id, session.name)
@@ -89,6 +110,36 @@ export function ReviewPage() {
     const allowed = new Set(checklist.map((f) => f.code))
     setSelected((prev) => prev.filter((code) => allowed.has(code)))
   }, [checklist])
+
+  useEffect(() => {
+    if (!request || !isReviewer || request.status !== 'pending') {
+      setAssist(null)
+      setAssistError(null)
+      return
+    }
+    let cancelled = false
+    const run = ++assistRunId.current
+    setAssistLoading(true)
+    setAssistError(null)
+    void assistReview({ request })
+      .then((result) => {
+        if (cancelled || run !== assistRunId.current) return
+        setAssist(result)
+        const allowed = new Set(findingsForTier(request.riskTier).map((f) => f.code))
+        const codes = result.findings.map((f) => f.code).filter((c) => allowed.has(c))
+        setSelected((prev) => [...new Set([...prev, ...codes])])
+      })
+      .catch(() => {
+        if (cancelled || run !== assistRunId.current) return
+        setAssistError('Assist could not run. Checklist unchanged.')
+      })
+      .finally(() => {
+        if (!cancelled && run === assistRunId.current) setAssistLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [request, isReviewer])
 
   if (!session) return <Navigate to="/" replace />
   if (!request || !canAccess) {
@@ -118,34 +169,66 @@ export function ReviewPage() {
     setError(null)
   }
 
+  async function runAssist() {
+    if (!request) return
+    const packet = request
+    const run = ++assistRunId.current
+    setAssistLoading(true)
+    setAssistError(null)
+    try {
+      const result = await assistReview({ request: packet })
+      if (run !== assistRunId.current) return
+      setAssist(result)
+      const allowed = new Set(checklist.map((f) => f.code))
+      const codes = result.findings.map((f) => f.code).filter((c) => allowed.has(c))
+      setSelected((prev) => [...new Set([...prev, ...codes])])
+    } catch {
+      if (run !== assistRunId.current) return
+      setAssistError('Assist could not run. Checklist unchanged.')
+    } finally {
+      if (run === assistRunId.current) setAssistLoading(false)
+    }
+  }
+
   function onDecide() {
-    if (!actionable || !session) return
+    if (!actionable || !session || !request) return
     setError(null)
     if (declining && selected.length === 0) {
       setError('Select at least one compliance issue to decline.')
       return
     }
-    decide(request!.id, {
+    decide(request.id, {
       action: declining ? 'rejected' : 'approved',
       detail: notes.trim() || undefined,
       reasonCodes: declining ? selected : undefined,
       actor: session.name,
     })
-    navigate(isReviewer ? '/queue' : `/review/${request!.id}`)
+    if (isReviewer) {
+      const next = nextPendingAfter(visibleRequests, request.id)
+      navigate(next ? `/review/${next.id}` : '/queue')
+      return
+    }
+    navigate(`/review/${request.id}`)
   }
+
+  const mapCodes: ReasonCode[] = isSubmitter && requestDeclined
+    ? declinedCodes
+    : checklist.map((f) => f.code)
+  const showMapTrigger =
+    (isReviewer && Boolean(request)) || (isSubmitter && requestDeclined)
 
   return (
     <div className="animate-in -mx-4 sm:-mx-6">
       <div className="mx-auto flex max-w-6xl flex-col overflow-hidden rounded-md border border-mist-200 bg-canvas sm:mx-6 lg:h-[calc(100vh-7.5rem)]">
         <header className="shrink-0 rounded-t-md border-b border-mist-200 bg-white px-[18px] py-4">
-          <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <Link
               to={backTo}
               className="inline-flex items-center gap-1 text-[11px] text-steel-600 hover:text-navy-800"
             >
               <ArrowLeft size={12} /> {backLabel} · {request.id}
             </Link>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex flex-wrap items-center gap-1.5">
               {isReviewer ? (
                 request.status === 'pending' ? (
                   <>
@@ -185,17 +268,42 @@ export function ReviewPage() {
           <h1 className="font-serif text-lg text-navy-800 leading-snug sm:text-[18px]">
             {request.title}
           </h1>
-          <p className="mt-2.5 text-[11px] text-steel-600 leading-snug">
-            Submitted by <strong className="font-medium text-navy-800">{request.submitter}</strong>
-            {' · '}
-            {request.source === 'affiliate' ? 'Affiliate manager' : 'Internal marketer'}
-            {request.partnerName ? (
-              <>
-                {' · Partner: '}
-                <strong className="font-medium text-navy-800">{request.partnerName}</strong>
-              </>
-            ) : null}
-          </p>
+          <div className="mt-2.5 flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+            <p className="min-w-0 flex-1 text-[11px] leading-snug text-steel-600">
+              Submitted by <strong className="font-medium text-navy-800">{request.submitter}</strong>
+              {' · '}
+              {request.source === 'affiliate' ? 'Affiliate manager' : 'Internal marketer'}
+              {request.partnerName ? (
+                <>
+                  {' · Partner: '}
+                  <strong className="font-medium text-navy-800">{request.partnerName}</strong>
+                </>
+              ) : null}
+            </p>
+            {queueNav && queueNav.total > 0 && (
+              <span className="inline-flex shrink-0 items-center gap-1.5 text-[11px]">
+                <button
+                  type="button"
+                  disabled={!queueNav.prev}
+                  className="font-medium text-navy-800 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:text-steel-600 disabled:no-underline"
+                  onClick={() => queueNav.prev && navigate(`/review/${queueNav.prev.id}`)}
+                >
+                  &lt; Previous
+                </button>
+                <span className="text-steel-600 tabular-nums">
+                  {queueNav.index >= 0 ? queueNav.index + 1 : '—'} / {queueNav.total}
+                </span>
+                <button
+                  type="button"
+                  disabled={!queueNav.next}
+                  className="font-medium text-navy-800 underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:text-steel-600 disabled:no-underline"
+                  onClick={() => queueNav.next && navigate(`/review/${queueNav.next.id}`)}
+                >
+                  Next &gt;
+                </button>
+              </span>
+            )}
+          </div>
         </header>
 
         <div className="grid flex-1 grid-cols-1 lg:min-h-0 lg:grid-cols-[2fr_1fr] lg:overflow-hidden">
@@ -297,6 +405,116 @@ export function ReviewPage() {
                 <>
                   {actionable && (
                     <>
+                      <div className="mb-3 rounded-[5px] border border-mist-200 bg-canvas/80 px-2.5 py-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-[11px] font-medium text-navy-800">Assist suggestions</p>
+                          <button
+                            type="button"
+                            className="inline-flex items-center gap-1 text-[10px] font-medium text-steel-600 hover:text-navy-800 disabled:opacity-50"
+                            onClick={() => void runAssist()}
+                            disabled={assistLoading}
+                          >
+                            <ArrowClockwise size={12} />
+                            Re-run
+                          </button>
+                        </div>
+                        {assistLoading && (
+                          <p className="mt-1.5 text-[10px] text-steel-600">Running triage…</p>
+                        )}
+                        {assistError && (
+                          <p className="mt-1.5 text-[10px] text-danger">{assistError}</p>
+                        )}
+                        {!assistLoading && assist?.summary && (
+                          <div className="mt-2">
+                            <p className="text-[10px] font-medium uppercase tracking-wide text-steel-600">
+                              Summary
+                            </p>
+                            <p className="mt-0.5 text-[10px] leading-snug text-navy-800">
+                              {assist.summary}
+                            </p>
+                          </div>
+                        )}
+                        {!assistLoading &&
+                          assist?.suggestedTier &&
+                          tierRank(assist.suggestedTier) > tierRank(request.riskTier) && (
+                            <div className="mt-2 rounded-[5px] border border-warn/40 bg-warn-soft/60 px-2 py-1.5">
+                              <p className="text-[10px] leading-snug text-navy-800">
+                                Checklist is {RISK_LABELS[request.riskTier]}; Assist needs{' '}
+                                {RISK_LABELS[assist.suggestedTier]} depth for all flagged issues.
+                              </p>
+                              <button
+                                type="button"
+                                className="mt-1 text-[10px] font-medium text-navy-800 underline underline-offset-2 hover:text-steel-600"
+                                onClick={() => {
+                                  if (!session || !assist.suggestedTier) return
+                                  updateRiskTier(
+                                    request.id,
+                                    assist.suggestedTier,
+                                    session.name,
+                                  )
+                                }}
+                              >
+                                Raise to {RISK_LABELS[assist.suggestedTier]}
+                              </button>
+                            </div>
+                          )}
+                        {!assistLoading && assist && assist.findings.length === 0 && (
+                          <p className="mt-2 text-[10px] text-steel-600">
+                            No issues flagged. Confirm manually before Approve.
+                          </p>
+                        )}
+                        {!assistLoading &&
+                          assist?.findings.map((f) => {
+                            const onChecklist = checklist.some((c) => c.code === f.code)
+                            const needTier = fromTierForCode(f.code)
+                            const related = (assist.callouts ?? []).filter(
+                              (c) =>
+                                c.relatedCodes?.includes(f.code) ||
+                                (!c.relatedCodes?.length && c.label === f.where),
+                            )
+                            const quoteKey = (detail: string) => {
+                              const m = detail.match(/[“"]([^”"]+)[”"]/)
+                              return (m?.[1] ?? detail).toLowerCase().replace(/\s+/g, ' ').trim()
+                            }
+                            const seen = new Set<string>()
+                            const extras = related.filter((c) => {
+                              const key = quoteKey(c.detail)
+                              if (seen.has(key)) return false
+                              seen.add(key)
+                              return true
+                            })
+                            const onCreative = extras[0]
+                            return (
+                              <div
+                                key={f.code}
+                                className="mt-2 border-t border-mist-100 pt-2"
+                              >
+                                <p className="text-[11px] font-medium text-navy-800">
+                                  {REASON_LABELS[f.code]}
+                                  {!onChecklist && (
+                                    <span className="ml-1 font-normal text-warn">
+                                      (needs {RISK_LABELS[needTier]} checklist)
+                                    </span>
+                                  )}
+                                </p>
+                                <p className="mt-0.5 text-[10px] text-steel-600">
+                                  <span className="font-medium text-navy-800">Where:</span> {f.where}
+                                </p>
+                                <p className="mt-0.5 text-[10px] leading-snug text-steel-600">
+                                  <span className="font-medium text-navy-800">Reason:</span>{' '}
+                                  {f.reason}
+                                </p>
+                                {onCreative && (
+                                  <p className="mt-0.5 text-[10px] leading-snug text-steel-600">
+                                    <span className="font-medium text-navy-800">On creative:</span>{' '}
+                                    {onCreative.detail}
+                                  </p>
+                                )}
+                              </div>
+                            )
+                          })}
+                      </div>
+
                       <p className="mb-1 text-[11px] font-medium text-navy-800">Compliance issues</p>
                       {depthCopy ? (
                         <p className="mb-2 text-[10px] leading-snug text-steel-600">
@@ -319,6 +537,14 @@ export function ReviewPage() {
                           <span className="font-medium text-navy-800">{f.label}</span>
                         </label>
                       ))}
+
+                      <button
+                        type="button"
+                        className="mt-2 text-left text-[10px] font-medium text-steel-700 underline underline-offset-2 hover:text-navy-800"
+                        onClick={() => setMapOpen(true)}
+                      >
+                        Why these issues?
+                      </button>
 
                       {declining && (
                         <div className="mt-2 rounded-[5px] bg-forest-50 px-2 py-2 text-[10px] leading-snug text-forest-800">
@@ -350,11 +576,30 @@ export function ReviewPage() {
                   )}
 
                   {!actionable && requestDeclined && (
-                    <DeclinedReasonsPanel
-                      codes={declinedCodes}
-                      fixes={declinedFixes}
-                      notes={declinedNotes}
-                    />
+                    <>
+                      <DeclinedReasonsPanel
+                        codes={declinedCodes}
+                        fixes={declinedFixes}
+                        notes={declinedNotes}
+                      />
+                      <button
+                        type="button"
+                        className="mt-2 text-left text-[10px] font-medium text-steel-700 underline underline-offset-2 hover:text-navy-800"
+                        onClick={() => setMapOpen(true)}
+                      >
+                        Why these issues?
+                      </button>
+                    </>
+                  )}
+
+                  {!actionable && !requestDeclined && !requestApproved && showMapTrigger && (
+                    <button
+                      type="button"
+                      className="mt-1 text-left text-[10px] font-medium text-steel-700 underline underline-offset-2 hover:text-navy-800"
+                      onClick={() => setMapOpen(true)}
+                    >
+                      Why these issues?
+                    </button>
                   )}
 
                   <Button
@@ -369,11 +614,20 @@ export function ReviewPage() {
               )}
 
               {isSubmitter && requestDeclined && (
-                <DeclinedReasonsPanel
-                  codes={declinedCodes}
-                  fixes={declinedFixes}
-                  notes={declinedNotes}
-                />
+                <>
+                  <DeclinedReasonsPanel
+                    codes={declinedCodes}
+                    fixes={declinedFixes}
+                    notes={declinedNotes}
+                  />
+                  <button
+                    type="button"
+                    className="mt-2 text-left text-[10px] font-medium text-steel-700 underline underline-offset-2 hover:text-navy-800"
+                    onClick={() => setMapOpen(true)}
+                  >
+                    Why these issues?
+                  </button>
+                </>
               )}
 
               {isSubmitter && requestApproved && (
@@ -442,6 +696,8 @@ export function ReviewPage() {
           navigate('/mine')
         }}
       />
+
+      <RegulationMapDrawer open={mapOpen} onClose={() => setMapOpen(false)} codes={mapCodes} />
     </div>
   )
 }
