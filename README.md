@@ -47,12 +47,30 @@ npm run preview
 ## Demo flow
 
 1. **Landing** — choose Review or Submit, then a demo identity  
-
 2. **Identity** — Jordan Lee (reviewer), Ava Chen (internal marketer), or Sam Ortiz (affiliate manager)  
 3. **Reviewer** sees the org-wide queue; **submitters** see only **Your submitted requests**  
-4. Open **CP-1042** to use the locked review workspace (Approve, or check findings → Decline)  
+4. Open a pending item (e.g. **CP-1050**) for the one-screen review workspace (Approve, or check findings → Decline)  
 
 Data persists in `localStorage`. Header **Reset** restores the seed dataset. **Switch** returns to the landing role cards.
+
+## AI assist (optional local LLM key)
+
+Assist runs automatically when a reviewer opens a **pending** request (seeds and new submits). Resolution order:
+
+1. `POST /api/assist` — production BFF with server-side keys (not available on static GitHub Pages; see `docs/api/assist.md`)  
+2. **Optional local OpenAI key** — prototype trials only  
+3. Heuristic fallback — always works offline  
+
+### Use a local key
+
+1. Create an API key at [platform.openai.com](https://platform.openai.com/api-keys) (you must use your own key; none is bundled with this repo).  
+2. Run the app locally, then sign in as **Jordan Lee** (reviewer).  
+3. On **Review queue**, open **AI assist**.  
+4. Paste the key → **Save key**. It is stored only in this browser’s `localStorage` (`clearpath-review.assist.apiKey.v1`).  
+5. Open or **Re-run** Assist on a pending review. The client calls OpenAI (`gpt-4o-mini`) and may send the creative proof image for vision when present.  
+6. **Clear key** on the same page when finished. Do not commit keys or use browser-held keys in production.
+
+Without a key or proxy, Assist still returns summary, findings, and creative evidence via fallback rules.
 
 ## GitHub Pages
 
