@@ -1,5 +1,5 @@
 import { findingsForTier } from '@/data/findings'
-import { ASSET_LABELS, CHANNEL_LABELS, PRODUCT_LABELS } from '@/lib/labels'
+import { ASSET_LABELS } from '@/lib/labels'
 import type { ReasonCode } from '@/lib/types'
 import type { AssistCallout, AssistFinding, AssistInput, AssistResult } from './types'
 
@@ -352,20 +352,15 @@ export function fallbackAssist({ request }: AssistInput): AssistResult {
     )
   }
 
-  const product = PRODUCT_LABELS[request.product] ?? request.product
-  const channel = CHANNEL_LABELS[request.channel] ?? request.channel
   const asset = ASSET_LABELS[request.assetType] ?? request.assetType
-  const flagBits =
-    request.claimFlags.length > 0 ? request.claimFlags.join(', ') : 'no claim flags'
 
   let summary: string
   if (findings.length === 0) {
-    summary = `No policy hits on this ${asset} (${product} · ${channel}; ${flagBits}). ${
+    summary = `No policy hits on this ${asset}. ${
       hasProof ? 'Proof image present — ' : ''
     }Confirm net impression, disclosure proximity, and landing match manually before Approve.`
   } else {
-    const codes = [...new Set(findings.map((f) => f.code))].slice(0, 4).join(', ')
-    summary = `Triage flagged ${findings.length} issue(s) on this ${asset} (${product} · ${channel}): ${codes}. Review callouts and pre-checked items; confirm before Decline — Assist does not decide.`
+    summary = `Triage flagged ${findings.length} issue(s) on this ${asset}.`
   }
 
   return { summary, findings, callouts, source: 'fallback' }

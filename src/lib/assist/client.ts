@@ -49,11 +49,11 @@ function sanitizeCallouts(raw: unknown): AssistCallout[] {
   return out
 }
 
-function defaultSummary(findings: AssistFinding[], source: AssistResult['source']): string {
+function defaultSummary(findings: AssistFinding[], _source: AssistResult['source']): string {
   if (findings.length === 0) {
-    return `No issues returned (${source}). Confirm net impression and disclosures manually before Approve.`
+    return 'No issues returned. Confirm net impression and disclosures manually before Approve.'
   }
-  return `Assist returned ${findings.length} finding(s) (${source}). Review where/reason and callouts; human decides Approve or Decline.`
+  return `Triage flagged ${findings.length} issue(s).`
 }
 
 function sanitizeResult(
@@ -128,7 +128,7 @@ async function tryLocalKey(input: AssistInput): Promise<AssistResult | null> {
   ].join(', ')
 
   const system = `You are a US consumer-finance marketing compliance triage assistant (not a decision engine). Return ONLY JSON:
-{"summary":"2-4 sentences for the reviewer","findings":[{"code":"...","reason":"...","where":"..."}],"callouts":[{"id":"short-id","label":"region name","detail":"quoted or paraphrased text on proof/copy","relatedCodes":["optional codes"]}]}.
+{"summary":"1-2 short sentences on what looks risky in plain language — do NOT list reason codes, product/channel labels, or say that Assist does not decide","findings":[{"code":"...","reason":"...","where":"..."}],"callouts":[{"id":"short-id","label":"region name","detail":"quoted or paraphrased text on proof/copy","relatedCodes":["optional codes"]}]}.
 Codes must be one of: ${codes}. Flag likely issues only. Never approve. Keep reason, where, and callout detail concise. If a creative image is provided, OCR/read visible text and cite headline vs disclosure bands in callouts and where fields.`
 
   const userText = JSON.stringify(packetPayload({ ...input.request, creativeImage: undefined }), null, 2)
